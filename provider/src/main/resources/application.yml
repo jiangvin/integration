@@ -1,0 +1,23 @@
+server:
+  port: 9020
+#Eureka
+spring.application.name: provider-service
+eureka.client.serviceUrl.defaultZone: http://localhost:9010/eureka/
+
+#Hystrix
+
+#LOG
+logging:
+  level.com: DEBUG
+  file: .\\active.log
+
+#Database
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sso?useSSL=false
+    username: root
+    password: 98741236
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml

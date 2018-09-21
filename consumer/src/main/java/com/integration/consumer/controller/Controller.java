@@ -1,10 +1,12 @@
 package com.integration.consumer.controller;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,11 +15,8 @@ import org.springframework.web.client.RestTemplate;
  */
 @RestController
 @RequestMapping(value = "/")
+@Slf4j
 public class Controller {
-
-    enum Type {
-        MEMBER
-    }
 
     private final RestTemplate restTemplate;
 
@@ -26,14 +25,18 @@ public class Controller {
         this.restTemplate = restTemplate;
     }
 
-    @RequestMapping(value = "/" , method = RequestMethod.GET)
+    @RequestMapping(value = "/*" , method = RequestMethod.GET)
     @HystrixCommand(fallbackMethod = "fallback")
-    public String mainMethod(@RequestParam(value = "name", defaultValue = "Consumer") String name) {
-        return restTemplate.getForEntity("http://provider-service?name=" + name, String.class).getBody();
-
+    public String mainMethod(HttpServletRequest request) {
+        String uriWithQuery = request.getRequestURI();
+        if (!request.getQueryString().isEmpty()) {
+            uriWithQuery += "?" + request.getQueryString();
+        }
+        log.debug("Get uri with queryString:" + uriWithQuery);
+        return restTemplate.getForEntity("http://provider-service" + uriWithQuery, String.class).getBody();
     }
 
-    public String fallback(String name) {
-        return name + " wrong !";
+    public String fallback(HttpServletRequest request) {
+        return request.getRequestURL() + " wrong !";
     }
 }
