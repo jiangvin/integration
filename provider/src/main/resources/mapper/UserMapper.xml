@@ -3,9 +3,9 @@
 <mapper namespace="com.integration.provider.mapper.UserMapper" >
     <resultMap id="UserResultMap" type="com.integration.provider.domain.User">
         <id property="userId" column="user_id" />
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="enabled" column="enabled"/>
+        <!--<result property="username" column="username"/>-->
+        <!--<result property="password" column="password"/>-->
+        <!--<result property="enabled" column="enabled"/>-->
     </resultMap>
     <select id="getOne" resultMap="UserResultMap">
         select * from users where user_id = #{userId}
