@@ -1,5 +1,6 @@
 package com.integration.provider.manager;
 
+import com.integration.provider.domain.DictionaryResult;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
@@ -113,11 +114,54 @@ public class DictionaryTreeManager {
             return count == recalculateCount();
         }
 
+        void findWordWithPrefix(DictionaryResult result, String currentPrefix, String prefix, int listCount) {
+            ++findTime;
+            String word = currentPrefix + key;
+            int matchCount = equalPrefixCount(prefix, word);
+            if (matchCount == prefix.length()) {
+                //刚好找到跟节点
+                findFlag = true;
+                if (result.getTotalCount() == 0) {
+                    result.setTotalCount(count);
+                }
+
+                //先加自己
+                if (isWord) {
+                    result.getTopResultList().add(word);
+                }
+
+                for (Map.Entry<String, Node> entry : children.entrySet()) {
+                    if (result.getTopResultList().size() >= listCount) {
+                        return;
+                    }
+                    entry.getValue().findWordWithPrefix(result, word, prefix, listCount);
+                }
+            } else if (matchCount == word.length()) {
+                //提速代码，直接查找看能否找到
+                String newPrefix = prefix.substring(matchCount);
+                while (!StringUtils.isEmpty(newPrefix)) {
+                    if (children.containsKey(newPrefix)) {
+                        children.get(newPrefix).findWordWithPrefix(result, word, prefix, listCount);
+                        return;
+                    }
+                    newPrefix = newPrefix.substring(0, newPrefix.length() - 1);
+                }
+
+                //跟节点在子节点里面，继续往下找
+                for (Map.Entry<String, Node> entry : children.entrySet()) {
+                    //已经找到，停止继续找
+                    if (findFlag) {
+                        return;
+                    }
+                    entry.getValue().findWordWithPrefix(result, word, prefix, listCount);
+                }
+                findFlag = true; //全部子节点都找完了，则表示结果没有，可以直接返回空结果。
+            }
+        }
+
         String toText(String prefix) {
             StringBuilder str = new StringBuilder(prefix + key + "," + count + "," + isWord + "\r\n");
-            children.entrySet().stream().forEach(entry -> {
-                str.append(entry.getValue().toText("    " + prefix + key));
-            });
+            children.forEach((key, value) -> str.append(value.toText("    " + prefix + key)));
             return str.toString();
         }
 
@@ -161,6 +205,9 @@ public class DictionaryTreeManager {
 
     private Node root = new Node("", null, false);
 
+    private int findTime = 0;
+    private boolean findFlag = false;
+
     public void addWord(String word) {
         if (StringUtils.isEmpty(word)) {
             return;
@@ -178,5 +225,17 @@ public class DictionaryTreeManager {
 
     public String toText() {
         return root.toText("") + "\r\n";
+    }
+
+    public DictionaryResult findWordWithPrefix(String prefix) {
+        findTime = 0;
+        findFlag = false;
+        DictionaryResult result = new DictionaryResult();
+        root.findWordWithPrefix(result, "", prefix, 10);
+        return result;
+    }
+
+    public int getFindTime() {
+        return findTime;
     }
 }
