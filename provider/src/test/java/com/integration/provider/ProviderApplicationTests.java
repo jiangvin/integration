@@ -2,7 +2,9 @@ package com.integration.provider;
 
 import com.integration.provider.domain.DictionaryResult;
 import com.integration.provider.manager.DictionaryTreeManager;
+import com.integration.provider.manager.MapManager;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,5 +63,20 @@ public class ProviderApplicationTests {
         Assert.assertEquals(result.getTopResultList().size(), 0);
         Assert.assertEquals(result.getTotalCount(), 0);
         Assert.assertEquals(manager.getFindTime(), 6);
+    }
+
+    @Test
+    public void Map() {
+        MapManager mapManager = new MapManager();
+        Random r = new Random(20181220);
+        for (int i = 0; i < 100000; ++i) {
+            long x = r.nextInt(10000) - 5000;
+            long y = r.nextInt(10000) - 5000;
+            mapManager.AddPoint(x, y);
+        }
+        Assert.assertEquals(mapManager.getPointCount(), 99953);
+        MapManager.Point p = mapManager.findNearest(0, 0);
+        Assert.assertEquals(p.getX(), 3);
+        Assert.assertEquals(p.getY(), -10);
     }
 }

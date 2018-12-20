@@ -26,7 +26,7 @@ public class Controller {
     }
 
     @RequestMapping(value = "/*" , method = RequestMethod.GET)
-//    @HystrixCommand(fallbackMethod = "fallback")
+    @HystrixCommand(fallbackMethod = "fallback")
     public String mainMethod(HttpServletRequest request) {
         String uriWithQuery = request.getRequestURI();
         if (!StringUtils.isEmpty(request.getQueryString())) {
@@ -36,7 +36,7 @@ public class Controller {
         return restTemplate.getForEntity("http://provider-service" + uriWithQuery, String.class).getBody();
     }
 
-//    public String fallback(HttpServletRequest request) {
-//        return request.getRequestURL() + " wrong !";
-//    }
+    public String fallback(HttpServletRequest request, Throwable throwable) {
+        return request.getRequestURL() + " wrong:" + throwable;
+    }
 }
