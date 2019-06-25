@@ -2,4 +2,6 @@
 */.mvn/*
 */mvnw
 */mvnw.cmd
-/active.log
+*/target/*
+*.iml
+/log/*
