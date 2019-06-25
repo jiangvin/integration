@@ -161,7 +161,7 @@ public class DictionaryTreeManager {
 
         String toText(String prefix) {
             StringBuilder str = new StringBuilder(prefix + key + "," + count + "," + isWord + "\r\n");
-            children.forEach((key, value) -> str.append(value.toText("    " + prefix + key)));
+            children.forEach((key, value) -> str.append(value.toText("    " + prefix + this.key)));
             return str.toString();
         }
 
