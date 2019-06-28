@@ -1,14 +1,6 @@
 server:
   port: 9411
-
-
-#Eureka
 spring.application.name: zipkin-service
-eureka.client.serviceUrl.defaultZone: http://localhost:9010/eureka/
-
-#LOG
-logging:
-  file: ..\\log\\${spring.application.name}.log
 
 #zipkin
 management.metrics.web.server.auto-time-requests: false

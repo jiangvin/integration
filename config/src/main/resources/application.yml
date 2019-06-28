@@ -1,0 +1,8 @@
+server:
+  port: 9030
+#Eureka
+spring.application.name: config-service
+eureka.client.serviceUrl.defaultZone: http://localhost:9010/eureka/
+
+#设定默认在src/main/resource目录下检索配置文件,否则会去git上检索
+spring.profiles.active: native

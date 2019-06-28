@@ -2,16 +2,3 @@ server:
   port: 9020
 #Eureka
 spring.application.name: provider-service
-eureka.client.serviceUrl.defaultZone: http://localhost:9010/eureka/
-
-#Hystrix
-
-#LOG
-logging:
-  level.com: DEBUG
-  file: ..\\log\\${spring.application.name}.log
-
-#Zipkin
-spring:
-  zipkin:
-    base-url: http://zipkin-service/

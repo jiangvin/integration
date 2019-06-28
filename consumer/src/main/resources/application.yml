@@ -1,13 +1,2 @@
 #Eureka
 spring.application.name: consumer-service
-eureka.client.serviceUrl.defaultZone: http://localhost:9010/eureka/
-
-#LOG
-logging:
-  level.com: DEBUG
-  file: ..\\log\\${spring.application.name}.log
-
-#Zipkin
-spring:
-  zipkin:
-    base-url: http://zipkin-service/
