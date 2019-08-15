@@ -13,4 +13,10 @@ import lombok.Data;
 public class DictionaryResult {
     private int totalCount = 0;
     private List<String> topResultList = new ArrayList<>();
+    private int findTime = 0;
+    private boolean findFlag = false;
+
+    public void addFindTime() {
+        ++findTime;
+    }
 }

@@ -36,16 +36,50 @@ public class TalkManager {
     }
 
     public void run() {
+        int totalValue = 0;
+        for (Talk talk : talkList) {
+            totalValue += talk.getValue();
+        }
+
+        //上午标准180，下午最低120，可以先用 180 + 180 当成1天的工作量预计算
+        int totalDays = totalValue / 360;
+        int residue = totalValue % 360;
+        if (residue > 0) {
+            totalDays += 1;
+        }
+
+        int valuesOfDay = totalValue / totalDays;
+        int valuesOfMorning = 180;
+        int valuesOfAfternoon = valuesOfDay - valuesOfMorning;
+
+        //开始排期
+        int dayNum = 1;
+        int valueNum = valuesOfMorning;
         List<Talk> route = new ArrayList<>();
-        while (findRoute(talkList, route, 180)) {
-            System.out.println("分组成功:");
+        while (findRoute(talkList, route, valueNum)) {
+            if (valueNum == valuesOfMorning) {
+                //上午
+                System.out.println("Day" + dayNum);
+                System.out.println("morning:" + valuesOfMorning);
+                valueNum = valuesOfAfternoon;
+            } else {
+                //下午
+                System.out.println("afternoon:" + valuesOfAfternoon);
+                valueNum = valuesOfMorning;
+                ++dayNum;
+            }
             route.forEach(t-> {
                 System.out.println(t.toString());
                 talkList.remove(t);
             });
             route.clear();
         }
-        System.out.println("剩下的成员:");
+
+        totalValue = 0;
+        for (Talk talk : talkList) {
+            totalValue += talk.getValue();
+        }
+        System.out.println("last afternoon:" + totalValue);
         talkList.forEach(t->System.out.println(t.toString()));
     }
 
