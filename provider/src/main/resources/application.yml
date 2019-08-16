@@ -2,3 +2,5 @@ server:
   port: 9020
 #Eureka
 spring.application.name: provider-service
+
+schedule.active: true
