@@ -2,9 +2,11 @@ package com.integration.provider;
 
 import com.integration.provider.domain.DictionaryResult;
 import com.integration.provider.manager.MapManager;
+import com.integration.provider.manager.PackageScannerManager;
 import com.integration.provider.manager.TalkManager;
 import com.integration.provider.manager.dictionary.DictionaryTreeManager;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.Assert;
@@ -125,5 +127,13 @@ public class ProviderApplicationTests {
         TalkManager talkManager = new TalkManager();
         talkManager.init("src/main/resources/talk.txt");
         talkManager.run();
+    }
+
+    @Test
+    public void doScan() {
+        PackageScannerManager packageScannerManager = new PackageScannerManager("com.integration.provider.manager");
+        List<String> results = packageScannerManager.getFullyQualifiedClassNameList();
+        Assert.assertTrue(results.size() > 1);
+        Assert.assertEquals(results.get(0), "com.integration.provider.manager.AspectManager");
     }
 }
