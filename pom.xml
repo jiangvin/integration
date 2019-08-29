@@ -27,6 +27,7 @@
         <module>zipkin</module>
         <module>provider</module>
         <module>consumer</module>
+        <module>agent</module>
     </modules>
 
     <dependencies>
