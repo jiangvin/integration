@@ -43,7 +43,6 @@ public class AspectManager {
         log.debug("IP : " + request.getRemoteAddr());
         log.debug("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
         log.debug("ARGS : " + Arrays.toString(joinPoint.getArgs()));
-
     }
 
     @AfterReturning(returning = "ret", pointcut = "pointCut()")
@@ -54,14 +53,14 @@ public class AspectManager {
 
     //后置异常通知
     @AfterThrowing("pointCut()")
-    public void throwing(JoinPoint joinPoint){
+    public void throwing(JoinPoint joinPoint) {
         log.debug("方法异常时执行.....");
         log.debug("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
     }
 
     //后置最终通知,final增强，不管是抛出异常或者正常退出都会执行
     @After("pointCut()")
-    public void after(JoinPoint joinPoint){
+    public void after(JoinPoint joinPoint) {
         log.debug("方法最后执行.....");
         log.debug("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
     }

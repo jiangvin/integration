@@ -1,10 +1,9 @@
-package com.integration.provider.manager.dictionary;
+package manager.dictionary;
 
-import com.integration.provider.domain.DictionaryResult;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
-import org.apache.commons.lang.StringUtils;
+import util.StringUtils;
 
 /**
  * @author 蒋文龙(Vin)

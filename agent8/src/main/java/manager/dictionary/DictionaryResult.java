@@ -1,4 +1,4 @@
-package com.integration.provider.domain;
+package manager.dictionary;
 
 import java.util.ArrayList;
 import java.util.List;
