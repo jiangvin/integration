@@ -2,6 +2,7 @@ package com.integration.provider.manager;
 
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -67,15 +68,10 @@ public class AspectManager {
 
     //环绕通知,环绕增强，相当于MethodInterceptor
     @Around("pointCut()")
-    public Object around(ProceedingJoinPoint pjp) {
+    public Object around(ProceedingJoinPoint pjp) throws Throwable {
         log.debug("方法环绕start.....");
-        try {
-            Object o =  pjp.proceed();
-            log.debug("方法环绕proceed，结果是 :" + o);
-            return o;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return null;
-        }
+        Object o = pjp.proceed();
+        log.debug("方法环绕proceed，结果是 :" + o);
+        return o;
     }
 }
