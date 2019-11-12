@@ -74,7 +74,7 @@ public class PackageScannerManager {
             names = readFromJarFile(filePath, splashPath);
         } else {
             // directory
-            log.debug("{}is a directory", filePath);
+            log.debug("{} is a directory", filePath);
 
             names = readFromDirectory(filePath);
         }

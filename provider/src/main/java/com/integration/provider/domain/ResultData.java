@@ -1,6 +1,5 @@
 package com.integration.provider.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
