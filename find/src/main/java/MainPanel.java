@@ -1,6 +1,5 @@
 import core.Constant;
 import core.Pos;
-import javafx.scene.shape.Polyline;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;

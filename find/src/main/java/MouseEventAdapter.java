@@ -13,10 +13,15 @@ public class MouseEventAdapter extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == 1) {
-            Constant.MAP_MANAGER.leftMouseDownEvent(e.getX(), e.getY());
-        } else if (e.getButton() == 3) {
-            Constant.MAP_MANAGER.rightMouseDownEvent(e.getX(), e.getY());
+        switch (e.getButton()) {
+            case 1:
+                Constant.MAP_MANAGER.leftMouseDownEvent(e.getX(), e.getY());
+                break;
+            case 3:
+                Constant.MAP_MANAGER.rightMouseDownEvent(e.getX(), e.getY());
+                break;
+            default:
+                break;
         }
     }
 
