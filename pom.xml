@@ -29,6 +29,7 @@
         <module>consumer</module>
         <module>agent7</module>
         <module>agent8</module>
+        <module>find</module>
     </modules>
 
     <dependencies>
