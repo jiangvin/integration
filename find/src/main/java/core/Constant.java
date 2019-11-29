@@ -10,6 +10,10 @@ public class Constant {
 
     public static final MapManager MAP_MANAGER = new MapManager();
 
+    public static final ViewController VIEW_CONTROLLER = new ViewController();
+    static final double MIN_DISPLAY_SCALE = 0.5;
+    static final int VIEW_MOVE = 50;
+
     public static final int MAX_EFFORT_TIMES = 10;
 
     static final int START_X = 100;

@@ -1,4 +1,5 @@
 import core.Constant;
+import core.ViewMoveType;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -20,6 +21,24 @@ public class KeyEventAdapter extends KeyAdapter {
                 break;
             case '3':
                 Constant.MAP_MANAGER.changeDisplayFindWay();
+                break;
+            case 'q':
+                Constant.VIEW_CONTROLLER.rescaleDisplay(true);
+                break;
+            case 'e':
+                Constant.VIEW_CONTROLLER.rescaleDisplay(false);
+                break;
+            case 'w':
+                Constant.VIEW_CONTROLLER.viewMove(ViewMoveType.UP);
+                break;
+            case 'a':
+                Constant.VIEW_CONTROLLER.viewMove(ViewMoveType.LEFT);
+                break;
+            case 's':
+                Constant.VIEW_CONTROLLER.viewMove(ViewMoveType.DOWN);
+                break;
+            case 'd':
+                Constant.VIEW_CONTROLLER.viewMove(ViewMoveType.RIGHT);
                 break;
             default:
                 break;

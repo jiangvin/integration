@@ -14,6 +14,15 @@ public class Pos {
         this.y = y;
     }
 
+    Pos(int x, int y, boolean adjust) {
+        this.x = x;
+        this.y = y;
+
+        if (adjust) {
+            adjustPosFromDisplayPos();
+        }
+    }
+
     public String generateKey() {
         int displayX = x / Constant.SCALE;
         int displayY = y / Constant.SCALE;
@@ -36,15 +45,15 @@ public class Pos {
         return y;
     }
 
-    public void setX(int x) {
+    void setX(int x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    void setY(int y) {
         this.y = y;
     }
 
-    public void adjustPosFromDisplayPos() {
+    private void adjustPosFromDisplayPos() {
         x = x / Constant.SCALE * Constant.SCALE;
         y = y / Constant.SCALE * Constant.SCALE;
     }
@@ -53,7 +62,7 @@ public class Pos {
         return getDisplayX() == pos.getDisplayX() && getDisplayY() == pos.getDisplayY();
     }
 
-    public boolean equals(Pos pos) {
+    boolean equals(Pos pos) {
         return this.x == pos.x && this.y == pos.y;
     }
 }

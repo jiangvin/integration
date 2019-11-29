@@ -1,4 +1,6 @@
 import core.Constant;
+import core.CoordsType;
+import core.ViewController;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,12 +15,15 @@ public class MouseEventAdapter extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        ViewController view = Constant.VIEW_CONTROLLER;
         switch (e.getButton()) {
             case 1:
-                Constant.MAP_MANAGER.leftMouseDownEvent(e.getX(), e.getY());
+                Constant.MAP_MANAGER.leftMouseDownEvent(view.getRealCoords(e.getX(), CoordsType.X),
+                                                        view.getRealCoords(e.getY(), CoordsType.Y));
                 break;
             case 3:
-                Constant.MAP_MANAGER.rightMouseDownEvent(e.getX(), e.getY());
+                Constant.MAP_MANAGER.rightMouseDownEvent(view.getRealCoords(e.getX(), CoordsType.X),
+                                                         view.getRealCoords(e.getY(), CoordsType.Y));
                 break;
             default:
                 break;
@@ -31,6 +36,8 @@ public class MouseEventAdapter extends MouseAdapter {
     }
 
     public void mouseDragged(MouseEvent e) {
-        Constant.MAP_MANAGER.mouseMoveEvent(e.getX(), e.getY());
+        ViewController view = Constant.VIEW_CONTROLLER;
+        Constant.MAP_MANAGER.mouseMoveEvent(view.getRealCoords(e.getX(), CoordsType.X),
+                                            view.getRealCoords(e.getY(), CoordsType.Y));
     }
 }

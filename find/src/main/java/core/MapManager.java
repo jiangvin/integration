@@ -69,7 +69,7 @@ public class MapManager {
     }
 
     public void leftMouseDownEvent(int x, int y) {
-        Pos pos = new Pos(x, y);
+        Pos pos = new Pos(x, y, true);
         String key = pos.generateKey();
         if (barrierMap.containsKey(key)) {
             barrierMap.remove(key);
@@ -81,8 +81,7 @@ public class MapManager {
     }
 
     public void rightMouseDownEvent(int x, int y) {
-        finalGoal = new Pos(x, y);
-        finalGoal.adjustPosFromDisplayPos();
+        finalGoal = new Pos(x, y, true);
         ai(barrierMap);
     }
 
@@ -95,7 +94,7 @@ public class MapManager {
             return;
         }
 
-        Pos pos = new Pos(x, y);
+        Pos pos = new Pos(x, y, true);
         String key = pos.generateKey();
         if (barrierActionType == BarrierActionType.NEW && !barrierMap.containsKey(key)) {
             barrierMap.put(key, pos);

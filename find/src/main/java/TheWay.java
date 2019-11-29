@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 public class TheWay {
     public static void main(String[] args) {
         JFrame frame = new JFrame("TheWay");
+
         MainPanel mainPanel = new MainPanel();
         MouseEventAdapter mouseEventAdapter = new MouseEventAdapter();
         KeyEventAdapter keyEventAdapter = new KeyEventAdapter();

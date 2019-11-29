@@ -1,5 +1,7 @@
 import core.Constant;
+import core.CoordsType;
 import core.Pos;
+import core.ViewController;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -31,23 +33,24 @@ public class MainPanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2 = (Graphics2D) g;
+        ViewController view = Constant.VIEW_CONTROLLER;
 
         g2.setColor(Color.YELLOW);
         List<Pos> wayList = Constant.MAP_MANAGER.getWayList();
         if (wayList != null) {
             for (Pos pos : wayList) {
-                int x = pos.getDisplayX() * Constant.SCALE;
-                int y = pos.getDisplayY() * Constant.SCALE;
-                g2.drawRect(x, y, Constant.SCALE, Constant.SCALE);
+                int x = view.getDisplayCoords(pos.getX(), CoordsType.X);
+                int y = view.getDisplayCoords(pos.getY(), CoordsType.Y);
+                g2.drawRect(x, y, view.getDisplayScale(), view.getDisplayScale());
             }
         }
 
         g2.setColor(Color.BLACK);
         Map<String, Pos> map = Constant.MAP_MANAGER.getBarrierMap();
         for (Map.Entry<String, Pos> kv : map.entrySet()) {
-            int x = kv.getValue().getDisplayX() * Constant.SCALE;
-            int y = kv.getValue().getDisplayY() * Constant.SCALE;
-            g2.fill3DRect(x, y, Constant.SCALE, Constant.SCALE, true);
+            int x = view.getDisplayCoords(kv.getValue().getX(), CoordsType.X);
+            int y = view.getDisplayCoords(kv.getValue().getY(), CoordsType.Y);
+            g2.fill3DRect(x, y, view.getDisplayScale(), view.getDisplayScale(), true);
         }
 
         Pos man = Constant.MAP_MANAGER.getMan();
@@ -57,23 +60,30 @@ public class MainPanel extends JPanel {
             int pointCount = goalList.size() + 1;
             int[] xs = new int[pointCount];
             int[] ys = new int[pointCount];
-            int offset = Constant.SCALE / 2;
-            xs[0] = man.getX() + offset;
-            ys[0] = man.getY() + offset;
+            int offset = view.getDisplayScale(0.5);
+            xs[0] = view.getDisplayCoords(man.getX(), CoordsType.X) + offset;
+            ys[0] = view.getDisplayCoords(man.getY(), CoordsType.Y) + offset;
             for (int i = 0; i < goalList.size(); ++i) {
-                xs[i + 1] = goalList.get(i).getX()  + offset;
-                ys[i + 1] = goalList.get(i).getY()  + offset;
+                xs[i + 1] = view.getDisplayCoords(goalList.get(i).getX(), CoordsType.X)  + offset;
+                ys[i + 1] = view.getDisplayCoords(goalList.get(i).getY(), CoordsType.Y)  + offset;
             }
             g2.drawPolyline(xs, ys, pointCount);
         }
 
         Pos goal = Constant.MAP_MANAGER.getFinalGoal();
         g2.setColor(Color.RED);
-        g2.drawOval(goal.getX(), goal.getY(), Constant.SCALE, Constant.SCALE);
+        g2.drawOval(view.getDisplayCoords(goal.getX(), CoordsType.X),
+                    view.getDisplayCoords(goal.getY(), CoordsType.Y),
+                    view.getDisplayScale(),
+                    view.getDisplayScale());
 
-        g2.fillOval(man.getX(), man.getY(), Constant.SCALE, Constant.SCALE);
+        g2.fillOval(view.getDisplayCoords(man.getX(), CoordsType.X),
+                    view.getDisplayCoords(man.getY(), CoordsType.Y),
+                    view.getDisplayScale(),
+                    view.getDisplayScale());
 
         g2.setColor(Color.BLACK);
         g2.drawString(Constant.MAP_MANAGER.getConfig(), 2, 12);
+        g2.drawString(view.getConfig(), 2, 24);
     }
 }

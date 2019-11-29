@@ -12,26 +12,15 @@ public class Way {
 
     private Way parentWay;
 
-    private double parentEffort;
-
-    private double effort;
+    double effort;
 
     public Way(Way parentWay, Pos pos) {
-        this.parentEffort = parentWay.getEffort();
         this.parentWay = parentWay;
         this.pos = pos;
-        this.effort = parentEffort + BaseFindWay.getDistance(parentWay.getPos(), pos);
-    }
-
-    public Way(Way parentWay, Pos pos, double effortAdjust) {
-        this.parentEffort = parentWay.getEffort();
-        this.parentWay = parentWay;
-        this.pos = pos;
-        this.effort = parentEffort + BaseFindWay.getDistance(parentWay.getPos(), pos) + effortAdjust;
+        this.effort = parentWay.getEffort() + BaseFindWay.getDistance(parentWay.getPos(), pos);
     }
 
     public Way(Pos pos) {
-        this.parentEffort = 0;
         this.parentWay = null;
         this.pos = pos;
         this.effort = 0;

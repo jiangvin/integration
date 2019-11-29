@@ -27,7 +27,7 @@ public class EstimateFindWay extends GeneralFindWay {
 
         double effortAdjust = getDistance(pos, end) - getDistance(parentWay.getPos(), end);
 
-        Way newWay = new Way(parentWay, pos, effortAdjust);
+        Way newWay = new EstimateWay(parentWay, pos, effortAdjust);
         if (wayMap.containsKey(key) && wayMap.get(key).getEffort() <= newWay.getEffort()) {
             return false;
         }
