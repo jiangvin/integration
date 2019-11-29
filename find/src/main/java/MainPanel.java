@@ -1,6 +1,7 @@
 import core.Constant;
 import core.CoordsType;
 import core.Pos;
+import core.findway.Way;
 import core.manager.ViewManager;
 
 import javax.swing.JPanel;
@@ -35,15 +36,7 @@ public class MainPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         ViewManager view = Constant.VIEW_MANAGER;
 
-        g2.setColor(Color.YELLOW);
-        List<Pos> wayList = Constant.MAP_MANAGER.getWayList();
-        if (wayList != null) {
-            for (Pos pos : wayList) {
-                int x = view.getDisplayCoords(pos.getX(), CoordsType.X);
-                int y = view.getDisplayCoords(pos.getY(), CoordsType.Y);
-                g2.drawRect(x, y, view.getDisplaySize(), view.getDisplaySize());
-            }
-        }
+        drawWay(g2);
 
         drawBarrier(g2);
 
@@ -92,6 +85,26 @@ public class MainPanel extends JPanel {
                           Constant.VIEW_MANAGER.getDisplaySize(),
                           Constant.VIEW_MANAGER.getDisplaySize(),
                           true);
+        }
+    }
+
+    private void drawWay(Graphics2D g2) {
+        List<Way> wayList = Constant.MAP_MANAGER.getWayList();
+        if (wayList != null) {
+            for (Way way : wayList) {
+                int x = Constant.VIEW_MANAGER.getDisplayCoords(way.getPos().getX(), CoordsType.X);
+                int y = Constant.VIEW_MANAGER.getDisplayCoords(way.getPos().getY(), CoordsType.Y);
+                g2.setColor(Color.YELLOW);
+                g2.drawRect(x,
+                            y,
+                            Constant.VIEW_MANAGER.getDisplaySize(),
+                            Constant.VIEW_MANAGER.getDisplaySize());
+                if (Constant.VIEW_MANAGER.needShowDetail()) {
+                    g2.setColor(Color.BLACK);
+                    int offset = Constant.VIEW_MANAGER.getDisplaySize(0.5);
+                    g2.drawString(way.getEffortForDisplay(), x + offset - 7, y + offset + 5);
+                }
+            }
         }
     }
 }

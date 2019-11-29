@@ -22,6 +22,9 @@ public class KeyEventAdapter extends KeyAdapter {
             case '3':
                 Constant.MAP_MANAGER.changeDisplayFindWay();
                 break;
+            case '4':
+                Constant.MAP_MANAGER.changePause();
+                break;
             case 'q':
                 Constant.VIEW_MANAGER.rescaleDisplay(true);
                 break;

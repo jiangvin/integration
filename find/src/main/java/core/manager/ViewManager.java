@@ -94,4 +94,8 @@ public class ViewManager {
     private void generateConfig() {
         config = String.format("Top:%d    Left:%d    Scale:%.1f", top, left, scaleWithAdjust);
     }
+
+    public boolean needShowDetail() {
+        return displayScale > 4.0;
+    }
 }

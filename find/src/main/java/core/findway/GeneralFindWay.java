@@ -175,14 +175,14 @@ public class GeneralFindWay extends BaseFindWay {
     }
 
     @Override
-    public List<Pos> getWayList() {
+    public List<Way> getWayList() {
         if (wayMap == null || wayMap.isEmpty()) {
             return null;
         }
 
-        List<Pos> list = new LinkedList<Pos>();
+        List<Way> list = new LinkedList<Way>();
         for (Map.Entry<String, Way> wayEntry : wayMap.entrySet()) {
-            list.add(wayEntry.getValue().getPos());
+            list.add(wayEntry.getValue());
         }
 
         return list;

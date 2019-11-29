@@ -34,5 +34,5 @@ public abstract class BaseFindWay {
      * 获取查找消耗
      * @return result list
      */
-    public abstract List<Pos> getWayList();
+    public abstract List<Way> getWayList();
 }

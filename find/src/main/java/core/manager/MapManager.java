@@ -6,6 +6,7 @@ import core.Pos;
 import core.findway.BaseFindWay;
 import core.findway.EstimateFindWay;
 import core.findway.GeneralFindWay;
+import core.findway.Way;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class MapManager {
     private Pos man = new Pos(Constant.START_X, Constant.START_Y);
     private Pos finalGoal = new Pos(Constant.START_X, Constant.START_Y);
     private List<Pos> goalList = null;
-    private List<Pos> wayList = null;
+    private List<Way> wayList = null;
     private Map<String, Pos> barrierMap = new HashMap<String, Pos>();
 
     private BarrierActionType barrierActionType = BarrierActionType.NONE;
@@ -31,13 +32,14 @@ public class MapManager {
     private String config = "";
     private boolean displayFindRange = false;
     private boolean displayFindWay = false;
+    private boolean pause = false;
     private long findTime = 0;
 
     public Map<String, Pos> getBarrierMap() {
         return barrierMap;
     }
 
-    public List<Pos> getWayList() {
+    public List<Way> getWayList() {
         if (!displayFindRange) {
             return null;
         }
@@ -60,6 +62,11 @@ public class MapManager {
 
     public void changeDisplayFindWay() {
         displayFindWay = !displayFindWay;
+        generateConfig();
+    }
+
+    public void changePause() {
+        pause = !pause;
         generateConfig();
     }
 
@@ -107,6 +114,10 @@ public class MapManager {
     }
 
     public void run() {
+        if (pause) {
+            return;
+        }
+
         if (goalList == null || goalList.isEmpty()) {
             return;
         }
@@ -165,10 +176,11 @@ public class MapManager {
         if (wayList != null) {
             findCount = wayList.size();
         }
-        config = String.format("AI:%s    DisplayFindRange:%s    DisplayFindWay:%s    FindCount:%d    FindTime:%d",
+        config = String.format("AI:%s    DisplayFindRange:%s    DisplayFindWay:%s    Pause:%s    FindCount:%d    FindTime:%d",
                                ai.getClass().getSimpleName(),
                                displayFindRange,
                                displayFindWay,
+                               pause,
                                findCount,
                                findTime);
     }

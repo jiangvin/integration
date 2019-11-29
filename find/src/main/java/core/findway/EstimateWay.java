@@ -10,6 +10,7 @@ import core.Pos;
 public class EstimateWay extends Way {
     public EstimateWay(Way parentWay, Pos pos, double effortAdjust) {
         super(parentWay, pos);
-        this.effort = + effortAdjust;
+        this.effort += effortAdjust;
+        generateDisplayStr();
     }
 }

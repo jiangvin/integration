@@ -14,16 +14,20 @@ public class Way {
 
     double effort;
 
+    private String effortForDisplay;
+
     public Way(Way parentWay, Pos pos) {
         this.parentWay = parentWay;
         this.pos = pos;
         this.effort = parentWay.getEffort() + BaseFindWay.getDistance(parentWay.getPos(), pos);
+        generateDisplayStr();
     }
 
     public Way(Pos pos) {
         this.parentWay = null;
         this.pos = pos;
         this.effort = 0;
+        generateDisplayStr();
     }
 
     public Pos getPos() {
@@ -36,5 +40,13 @@ public class Way {
 
     public Way getParentWay() {
         return parentWay;
+    }
+
+    void generateDisplayStr() {
+        effortForDisplay = String.format("%.1f", effort);
+    }
+
+    public String getEffortForDisplay() {
+        return effortForDisplay;
     }
 }
