@@ -1,4 +1,8 @@
-package core;
+package core.manager;
+
+import core.Constant;
+import core.CoordsType;
+import core.ViewMoveType;
 
 import java.math.BigDecimal;
 
@@ -7,7 +11,7 @@ import java.math.BigDecimal;
  * @description
  * @date 2019/11/28
  */
-public class ViewController {
+public class ViewManager {
     private double displayScale = 1;
     private double scaleWithAdjust = displayScale;
 
@@ -37,11 +41,11 @@ public class ViewController {
         return (int)(value / scaleWithAdjust + 0.5) + offset;
     }
 
-    public int getDisplayScale() {
-        return getDisplayScale(1);
+    public int getDisplaySize() {
+        return getDisplaySize(1);
     }
 
-    public int getDisplayScale(double resize) {
+    public int getDisplaySize(double resize) {
         return getDisplayCoords(Constant.SCALE * resize, CoordsType.NONE);
     }
 

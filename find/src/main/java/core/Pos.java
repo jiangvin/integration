@@ -14,7 +14,7 @@ public class Pos {
         this.y = y;
     }
 
-    Pos(int x, int y, boolean adjust) {
+    public Pos(int x, int y, boolean adjust) {
         this.x = x;
         this.y = y;
 
@@ -45,11 +45,11 @@ public class Pos {
         return y;
     }
 
-    void setX(int x) {
+    public void setX(int x) {
         this.x = x;
     }
 
-    void setY(int y) {
+    public void setY(int y) {
         this.y = y;
     }
 
@@ -62,7 +62,7 @@ public class Pos {
         return getDisplayX() == pos.getDisplayX() && getDisplayY() == pos.getDisplayY();
     }
 
-    boolean equals(Pos pos) {
+    public boolean realEquals(Pos pos) {
         return this.x == pos.x && this.y == pos.y;
     }
 }

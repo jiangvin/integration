@@ -1,5 +1,8 @@
-package core;
+package core.manager;
 
+import core.BarrierActionType;
+import core.Constant;
+import core.Pos;
 import core.findway.BaseFindWay;
 import core.findway.EstimateFindWay;
 import core.findway.GeneralFindWay;
@@ -142,14 +145,15 @@ public class MapManager {
             }
         }
 
-        if (man.equals(goal)) {
+        if (man.realEquals(goal)) {
             goalList.remove(0);
         }
     }
 
     private void ai(Map<String, Pos> barrierMap) {
+        Pos start = new Pos(man.getX(), man.getY(), true);
         long before = System.currentTimeMillis();
-        ai.find(man, finalGoal, barrierMap);
+        ai.find(start, finalGoal, barrierMap);
         findTime = System.currentTimeMillis() - before;
         goalList = ai.getGoalList();
         wayList = ai.getWayList();
