@@ -1,6 +1,7 @@
 package core.findway;
 
 import core.Pos;
+import lombok.Getter;
 
 /**
  * @author 蒋文龙(Vin)
@@ -8,10 +9,13 @@ import core.Pos;
  * @date 2019/11/28
  */
 public class Way {
+    @Getter
     private Pos pos;
 
+    @Getter
     private Way parentWay;
 
+    @Getter
     double effort;
 
     private String effortForDisplay;
@@ -28,18 +32,6 @@ public class Way {
         this.pos = pos;
         this.effort = 0;
         generateDisplayStr();
-    }
-
-    public Pos getPos() {
-        return pos;
-    }
-
-    public double getEffort() {
-        return effort;
-    }
-
-    public Way getParentWay() {
-        return parentWay;
     }
 
     void generateDisplayStr() {

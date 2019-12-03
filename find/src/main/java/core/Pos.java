@@ -1,18 +1,18 @@
 package core;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 /**
  * @author 蒋文龙(Vin)
  * @description
  * @date 2019/11/27
  */
+@Data
+@AllArgsConstructor
 public class Pos {
     private int x;
     private int y;
-
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
 
     public Pos(int x, int y, boolean adjust) {
         this.x = x;
@@ -35,22 +35,6 @@ public class Pos {
 
     public int getDisplayY() {
         return y / Constant.SCALE;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     private void adjustPosFromDisplayPos() {
