@@ -7,6 +7,7 @@ import core.manager.ViewManager;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -71,7 +72,7 @@ public class MainPanel extends JPanel {
 
         g2.setColor(Color.BLACK);
         g2.drawString(Constant.MAP_MANAGER.getConfig(), 2, 12);
-        g2.drawString(view.getConfig(), 2, 24);
+        g2.drawString(view.getConfig(), 2, getHeight() - 2);
     }
 
     private void drawBarrier(Graphics2D g2) {
@@ -102,7 +103,9 @@ public class MainPanel extends JPanel {
                 if (Constant.VIEW_MANAGER.needShowDetail()) {
                     g2.setColor(Color.BLACK);
                     int offset = Constant.VIEW_MANAGER.getDisplaySize(0.5);
-                    g2.drawString(way.getEffortForDisplay(), x + offset - 7, y + offset + 5);
+                    FontMetrics fm = g2.getFontMetrics();
+                    int widthOffset = fm.stringWidth(way.getEffortForDisplay()) / 2;
+                    g2.drawString(way.getEffortForDisplay(), x + offset - widthOffset, y + offset + 5);
                 }
             }
         }

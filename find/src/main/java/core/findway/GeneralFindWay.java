@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static core.Constant.MAX_FOUNT_COUNT;
+
 /**
  * @author 蒋文龙(Vin)
  * @description
@@ -26,16 +28,8 @@ public class GeneralFindWay extends BaseFindWay {
 
     private Way goalWay = null;
 
-    private static final double MAX_EFFORT_LESS_LIMIT = 100.0;
-
     @Override
     public void find(Pos start, Pos end, Map<String, Pos> barrierMap) {
-        //计算最大预估
-        double estimateDistance = getDistance(start, end);
-        double maxEffort = estimateDistance * Constant.MAX_EFFORT_TIMES;
-        if (maxEffort < MAX_EFFORT_LESS_LIMIT) {
-            maxEffort = MAX_EFFORT_LESS_LIMIT;
-        }
 
         //初始化
         this.wayMap.clear();
@@ -58,15 +52,15 @@ public class GeneralFindWay extends BaseFindWay {
                 break;
             }
 
-            //没找到，但消耗值超标，退出循环
-            if (way.getEffort() >= maxEffort) {
-                break;
-            }
-
             //找到了，但不能马上退出循环，因为可能还有更优解
             if (way.getPos().displayEquals(end)) {
                 goalWay = way;
                 continue;
+            }
+
+            //没找到，但消耗值超标，退出循环
+            if (wayMap.size() > MAX_FOUNT_COUNT) {
+                break;
             }
 
             findTerminals(way);

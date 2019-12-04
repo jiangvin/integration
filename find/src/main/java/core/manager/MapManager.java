@@ -1,6 +1,6 @@
 package core.manager;
 
-import core.BarrierActionType;
+import core.ActionType;
 import core.Constant;
 import core.Pos;
 import core.findway.BaseFindWay;
@@ -27,13 +27,17 @@ public class MapManager {
     private List<Way> wayList = null;
     private Map<String, Pos> barrierMap = new HashMap<String, Pos>();
 
-    private BarrierActionType barrierActionType = BarrierActionType.NONE;
+    private ActionType barrierActionType = ActionType.NONE;
 
     private String config = "";
     private boolean displayFindRange = false;
     private boolean displayFindWay = false;
     private boolean pause = false;
     private long findTime = 0;
+
+    public MapManager() {
+        generateConfig();
+    }
 
     public Map<String, Pos> getBarrierMap() {
         return barrierMap;
@@ -83,10 +87,10 @@ public class MapManager {
         String key = pos.generateKey();
         if (barrierMap.containsKey(key)) {
             barrierMap.remove(key);
-            barrierActionType = BarrierActionType.REMOVE;
+            barrierActionType = ActionType.REMOVE_BARRIER;
         } else {
             barrierMap.put(key, pos);
-            barrierActionType = BarrierActionType.NEW;
+            barrierActionType = ActionType.NEW_BARRIER;
         }
     }
 
@@ -96,19 +100,19 @@ public class MapManager {
     }
 
     public void moveUpEvent() {
-        barrierActionType = BarrierActionType.NONE;
+        barrierActionType = ActionType.NONE;
     }
 
     public void mouseMoveEvent(int x, int y) {
-        if (barrierActionType == BarrierActionType.NONE) {
+        if (barrierActionType == ActionType.NONE) {
             return;
         }
 
         Pos pos = new Pos(x, y, true);
         String key = pos.generateKey();
-        if (barrierActionType == BarrierActionType.NEW && !barrierMap.containsKey(key)) {
+        if (barrierActionType == ActionType.NEW_BARRIER && !barrierMap.containsKey(key)) {
             barrierMap.put(key, pos);
-        } else if (barrierActionType == BarrierActionType.REMOVE && barrierMap.containsKey(key)) {
+        } else if (barrierActionType == ActionType.REMOVE_BARRIER && barrierMap.containsKey(key)) {
             barrierMap.remove(key);
         }
     }
@@ -176,7 +180,7 @@ public class MapManager {
         if (wayList != null) {
             findCount = wayList.size();
         }
-        config = String.format("AI:%s    DisplayFindRange:%s    DisplayFindWay:%s    Pause:%s    FindCount:%d    FindTime:%d",
+        config = String.format("1.AI:%s    2.FindRange:%s    3.FindWay:%s    4.Pause:%s    FindCount:%d    FindTime:%d",
                                ai.getClass().getSimpleName(),
                                displayFindRange,
                                displayFindWay,

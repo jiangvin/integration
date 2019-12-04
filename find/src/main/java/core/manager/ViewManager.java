@@ -20,6 +20,10 @@ public class ViewManager {
 
     private String config = "";
 
+    public ViewManager() {
+        generateConfig();
+    }
+
     public int getDisplayCoords(double value, CoordsType type) {
         int offset = getOffset(type);
         return (int)((value - offset) * scaleWithAdjust + 0.5);

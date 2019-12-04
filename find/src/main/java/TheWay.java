@@ -14,6 +14,7 @@ public class TheWay {
         KeyEventAdapter keyEventAdapter = new KeyEventAdapter();
         mainPanel.addMouseListener(mouseEventAdapter);
         mainPanel.addMouseMotionListener(mouseEventAdapter);
+        mainPanel.addMouseWheelListener(mouseEventAdapter);
         mainPanel.addKeyListener(keyEventAdapter);
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

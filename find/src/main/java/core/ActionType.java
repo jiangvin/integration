@@ -5,7 +5,7 @@ package core;
  * @description
  * @date 2019/11/27
  */
-public enum BarrierActionType {
+public enum ActionType {
     /**
      * 空
      */
@@ -14,10 +14,15 @@ public enum BarrierActionType {
     /**
      * 新增
      */
-    NEW,
+    NEW_BARRIER,
 
     /**
      * 删除
      */
-    REMOVE
+    REMOVE_BARRIER,
+
+    /**
+     * 镜头控制
+     */
+    VIEW_CONTROL
 }

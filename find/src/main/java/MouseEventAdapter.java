@@ -4,6 +4,7 @@ import core.manager.ViewManager;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * @author 蒋文龙(Vin)
@@ -12,7 +13,6 @@ import java.awt.event.MouseEvent;
  */
 
 public class MouseEventAdapter extends MouseAdapter {
-
     @Override
     public void mousePressed(MouseEvent e) {
         ViewManager view = Constant.VIEW_MANAGER;
@@ -39,5 +39,13 @@ public class MouseEventAdapter extends MouseAdapter {
         ViewManager view = Constant.VIEW_MANAGER;
         Constant.MAP_MANAGER.mouseMoveEvent(view.getRealCoords(e.getX(), CoordsType.X),
                                             view.getRealCoords(e.getY(), CoordsType.Y));
+    }
+
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (e.getWheelRotation() < 0) {
+            Constant.VIEW_MANAGER.rescaleDisplay(true);
+        } else if (e.getWheelRotation() > 0) {
+            Constant.VIEW_MANAGER.rescaleDisplay(false);
+        }
     }
 }
