@@ -18,6 +18,12 @@ public class ViewManager {
     private int top = 0;
     private int left = 0;
 
+    /**
+     * 用于鼠标控制镜头
+     */
+    private int xMouse = 0;
+    private int yMouse = 0;
+
     private String config = "";
 
     public ViewManager() {
@@ -69,18 +75,12 @@ public class ViewManager {
         switch (type) {
             case UP:
                 top -= moveValue;
-                if (top < 0) {
-                    top = 0;
-                }
                 break;
             case DOWN:
                 top += moveValue;
                 break;
             case LEFT:
                 left -= moveValue;
-                if (left < 0) {
-                    left = 0;
-                }
                 break;
             case RIGHT:
                 left += moveValue;
@@ -88,6 +88,17 @@ public class ViewManager {
             default:
                 break;
         }
+        generateConfig();
+    }
+
+    public void setMousePos(int x, int y) {
+        xMouse = x;
+        yMouse = y;
+    }
+
+    public void viewMove(int x, int y) {
+        left -= getRealCoords(x, CoordsType.X) - getRealCoords(xMouse, CoordsType.X);
+        top -= getRealCoords(y, CoordsType.Y) - getRealCoords(yMouse, CoordsType.Y);
         generateConfig();
     }
 

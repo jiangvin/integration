@@ -14,15 +14,18 @@ public class KeyEventAdapter extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyChar()) {
             case '1':
-                Constant.MAP_MANAGER.changeAi();
+                Constant.MAP_MANAGER.changeMode();
                 break;
             case '2':
-                Constant.MAP_MANAGER.changeDisplayFindRange();
+                Constant.MAP_MANAGER.changeAi();
                 break;
             case '3':
-                Constant.MAP_MANAGER.changeDisplayFindWay();
+                Constant.MAP_MANAGER.changeDisplayFindRange();
                 break;
             case '4':
+                Constant.MAP_MANAGER.changeDisplayFindWay();
+                break;
+            case '5':
                 Constant.MAP_MANAGER.changePause();
                 break;
             case 'q':

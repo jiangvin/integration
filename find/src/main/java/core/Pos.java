@@ -24,22 +24,28 @@ public class Pos {
     }
 
     public String generateKey() {
-        int displayX = x / Constant.SCALE;
-        int displayY = y / Constant.SCALE;
-        return String.format("%d_%d", displayX, displayY);
+        return String.format("%d_%d", getDisplayX(), getDisplayY());
     }
 
     public int getDisplayX() {
-        return x / Constant.SCALE;
+        if (x < 0) {
+            return (x + 1) / Constant.SCALE - 1;
+        } else {
+            return x / Constant.SCALE;
+        }
     }
 
     public int getDisplayY() {
-        return y / Constant.SCALE;
+        if (y < 0) {
+            return (y + 1) / Constant.SCALE - 1;
+        } else {
+            return y / Constant.SCALE;
+        }
     }
 
     private void adjustPosFromDisplayPos() {
-        x = x / Constant.SCALE * Constant.SCALE;
-        y = y / Constant.SCALE * Constant.SCALE;
+        x = getDisplayX() * Constant.SCALE;
+        y = getDisplayY() * Constant.SCALE;
     }
 
     public boolean displayEquals(Pos pos) {

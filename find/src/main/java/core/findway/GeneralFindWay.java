@@ -72,22 +72,18 @@ public class GeneralFindWay extends BaseFindWay {
         int displayX = pos.getDisplayX();
         int displayY = pos.getDisplayY();
 
-        boolean canUp = false;
-        boolean canLeft = false;
+        boolean canUp;
+        boolean canLeft;
         boolean canRight;
         boolean canDown;
 
         //up
-        if (displayY - 1 >= 0) {
-            Pos upPos = new Pos(displayX * Constant.SCALE, (displayY - 1) * Constant.SCALE);
-            canUp = addNewWay(way, upPos);
-        }
+        Pos upPos = new Pos(displayX * Constant.SCALE, (displayY - 1) * Constant.SCALE);
+        canUp = addNewWay(way, upPos);
 
         //left
-        if (displayX - 1 >= 0) {
-            Pos leftPos = new Pos((displayX - 1) * Constant.SCALE, displayY * Constant.SCALE);
-            canLeft = addNewWay(way, leftPos);
-        }
+        Pos leftPos = new Pos((displayX - 1) * Constant.SCALE, displayY * Constant.SCALE);
+        canLeft = addNewWay(way, leftPos);
 
         //down
         Pos downPos = new Pos(displayX * Constant.SCALE, (displayY + 1) * Constant.SCALE);

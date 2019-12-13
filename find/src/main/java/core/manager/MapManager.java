@@ -27,7 +27,7 @@ public class MapManager {
     private List<Way> wayList = null;
     private Map<String, Pos> barrierMap = new HashMap<String, Pos>();
 
-    private ActionType barrierActionType = ActionType.NONE;
+    private ActionType actionType = ActionType.NONE;
 
     private String config = "";
     private boolean displayFindRange = false;
@@ -48,6 +48,15 @@ public class MapManager {
             return null;
         }
         return wayList;
+    }
+
+    public void changeMode() {
+        if (actionType != ActionType.VIEW_CONTROL) {
+            actionType = ActionType.VIEW_CONTROL;
+        } else {
+            actionType = ActionType.NONE;
+        }
+        generateConfig();
     }
 
     public void changeAi() {
@@ -83,14 +92,19 @@ public class MapManager {
     }
 
     public void leftMouseDownEvent(int x, int y) {
+        if (actionType == ActionType.VIEW_CONTROL) {
+            Constant.VIEW_MANAGER.setMousePos(x, y);
+            return;
+        }
+
         Pos pos = new Pos(x, y, true);
         String key = pos.generateKey();
         if (barrierMap.containsKey(key)) {
             barrierMap.remove(key);
-            barrierActionType = ActionType.REMOVE_BARRIER;
+            actionType = ActionType.REMOVE_BARRIER;
         } else {
             barrierMap.put(key, pos);
-            barrierActionType = ActionType.NEW_BARRIER;
+            actionType = ActionType.NEW_BARRIER;
         }
     }
 
@@ -100,19 +114,26 @@ public class MapManager {
     }
 
     public void moveUpEvent() {
-        barrierActionType = ActionType.NONE;
+        if (actionType != ActionType.VIEW_CONTROL) {
+            actionType = ActionType.NONE;
+        }
     }
 
     public void mouseMoveEvent(int x, int y) {
-        if (barrierActionType == ActionType.NONE) {
+        if (actionType == ActionType.NONE) {
+            return;
+        }
+
+        if (actionType == ActionType.VIEW_CONTROL) {
+            Constant.VIEW_MANAGER.viewMove(x, y);
             return;
         }
 
         Pos pos = new Pos(x, y, true);
         String key = pos.generateKey();
-        if (barrierActionType == ActionType.NEW_BARRIER && !barrierMap.containsKey(key)) {
+        if (actionType == ActionType.NEW_BARRIER && !barrierMap.containsKey(key)) {
             barrierMap.put(key, pos);
-        } else if (barrierActionType == ActionType.REMOVE_BARRIER && barrierMap.containsKey(key)) {
+        } else if (actionType == ActionType.REMOVE_BARRIER && barrierMap.containsKey(key)) {
             barrierMap.remove(key);
         }
     }
@@ -180,7 +201,8 @@ public class MapManager {
         if (wayList != null) {
             findCount = wayList.size();
         }
-        config = String.format("1.AI:%s    2.FindRange:%s    3.FindWay:%s    4.Pause:%s    FindCount:%d    FindTime:%d",
+        config = String.format("1.MODE:%s    2.AI:%s    3.FindRange:%s    4.FindWay:%s    5.Pause:%s    FindCount:%d    FindTime:%d",
+                               actionType == ActionType.VIEW_CONTROL ? "view" : "edit",
                                ai.getClass().getSimpleName(),
                                displayFindRange,
                                displayFindWay,
