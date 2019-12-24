@@ -1,9 +1,12 @@
 package com.integration.util.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import javax.crypto.Cipher;
+import java.io.IOException;
 import java.security.Key;
 
 /**
@@ -23,6 +26,8 @@ public abstract class BaseSecurityUtil {
      */
     Cipher decryptCipher = null;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     BaseSecurityUtil(String keyStr) {
         try {
             Key key = generateKey(keyStr);
@@ -33,6 +38,15 @@ public abstract class BaseSecurityUtil {
         } catch (Exception e) {
             log.error("SecurityUtil install error:", e);
         }
+    }
+
+    public String encrypt(Object object) {
+        try {
+            return encrypt(objectMapper.writeValueAsString(object));
+        } catch (JsonProcessingException e) {
+            log.error("Json parser error:", e);
+        }
+        return null;
     }
 
     /**
@@ -46,6 +60,15 @@ public abstract class BaseSecurityUtil {
             log.error("encrypt error:", e);
         }
         return strIn;
+    }
+
+    public <T> T decrypt(String strIn, Class<T> valueType) {
+        try {
+            return objectMapper.readValue(decrypt(strIn), valueType);
+        } catch (IOException e) {
+            log.error("Json parser error:", e);
+        }
+        return null;
     }
 
     /**

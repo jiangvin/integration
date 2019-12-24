@@ -3,6 +3,9 @@ package com.integration.util;
 import com.integration.util.security.DesSecurityUtil;
 import com.integration.util.security.RsaPrivateSecurityUtil;
 import com.integration.util.security.RsaPublicSecurityUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,24 +21,33 @@ import java.security.NoSuchAlgorithmException;
 @SpringBootTest
 public class UtilApplicationTests {
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class Person {
+        private String name;
+        private Integer age;
+        private Boolean isHero;
+    }
+
     @Test
     public void desSecurityServiceTest() {
-        String source = "hello,world! 你好，世界！";
-        String encodeTemplate = "17971458faf567ed8b158e3621fc2b40b3bb60d645ac49f654856ad0fdf5af28";
+        Person source = new Person("Vin", 18, false);
+        String encodeTemplate = "c093955756da4ee6454dc5c9c5239450b6aa5154aba9d22a36d4737d6e074fae29b97838c726e644";
 
         //随机钥匙测试
         DesSecurityUtil desSecurityService = new DesSecurityUtil();
         String encode = desSecurityService.encrypt(source);
         Assert.assertNotEquals(source, encode);
         Assert.assertNotEquals(encode, encodeTemplate);
-        String decode = desSecurityService.decrypt(encode);
+        Person decode = desSecurityService.decrypt(encode, Person.class);
         Assert.assertEquals(source, decode);
 
         //特定钥匙测试
         desSecurityService = new DesSecurityUtil("VIN");
         encode = desSecurityService.encrypt(source);
         Assert.assertEquals(encode, encodeTemplate);
-        decode = desSecurityService.decrypt(encode);
+        decode = desSecurityService.decrypt(encode, Person.class);
         Assert.assertEquals(source, decode);
     }
 
