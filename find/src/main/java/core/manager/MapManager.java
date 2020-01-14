@@ -109,6 +109,11 @@ public class MapManager {
     }
 
     public void rightMouseDownEvent(int x, int y) {
+        if (actionType == ActionType.VIEW_CONTROL) {
+            Constant.VIEW_MANAGER.setMousePos(x, y);
+            return;
+        }
+
         finalGoal = new Pos(x, y, true);
         ai(barrierMap);
     }
