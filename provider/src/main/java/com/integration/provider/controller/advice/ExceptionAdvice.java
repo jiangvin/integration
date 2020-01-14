@@ -19,13 +19,14 @@ public class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ResultData exceptionHandler(Exception e) {
-        log.error("controller error:", e);
         int code;
         String msg;
         if (e instanceof CustomException) {
+            log.error("controller error: {}", e.getMessage());
             code = ((CustomException) e).getCode();
             msg = ((CustomException) e).getMsg();
         } else {
+            log.error("controller error: ", e);
             code = 1100;
             msg = e.getClass().getName() + ":" + e.getMessage();
         }
