@@ -2,6 +2,8 @@ package com.integration.provider.controller;
 
 import com.integration.provider.domain.CustomException;
 import com.integration.provider.domain.User;
+import com.integration.provider.manager.MessageManager;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,10 +19,15 @@ public class Controller {
     @RequestMapping(value = "/" , method = RequestMethod.GET)
     public String mainMethod(@RequestParam(value = "name", defaultValue = "Vin") String name) {
         if ("Jefy".equals(name)) {
-            throw new CustomException(999, "你并没显示改用户的权限!");
+            throw new CustomException(1200, MessageManager.get("permission.denied"));
         }
 
-        return name + ",Welcome to my provider !";
+        return MessageManager.get("welcome", name, "Provider");
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public String mainPostMethod(@RequestBody User user) {
+        return MessageManager.get("welcome", user.getUsername(), user.getUserId());
     }
 
     @RequestMapping(value = "/user" , method = RequestMethod.GET)
