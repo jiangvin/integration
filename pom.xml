@@ -22,14 +22,8 @@
     </properties>
 
     <modules>
-        <module>registry</module>
-        <module>config</module>
-        <module>zipkin</module>
-        <module>provider</module>
-        <module>consumer</module>
-        <module>agent7</module>
-        <module>agent8</module>
-        <module>find</module>
+        <module>center</module>
+        <module>zuul</module>
     </modules>
 
     <dependencies>
