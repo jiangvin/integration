@@ -1,4 +1,4 @@
-package com.integration.provider.config;
+package com.integration.util.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;

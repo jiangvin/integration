@@ -1,4 +1,4 @@
-package com.integration.provider.config;
+package com.integration.util.configuration;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;

@@ -1,4 +1,4 @@
-package com.integration.provider.manager;
+package com.integration.util.message;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class MessageManager {
+public class MessageUtil {
 
     private static MessageSource ms;
 
-    public MessageManager(MessageSource messageSource) {
+    public MessageUtil(MessageSource messageSource) {
         ms = messageSource;
     }
 
