@@ -26,6 +26,7 @@
         <module>zuul</module>
         <module>util</module>
         <module>provider</module>
+        <module>find</module>
     </modules>
 
     <dependencies>
