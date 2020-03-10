@@ -3,6 +3,7 @@ package com.integration.provider.controller;
 import com.integration.provider.domain.CustomException;
 import com.integration.provider.domain.User;
 import com.integration.util.message.MessageUtil;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,5 +41,11 @@ public class Controller {
         user.setUsername(name);
         user.setPassword("123456");
         return user;
+    }
+
+    @GetMapping(value = "sleep")
+    public boolean sleep(@RequestParam(value = "time", defaultValue = "1000") int time) throws InterruptedException {
+        Thread.sleep(time);
+        return true;
     }
 }
