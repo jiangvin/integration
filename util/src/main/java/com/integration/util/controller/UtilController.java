@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping(value = "/util")
+@RequestMapping(value = "util")
 public class UtilController {
-    @RequestMapping(value = "/" , method = RequestMethod.GET)
+    @RequestMapping(value = "" , method = RequestMethod.GET)
     public String mainMethod(@RequestParam(value = "name", defaultValue = "Util") String name,
                              @RequestParam(value = "author", defaultValue = "Vin") String author) {
         return MessageUtil.get("welcome", author, name);

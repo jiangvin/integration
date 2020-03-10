@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/")
 public class Controller {
-    @RequestMapping(value = "/" , method = RequestMethod.GET)
+    @RequestMapping(value = "" , method = RequestMethod.GET)
     public String mainMethod(@RequestParam(value = "name", defaultValue = "Vin") String name) {
         if ("Jefy".equals(name)) {
             throw new CustomException(1200, MessageUtil.get("permission.denied"));
@@ -25,12 +25,12 @@ public class Controller {
         return MessageUtil.get("welcome", name, "Provider");
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public String mainPostMethod(@RequestBody User user) {
         return MessageUtil.get("welcome", user.getUsername(), user.getUserId());
     }
 
-    @RequestMapping(value = "/user" , method = RequestMethod.GET)
+    @RequestMapping(value = "user" , method = RequestMethod.GET)
     public User mainUser(@RequestParam(value = "name", defaultValue = "Vin") String name) {
         User user = new User();
         if ("Jefy".equals(name)) {

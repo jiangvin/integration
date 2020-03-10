@@ -36,14 +36,4 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer.defaultContentType(MediaType.APPLICATION_JSON);
     }
-
-    /**
-     * 支持多语言，从url的lang中截取语言选择
-     */
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        LocaleChangeInterceptor localeInterceptor = new LocaleChangeInterceptor();
-//        localeInterceptor.setParamName("lang");
-//        registry.addInterceptor(localeInterceptor);
-//    }
 }
