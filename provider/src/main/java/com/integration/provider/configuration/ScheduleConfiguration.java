@@ -1,4 +1,4 @@
-package com.integration.provider.config;
+package com.integration.provider.configuration;
 
 import java.util.concurrent.Executors;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

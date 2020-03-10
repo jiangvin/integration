@@ -15,18 +15,7 @@ import java.util.Locale;
  * @date 2019/11/26
  */
 @Configuration
-public class ServiceConfiguration {
-
-    /**
-     * URL里面能够包含特殊字符如[],{}等
-     */
-    @Bean
-    public ServletWebServerFactory webServerFactory() {
-        TomcatServletWebServerFactory fa = new TomcatServletWebServerFactory();
-        fa.addConnectorCustomizers(connector -> connector.setProperty("relaxedQueryChars", "[]{}"));
-        return fa;
-    }
-
+public class LanguageConfiguration {
     /**
      * 默认语言解析器 其中locale表示默认语言
      */

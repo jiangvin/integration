@@ -25,6 +25,7 @@
         <module>center</module>
         <module>zuul</module>
         <module>util</module>
+        <module>provider</module>
     </modules>
 
     <dependencies>

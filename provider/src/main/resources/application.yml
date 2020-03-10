@@ -4,5 +4,3 @@ server:
 spring.application.name: provider-service
 
 schedule.active: true
-
-spring.messages.basename: messages
