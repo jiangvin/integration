@@ -27,6 +27,7 @@
         <module>util</module>
         <module>provider</module>
         <module>find</module>
+        <module>notifier</module>
     </modules>
 
     <dependencies>
