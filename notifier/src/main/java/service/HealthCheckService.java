@@ -3,6 +3,7 @@ package service;
 import dao.BaseDao;
 import model.CustomException;
 import model.CustomExceptionType;
+import model.MessagePushType;
 import model.ServiceNotifier;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class HealthCheckService {
 
     private ConnectService connectService = new ConnectService();
     private BaseDao baseDao = new BaseDao();
+    private NotifierService notifierService = new NotifierService();
 
     public void start() {
         List<ServiceNotifier> serviceNotifiers = baseDao.queryServiceNotifiers();
@@ -45,6 +47,7 @@ public class HealthCheckService {
         checkVersion(serviceNotifiers);
         updateErrorCount(serviceNotifiers);
         baseDao.updateCheckLog(serviceNotifiers);
+        notifierService.sendMessage(serviceNotifiers);
     }
 
     private void checkVersion(List<ServiceNotifier> serviceNotifiers) {
@@ -93,7 +96,26 @@ public class HealthCheckService {
     }
 
     private void updateErrorCount(List<ServiceNotifier> serviceNotifiers) {
-        serviceNotifiers.stream().filter(i -> !i.getConnectFlag()).forEach(i -> i.setErrorCount(baseDao.queryErrorCount(i.getServiceId()) + 1));
+        for (ServiceNotifier serviceNotifier : serviceNotifiers) {
+            int lastCount = baseDao.queryErrorCount(serviceNotifier.getServiceId());
+            //恢复正常
+            if (serviceNotifier.getConnectFlag() && lastCount != 0) {
+                serviceNotifier.setConnectResult("恢复正常");
+                serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
+                continue;
+            }
+
+            //异常
+            if (!serviceNotifier.getConnectFlag()) {
+                int errorCount = lastCount + 1;
+                serviceNotifier.setErrorCount(errorCount);
+                if (errorCount == 3) {
+                    serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
+                } else if (errorCount > 3) {
+                    serviceNotifier.setPushType(MessagePushType.REGULAR_PUSH);
+                }
+            }
+        }
     }
 
     private String findVersion(ServiceNotifier serviceNotifier) {

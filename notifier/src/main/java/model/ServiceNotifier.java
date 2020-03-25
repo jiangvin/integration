@@ -18,6 +18,8 @@ public class ServiceNotifier {
     @NonNull
     private String url;
 
+    private MessagePushType pushType = MessagePushType.NO_PUSH;
+
     private Boolean connectFlag;
 
     private String connectResult;

@@ -26,11 +26,15 @@ public class ConnectService {
 
     private RestTemplate restTemplate = new RestTemplate();
     private ObjectMapper objectMapper = new ObjectMapper();
-    private HttpHeaders headers;
+    private HttpHeaders formHeaders;
+    private HttpHeaders jsonHeaders;
 
     public ConnectService() {
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        formHeaders = new HttpHeaders();
+        formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        jsonHeaders = new HttpHeaders();
+        jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
     }
 
     <T> T getRequest(String url, Class<T> type) {
@@ -56,7 +60,26 @@ public class ConnectService {
         }
     }
 
-    <T> T postRequest(String url, Class<T> type, Map<String, String> params) {
+    <T> T postJsonRequest(String url, Class<T> type, Object object) {
+        try {
+            HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(object), jsonHeaders);
+            log.info("Send post request:{} to url:{}", request.toString(), url);
+            ResponseEntity<String> responseStr = restTemplate.postForEntity(url, request , String.class);
+            log.info("Receive response:{}, try to convert to {}", responseStr.getBody(), type.getName());
+            if (type == String.class) {
+                return (T) responseStr.getBody();
+            } else {
+                return objectMapper.readValue(responseStr.getBody(), type);
+            }
+        } catch (HttpClientErrorException e) {
+            throw new CustomException(CustomExceptionType.HTTP, e.getStatusCode().toString());
+        } catch (Exception e) {
+            log.error("Catch http error:", e);
+            throw new CustomException(CustomExceptionType.HTTP, e.getMessage());
+        }
+    }
+
+    <T> T postFormRequest(String url, Class<T> type, Map<String, String> params) {
         try {
             HttpEntity<MultiValueMap<String, String>> request = generateRequest(params);
             log.info("Send post request:{} to url:{}", request.toString(), url);
@@ -86,7 +109,7 @@ public class ConnectService {
     private HttpEntity<MultiValueMap<String, String>> generateRequest(Map<String, String> params) {
         MultiValueMap<String, String> pushMap = new LinkedMultiValueMap<>(16);
         params.forEach(pushMap::add);
-        return new HttpEntity<>(pushMap, headers);
+        return new HttpEntity<>(pushMap, formHeaders);
     }
 
     private String getUrlMatching(String url) {
