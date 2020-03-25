@@ -46,7 +46,11 @@ public class ConnectService {
             url = generateUrlWithParams(url, params);
             log.info("Send get request to url:{}", url);
             ResponseEntity<String> responseStr = restTemplate.getForEntity(url, String.class);
-            log.info("Receive response:{}, try to convert to {}", responseStr.getBody(), type.getName());
+            String receiveStr = responseStr.getBody();
+            if (receiveStr != null && receiveStr.length() > 128) {
+                receiveStr = receiveStr.substring(0, 128) + "...";
+            }
+            log.info("Receive response:{}, try to convert to {}", receiveStr, type.getName());
             if (type == String.class) {
                 return (T) responseStr.getBody();
             } else {

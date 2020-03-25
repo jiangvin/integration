@@ -1,5 +1,6 @@
 package service;
 
+import model.Constant;
 import model.MessagePushType;
 import model.ServiceNotifier;
 import model.WxMessage;
@@ -16,7 +17,7 @@ public class NotifierService {
     public void sendMessage(List<ServiceNotifier> serviceNotifiers) {
         boolean regularPush = false;
         long minutesOfHour = System.currentTimeMillis() / 1000 / 60 % 60;
-        if (minutesOfHour < 5) {
+        if (minutesOfHour < Constant.REGULAR_PUSH_MINUTES_OF_HOUR) {
             regularPush = true;
         }
 

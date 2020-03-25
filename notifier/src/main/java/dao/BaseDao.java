@@ -66,6 +66,10 @@ public class BaseDao {
 
     public void updateCheckLog(List<ServiceNotifier> serviceNotifiers) {
         for (ServiceNotifier serviceNotifier : serviceNotifiers) {
+            if (!serviceNotifier.isNeedSave()) {
+                log.info("{} needn't save into database", serviceNotifier.getServiceId());
+                continue;
+            }
             try {
                 statement.executeUpdate(String.format("insert into check_log (service_id,success,result,error_count) values('%s',%s,'%s',%d)",
                                                       serviceNotifier.getServiceId(),

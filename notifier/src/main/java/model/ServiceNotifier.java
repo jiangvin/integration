@@ -26,6 +26,8 @@ public class ServiceNotifier {
 
     private int errorCount;
 
+    private boolean needSave = true;
+
     public void setConnectResult(String result, boolean flag) {
         this.connectFlag = flag;
         this.connectResult = result;
