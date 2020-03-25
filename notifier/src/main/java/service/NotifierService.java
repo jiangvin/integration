@@ -1,6 +1,6 @@
 package service;
 
-import model.Constant;
+import utils.PropertyUtils;
 import model.MessagePushType;
 import model.ServiceNotifier;
 import model.WxMessage;
@@ -17,7 +17,7 @@ public class NotifierService {
     public void sendMessage(List<ServiceNotifier> serviceNotifiers) {
         boolean regularPush = false;
         long minutesOfHour = System.currentTimeMillis() / 1000 / 60 % 60;
-        if (minutesOfHour < Constant.REGULAR_PUSH_MINUTES_OF_HOUR) {
+        if (minutesOfHour < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
             regularPush = true;
         }
 
@@ -41,7 +41,7 @@ public class NotifierService {
         }
         WxMessage wxMessage = new WxMessage(content.toString());
         ConnectService connectService = new ConnectService();
-        connectService.postJsonRequest("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=01a4d06b-9f42-4104-a125-9be13b46fbd3", String.class, wxMessage);
+        connectService.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
     }
 
     private String adjustPushMessage(ServiceNotifier serviceNotifier) {

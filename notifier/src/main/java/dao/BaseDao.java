@@ -2,6 +2,7 @@ package dao;
 
 import lombok.extern.slf4j.Slf4j;
 import model.ServiceNotifier;
+import utils.PropertyUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,10 +25,10 @@ public class BaseDao {
 
     public BaseDao() {
         try {
-            String url = "jdbc:mysql://192.168.5.224:3306/service-notifier?useSSL=false&characterEncoding=utf-8";
-            String username = "root";
-            String password = "Root@123";
-            connection = DriverManager.getConnection(url, username, password);
+            connection = DriverManager.getConnection(
+                             PropertyUtils.getDbUrl(),
+                             PropertyUtils.getDbUsername(),
+                             PropertyUtils.getDbPassword());
 
             //创建Statement，执行sql
             statement = connection.createStatement();

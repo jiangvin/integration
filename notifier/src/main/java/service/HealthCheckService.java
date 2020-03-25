@@ -1,7 +1,7 @@
 package service;
 
 import dao.BaseDao;
-import model.Constant;
+import utils.PropertyUtils;
 import model.CustomException;
 import model.CustomExceptionType;
 import model.MessagePushType;
@@ -109,7 +109,7 @@ public class HealthCheckService {
             //恢复正常
             if (serviceNotifier.getConnectFlag() && lastCount != 0) {
                 serviceNotifier.setConnectResult("恢复正常");
-                if (lastCount >= Constant.PUSH_FOR_ERROR_COUNT) {
+                if (lastCount >= PropertyUtils.PUSH_FOR_ERROR_COUNT) {
                     serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
                 }
                 continue;
@@ -119,9 +119,9 @@ public class HealthCheckService {
             if (!serviceNotifier.getConnectFlag()) {
                 int errorCount = lastCount + 1;
                 serviceNotifier.setErrorCount(errorCount);
-                if (errorCount == Constant.PUSH_FOR_ERROR_COUNT) {
+                if (errorCount == PropertyUtils.PUSH_FOR_ERROR_COUNT) {
                     serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
-                } else if (errorCount > Constant.PUSH_FOR_ERROR_COUNT) {
+                } else if (errorCount > PropertyUtils.PUSH_FOR_ERROR_COUNT) {
                     serviceNotifier.setPushType(MessagePushType.REGULAR_PUSH);
                 }
             }
