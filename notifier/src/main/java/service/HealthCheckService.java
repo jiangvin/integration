@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class HealthCheckService {
 
+    private static final String BUILD_DATE_TAG = "build_date=";
     private static final String VERSION_TAG = "version=";
 
     private ConnectService connectService = new ConnectService();
@@ -30,14 +31,10 @@ public class HealthCheckService {
         //网络检查
         for (ServiceNotifier serviceNotifier : serviceNotifiers) {
             try {
-                String str = connectService.getRequest(serviceNotifier.getUrl(), String.class);
-                if (!str.contains(VERSION_TAG)) {
+                String version = findVersion(serviceNotifier);
+                if (version == null) {
                     serviceNotifier.setConnectResult("找不到版本信息", false);
                     continue;
-                }
-                String version = str.split("version=")[1].split(",")[0].replace("\"", "").replace("\\", "");
-                if (version.length() > 5) {
-                    version = version.substring(0, 5);
                 }
                 serviceNotifier.setConnectResult(version, true);
             } catch (Exception e) {
@@ -96,8 +93,24 @@ public class HealthCheckService {
     }
 
     private void updateErrorCount(List<ServiceNotifier> serviceNotifiers) {
-        serviceNotifiers.stream().filter(i -> !i.getConnectFlag()).forEach(i -> {
-            i.setErrorCount(baseDao.queryErrorCount(i.getServiceId()) + 1);
-        });
+        serviceNotifiers.stream().filter(i -> !i.getConnectFlag()).forEach(i -> i.setErrorCount(baseDao.queryErrorCount(i.getServiceId()) + 1));
+    }
+
+    private String findVersion(ServiceNotifier serviceNotifier) {
+        String str = connectService.getRequest(serviceNotifier.getUrl(), String.class);
+        if (!str.contains(BUILD_DATE_TAG)) {
+            return null;
+        }
+
+        String versionStr = str.split(BUILD_DATE_TAG)[1];
+        if (!versionStr.contains(VERSION_TAG)) {
+            return null;
+        }
+
+        String version = versionStr.split(VERSION_TAG)[1].split(",")[0].replace("\"", "").replace("\\", "");
+        if (version.length() > 5) {
+            version = version.substring(0, 5);
+        }
+        return version;
     }
 }
