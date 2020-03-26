@@ -1,4 +1,4 @@
-package service;
+package util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +21,16 @@ import java.util.Map;
  * @date 2020/3/23
  */
 @Slf4j
-public class ConnectService {
+public class HttpUtils {
     private static final String KEY_OF_PARAM = "?";
+    private static HttpUtils httpUtils = new HttpUtils();
 
     private RestTemplate restTemplate = new RestTemplate();
     private ObjectMapper objectMapper = new ObjectMapper();
     private HttpHeaders formHeaders;
     private HttpHeaders jsonHeaders;
 
-    public ConnectService() {
+    private HttpUtils() {
         formHeaders = new HttpHeaders();
         formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -37,15 +38,15 @@ public class ConnectService {
         jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
     }
 
-    <T> T getRequest(String url, Class<T> type) {
+    public static <T> T getRequest(String url, Class<T> type) {
         return getRequest(url, type, null);
     }
 
-    <T> T getRequest(String url, Class<T> type, Map<String, String> params) {
+    public static <T> T getRequest(String url, Class<T> type, Map<String, String> params) {
         try {
             url = generateUrlWithParams(url, params);
             log.info("Send get request to url:{}", url);
-            ResponseEntity<String> responseStr = restTemplate.getForEntity(url, String.class);
+            ResponseEntity<String> responseStr = httpUtils.restTemplate.getForEntity(url, String.class);
             String receiveStr = responseStr.getBody();
             if (receiveStr != null && receiveStr.length() > 128) {
                 receiveStr = receiveStr.substring(0, 128) + "...";
@@ -54,7 +55,7 @@ public class ConnectService {
             if (type == String.class) {
                 return (T) responseStr.getBody();
             } else {
-                return objectMapper.readValue(responseStr.getBody(), type);
+                return httpUtils.objectMapper.readValue(responseStr.getBody(), type);
             }
         } catch (HttpClientErrorException e) {
             throw new CustomException(CustomExceptionType.HTTP, e.getStatusCode().toString());
@@ -64,16 +65,16 @@ public class ConnectService {
         }
     }
 
-    public <T> T postJsonRequest(String url, Class<T> type, Object object) {
+    public static <T> T postJsonRequest(String url, Class<T> type, Object object) {
         try {
-            HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(object), jsonHeaders);
+            HttpEntity<String> request = new HttpEntity<>(httpUtils.objectMapper.writeValueAsString(object), httpUtils.jsonHeaders);
             log.info("Send post request:{} to url:{}", request.toString(), url);
-            ResponseEntity<String> responseStr = restTemplate.postForEntity(url, request , String.class);
+            ResponseEntity<String> responseStr = httpUtils.restTemplate.postForEntity(url, request , String.class);
             log.info("Receive response:{}, try to convert to {}", responseStr.getBody(), type.getName());
             if (type == String.class) {
                 return (T) responseStr.getBody();
             } else {
-                return objectMapper.readValue(responseStr.getBody(), type);
+                return httpUtils.objectMapper.readValue(responseStr.getBody(), type);
             }
         } catch (HttpClientErrorException e) {
             throw new CustomException(CustomExceptionType.HTTP, e.getStatusCode().toString());
@@ -98,7 +99,7 @@ public class ConnectService {
         }
     }
 
-    private String generateUrlWithParams(String url, Map<String, String> params) {
+    private static String generateUrlWithParams(String url, Map<String, String> params) {
         if (params == null || params.isEmpty()) {
             return url;
         }
@@ -116,7 +117,7 @@ public class ConnectService {
         return new HttpEntity<>(pushMap, formHeaders);
     }
 
-    private String getUrlMatching(String url) {
+    private static String getUrlMatching(String url) {
         if (url.contains(KEY_OF_PARAM)) {
             return "&";
         }

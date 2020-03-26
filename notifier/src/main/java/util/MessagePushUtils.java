@@ -1,10 +1,9 @@
-package utils;
+package util;
 
 import model.MessagePushType;
 import model.ServiceNotifier;
 import model.WxMessage;
 import org.springframework.util.StringUtils;
-import service.ConnectService;
 
 import java.util.List;
 
@@ -48,8 +47,7 @@ public class MessagePushUtils {
             return;
         }
         WxMessage wxMessage = new WxMessage(content);
-        ConnectService connectService = new ConnectService();
-        connectService.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
+        HttpUtils.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
     }
 
     private static String adjustPushMessage(ServiceNotifier serviceNotifier) {

@@ -1,8 +1,8 @@
 import service.HealthCheckService;
-import utils.DbUtils;
-import utils.MessagePushUtils;
-import utils.PropertyUtils;
-import utils.TimeUtils;
+import util.DbUtils;
+import util.MessagePushUtils;
+import util.PropertyUtils;
+import util.TimeUtils;
 
 /**
  * @author 蒋文龙(Vin)

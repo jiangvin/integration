@@ -4,10 +4,11 @@ import model.CustomException;
 import model.CustomExceptionType;
 import model.MessagePushType;
 import model.ServiceNotifier;
-import utils.DbUtils;
-import utils.MessagePushUtils;
-import utils.PropertyUtils;
-import utils.TimeUtils;
+import util.DbUtils;
+import util.HttpUtils;
+import util.MessagePushUtils;
+import util.PropertyUtils;
+import util.TimeUtils;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -23,8 +24,6 @@ public class HealthCheckService {
 
     private static final String BUILD_DATE_TAG = "build_date=";
     private static final String VERSION_TAG = "version=";
-
-    private ConnectService connectService = new ConnectService();
 
     public void start() {
         List<ServiceNotifier> serviceNotifiers = DbUtils.queryServiceNotifiers();
@@ -136,7 +135,7 @@ public class HealthCheckService {
     }
 
     private String findVersion(ServiceNotifier serviceNotifier) {
-        String str = connectService.getRequest(serviceNotifier.getUrl(), String.class);
+        String str = HttpUtils.getRequest(serviceNotifier.getUrl(), String.class);
         if (!str.contains(BUILD_DATE_TAG)) {
             return null;
         }
