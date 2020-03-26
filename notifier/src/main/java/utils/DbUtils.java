@@ -1,8 +1,7 @@
-package dao;
+package utils;
 
 import lombok.extern.slf4j.Slf4j;
 import model.ServiceNotifier;
-import utils.PropertyUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,12 +18,13 @@ import java.util.List;
  * @date 2020/3/24
  */
 @Slf4j
-public class BaseDao {
+public class DbUtils {
 
     private Connection connection;
     private Statement statement;
+    private static DbUtils dbUtils = new DbUtils();
 
-    public BaseDao() {
+    private DbUtils() {
         try {
             connection = DriverManager.getConnection(
                              PropertyUtils.getDbUrl(),
@@ -38,10 +38,10 @@ public class BaseDao {
         }
     }
 
-    public List<ServiceNotifier> queryServiceNotifiers() {
+    public static List<ServiceNotifier> queryServiceNotifiers() {
         List<ServiceNotifier> serviceNotifiers = new ArrayList<>();
         try {
-            ResultSet rs = statement.executeQuery("select * from service");
+            ResultSet rs = dbUtils.statement.executeQuery("select * from service");
             while (rs.next()) {
                 serviceNotifiers.add(new ServiceNotifier(rs.getString("service_id"), rs.getString("url")));
             }
@@ -52,10 +52,10 @@ public class BaseDao {
         return serviceNotifiers;
     }
 
-    public int queryErrorCount(String serviceId) {
+    public static int queryErrorCount(String serviceId) {
         int errorCount = 0;
         try {
-            ResultSet rs = statement.executeQuery(String.format("select * from check_log where service_id = '%s' order by create_time desc limit 0,1", serviceId));
+            ResultSet rs = dbUtils.statement.executeQuery(String.format("select * from check_log where service_id = '%s' order by create_time desc limit 0,1", serviceId));
             if (rs.next()) {
                 errorCount =  rs.getInt("error_count");
             }
@@ -66,10 +66,10 @@ public class BaseDao {
         return errorCount;
     }
 
-    public Timestamp queryErrorStartTime(String serviceId) {
+    public static Timestamp queryErrorStartTime(String serviceId) {
         Timestamp startTime = null;
         try {
-            ResultSet rs = statement.executeQuery(String.format("select * from check_log where service_id = '%s' and error_count = 1 order by create_time desc limit 0,1", serviceId));
+            ResultSet rs = dbUtils.statement.executeQuery(String.format("select * from check_log where service_id = '%s' and error_count = 1 order by create_time desc limit 0,1", serviceId));
             if (rs.next()) {
                 startTime = rs.getTimestamp("create_time");
             }
@@ -80,23 +80,39 @@ public class BaseDao {
         return startTime;
     }
 
-    public void updateCheckLog(List<ServiceNotifier> serviceNotifiers) {
+    public static void updateCheckLog(List<ServiceNotifier> serviceNotifiers) {
         for (ServiceNotifier serviceNotifier : serviceNotifiers) {
             if (!serviceNotifier.isNeedSave()) {
                 log.info("{} needn't save into database", serviceNotifier.getServiceId());
                 continue;
             }
             try {
-                statement.executeUpdate(String.format("insert into check_log (service_id,success,result,error_count) values('%s',%s,'%s',%d)",
-                                                      serviceNotifier.getServiceId(),
-                                                      serviceNotifier.getConnectFlag(),
-                                                      serviceNotifier.getConnectResult(),
-                                                      serviceNotifier.getErrorCount()));
+                dbUtils.statement.executeUpdate(String.format("insert into check_log (service_id,success,result,error_count) values('%s',%s,'%s',%d)",
+                                                              serviceNotifier.getServiceId(),
+                                                              serviceNotifier.getConnectFlag(),
+                                                              serviceNotifier.getConnectResult(),
+                                                              serviceNotifier.getErrorCount()));
             } catch (Exception e) {
                 log.error("sql connection error:", e);
             }
         }
 
+    }
+
+    public static int queryYesterdayErrorCount() {
+        int errorCount = 0;
+        try {
+            ResultSet rs = dbUtils.statement.executeQuery(String.format("SELECT count(*) FROM check_log where success = 0 and create_time between '%s' and '%s';",
+                                                                        TimeUtils.yesterday(),
+                                                                        TimeUtils.now()));
+            if (rs.next()) {
+                errorCount =  rs.getInt(1);
+            }
+            rs.close();
+        } catch (Exception e) {
+            log.error("sql connection error:", e);
+        }
+        return errorCount;
     }
 
     @Override

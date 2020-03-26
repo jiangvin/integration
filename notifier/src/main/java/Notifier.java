@@ -1,4 +1,5 @@
 import service.HealthCheckService;
+import utils.DbUtils;
 import utils.MessagePushUtils;
 import utils.PropertyUtils;
 import utils.TimeUtils;
@@ -10,18 +11,22 @@ import utils.TimeUtils;
  */
 public class Notifier {
     public static void main(String[] args) {
-        long hours = TimeUtils.getHoursOfDay();
-        long minutes = TimeUtils.getMinutesOfHour();
-        if (hours == 9 && minutes < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
-            MessagePushUtils.sendMessage("监控开始运行(运行时间: 09:00 ~ 21:00)");
-        }
-
         PropertyUtils.setArgs(args);
+
         try {
+            sendStartMessage();
             HealthCheckService healthCheckService = new HealthCheckService();
             healthCheckService.start();
         } catch (Exception e) {
             MessagePushUtils.sendMessage(String.format("监控程序发生异常:%s", e.getMessage()));
+        }
+    }
+
+    private static void sendStartMessage() {
+        long hours = TimeUtils.getHoursOfDay();
+        long minutes = TimeUtils.getMinutesOfHour();
+        if (hours == 9 && minutes < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
+            MessagePushUtils.sendMessage(String.format("监控开始运行(运行时间: 09:00 ~ 21:00) [昨天累计异常次数:%d]", DbUtils.queryYesterdayErrorCount()));
         }
     }
 }

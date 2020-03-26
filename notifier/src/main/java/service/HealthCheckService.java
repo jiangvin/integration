@@ -1,12 +1,13 @@
 package service;
 
-import dao.BaseDao;
-import utils.MessagePushUtils;
-import utils.PropertyUtils;
 import model.CustomException;
 import model.CustomExceptionType;
 import model.MessagePushType;
 import model.ServiceNotifier;
+import utils.DbUtils;
+import utils.MessagePushUtils;
+import utils.PropertyUtils;
+import utils.TimeUtils;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -24,10 +25,9 @@ public class HealthCheckService {
     private static final String VERSION_TAG = "version=";
 
     private ConnectService connectService = new ConnectService();
-    private BaseDao baseDao = new BaseDao();
 
     public void start() {
-        List<ServiceNotifier> serviceNotifiers = baseDao.queryServiceNotifiers();
+        List<ServiceNotifier> serviceNotifiers = DbUtils.queryServiceNotifiers();
         if (serviceNotifiers.isEmpty()) {
             throw new CustomException(CustomExceptionType.NO_DATA, "找不到查询数据!");
         }
@@ -48,7 +48,7 @@ public class HealthCheckService {
 
         checkVersion(serviceNotifiers);
         updateErrorCount(serviceNotifiers);
-        baseDao.updateCheckLog(serviceNotifiers);
+        DbUtils.updateCheckLog(serviceNotifiers);
         MessagePushUtils.sendMessage(serviceNotifiers);
     }
 
@@ -99,7 +99,7 @@ public class HealthCheckService {
 
     private void updateErrorCount(List<ServiceNotifier> serviceNotifiers) {
         for (ServiceNotifier serviceNotifier : serviceNotifiers) {
-            int lastCount = baseDao.queryErrorCount(serviceNotifier.getServiceId());
+            int lastCount = DbUtils.queryErrorCount(serviceNotifier.getServiceId());
 
             //一直正常
             if (serviceNotifier.getConnectFlag() && lastCount == 0) {
@@ -110,10 +110,9 @@ public class HealthCheckService {
             //恢复正常
             if (serviceNotifier.getConnectFlag() && lastCount != 0) {
                 String msg = "恢复正常";
-                Timestamp startTime = baseDao.queryErrorStartTime(serviceNotifier.getServiceId());
+                Timestamp startTime = DbUtils.queryErrorStartTime(serviceNotifier.getServiceId());
                 if (startTime != null) {
-                    Timestamp endTime = new Timestamp(System.currentTimeMillis());
-                    String durationMsg = String.format(",异常持续时间[%s]~[%s]", startTime.toString(), endTime.toString());
+                    String durationMsg = String.format(",异常持续时间[%s]~[%s]", startTime.toString(), TimeUtils.now().toString());
                     msg += durationMsg;
                 }
                 serviceNotifier.setConnectResult(msg);

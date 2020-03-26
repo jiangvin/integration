@@ -1,5 +1,7 @@
 package utils;
 
+import java.sql.Timestamp;
+
 /**
  * @author 蒋文龙(Vin)
  * @description
@@ -12,5 +14,13 @@ public class TimeUtils {
 
     public static long getMinutesOfHour() {
         return System.currentTimeMillis() / 1000 / 60 % 60;
+    }
+
+    public static Timestamp yesterday() {
+        return new Timestamp(System.currentTimeMillis() - (24 * 60 * 60 * 1000));
+    }
+
+    public static Timestamp now() {
+        return new Timestamp(System.currentTimeMillis());
     }
 }
