@@ -1,5 +1,6 @@
-package service;
+package utils;
 
+import service.ConnectService;
 import utils.PropertyUtils;
 import model.MessagePushType;
 import model.ServiceNotifier;
@@ -13,8 +14,12 @@ import java.util.List;
  * @description
  * @date 2020/3/25
  */
-public class NotifierService {
-    public void sendMessage(List<ServiceNotifier> serviceNotifiers) {
+public class MessagePushUtils {
+    private MessagePushUtils() {
+
+    }
+
+    public static void sendMessage(List<ServiceNotifier> serviceNotifiers) {
         boolean regularPush = false;
         long minutesOfHour = System.currentTimeMillis() / 1000 / 60 % 60;
         if (minutesOfHour < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
@@ -36,15 +41,19 @@ public class NotifierService {
             }
         }
 
-        if (StringUtils.isEmpty(content.toString())) {
+        sendMessage(content.toString());
+    }
+
+    public static void sendMessage(String content) {
+        if (StringUtils.isEmpty(content)) {
             return;
         }
-        WxMessage wxMessage = new WxMessage(content.toString());
+        WxMessage wxMessage = new WxMessage(content);
         ConnectService connectService = new ConnectService();
         connectService.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
     }
 
-    private String adjustPushMessage(ServiceNotifier serviceNotifier) {
+    private static String adjustPushMessage(ServiceNotifier serviceNotifier) {
         if (serviceNotifier.getConnectFlag()) {
             return String.format("%s: %s\n", serviceNotifier.getServiceId(), serviceNotifier.getConnectResult());
         }
@@ -55,7 +64,7 @@ public class NotifierService {
                              serviceNotifier.getErrorCount());
     }
 
-    private String adjustErrorMessage(String error) {
+    private static String adjustErrorMessage(String error) {
         if (error.contains("ConnectException: Connection timed out")) {
             return "连接超时";
         }

@@ -1,6 +1,7 @@
 package service;
 
 import dao.BaseDao;
+import utils.MessagePushUtils;
 import utils.PropertyUtils;
 import model.CustomException;
 import model.CustomExceptionType;
@@ -23,7 +24,6 @@ public class HealthCheckService {
 
     private ConnectService connectService = new ConnectService();
     private BaseDao baseDao = new BaseDao();
-    private NotifierService notifierService = new NotifierService();
 
     public void start() {
         List<ServiceNotifier> serviceNotifiers = baseDao.queryServiceNotifiers();
@@ -48,7 +48,7 @@ public class HealthCheckService {
         checkVersion(serviceNotifiers);
         updateErrorCount(serviceNotifiers);
         baseDao.updateCheckLog(serviceNotifiers);
-        notifierService.sendMessage(serviceNotifiers);
+        MessagePushUtils.sendMessage(serviceNotifiers);
     }
 
     private void checkVersion(List<ServiceNotifier> serviceNotifiers) {

@@ -64,7 +64,7 @@ public class ConnectService {
         }
     }
 
-    <T> T postJsonRequest(String url, Class<T> type, Object object) {
+    public <T> T postJsonRequest(String url, Class<T> type, Object object) {
         try {
             HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(object), jsonHeaders);
             log.info("Send post request:{} to url:{}", request.toString(), url);
