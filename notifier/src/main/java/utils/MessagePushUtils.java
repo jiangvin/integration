@@ -1,11 +1,10 @@
 package utils;
 
-import service.ConnectService;
-import utils.PropertyUtils;
 import model.MessagePushType;
 import model.ServiceNotifier;
 import model.WxMessage;
 import org.springframework.util.StringUtils;
+import service.ConnectService;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class MessagePushUtils {
 
     public static void sendMessage(List<ServiceNotifier> serviceNotifiers) {
         boolean regularPush = false;
-        long minutesOfHour = System.currentTimeMillis() / 1000 / 60 % 60;
+        long minutesOfHour = TimeUtils.getMinutesOfHour();
         if (minutesOfHour < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
             regularPush = true;
         }
