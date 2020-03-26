@@ -8,6 +8,7 @@ import model.CustomExceptionType;
 import model.MessagePushType;
 import model.ServiceNotifier;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,14 @@ public class HealthCheckService {
 
             //恢复正常
             if (serviceNotifier.getConnectFlag() && lastCount != 0) {
-                serviceNotifier.setConnectResult("恢复正常");
+                String msg = "恢复正常";
+                Timestamp startTime = baseDao.queryErrorStartTime(serviceNotifier.getServiceId());
+                if (startTime != null) {
+                    Timestamp endTime = new Timestamp(System.currentTimeMillis());
+                    String durationMsg = String.format(",异常持续时间[%s]~[%s]", startTime.toString(), endTime.toString());
+                    msg += durationMsg;
+                }
+                serviceNotifier.setConnectResult(msg);
                 if (lastCount >= PropertyUtils.PUSH_FOR_ERROR_COUNT) {
                     serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
                 }

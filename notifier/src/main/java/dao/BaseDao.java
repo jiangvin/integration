@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +64,20 @@ public class BaseDao {
             log.error("sql connection error:", e);
         }
         return errorCount;
+    }
+
+    public Timestamp queryErrorStartTime(String serviceId) {
+        Timestamp startTime = null;
+        try {
+            ResultSet rs = statement.executeQuery(String.format("select * from check_log where service_id = '%s' and error_count = 1 order by create_time desc limit 0,1", serviceId));
+            if (rs.next()) {
+                startTime = rs.getTimestamp("create_time");
+            }
+            rs.close();
+        } catch (Exception e) {
+            log.error("sql connection error:", e);
+        }
+        return startTime;
     }
 
     public void updateCheckLog(List<ServiceNotifier> serviceNotifiers) {
