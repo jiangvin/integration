@@ -46,6 +46,12 @@ public class PropertyUtils {
         return propertyUtils.propertyMap.get("dbPassword");
     }
 
+    public static boolean isTargetErrorCount(int count) {
+        return count == PUSH_FOR_ERROR_COUNT
+               || count == (PUSH_FOR_ERROR_COUNT * 3 + 1)
+               || count == (PUSH_FOR_ERROR_COUNT * 7 - 1);
+    }
+
     public static void setArgs(String[] args) {
         for (String arg : args) {
             if (!arg.startsWith("--") || !arg.contains("=")) {

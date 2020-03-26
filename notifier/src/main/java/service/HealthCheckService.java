@@ -127,7 +127,7 @@ public class HealthCheckService {
             if (!serviceNotifier.getConnectFlag()) {
                 int errorCount = lastCount + 1;
                 serviceNotifier.setErrorCount(errorCount);
-                if (errorCount == PropertyUtils.PUSH_FOR_ERROR_COUNT) {
+                if (PropertyUtils.isTargetErrorCount(errorCount)) {
                     serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
                 } else if (errorCount > PropertyUtils.PUSH_FOR_ERROR_COUNT) {
                     serviceNotifier.setPushType(MessagePushType.REGULAR_PUSH);
