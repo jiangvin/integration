@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MessageUtil {
 
+    /**
+     * MessageSource must be ResourceBundleMessageSource
+     */
     private static MessageSource ms;
 
     public MessageUtil(MessageSource messageSource) {
