@@ -7,6 +7,7 @@ import model.MessagePushType;
 import model.Service;
 import service.checkunit.BaseCheckUnit;
 import service.checkunit.ConnectCheckUnit;
+import service.checkunit.MemoryCheckUnit;
 import service.checkunit.VersionCheckUnit;
 import util.DbUtils;
 import util.MessagePushUtils;
@@ -31,6 +32,7 @@ public class HealthCheckService {
         checkUnitList = new ArrayList<>();
         checkUnitList.add(new ConnectCheckUnit());
         checkUnitList.add(new VersionCheckUnit());
+        checkUnitList.add(new MemoryCheckUnit());
     }
 
     public void start() {

@@ -82,13 +82,13 @@ public class DbUtils {
 
     public static void updateCheckLog(List<Service> services) {
         if (PropertyUtils.isDebug()) {
-            log.info("debug mode no need change db");
+            log.info("debug mode no need change check_log");
             return;
         }
 
         for (Service service : services) {
             if (!service.isNeedSave()) {
-                log.info("{} needn't save into database", service.getServiceId());
+                log.info("{} needn't save into check_log", service.getServiceId());
                 continue;
             }
             try {
@@ -102,6 +102,67 @@ public class DbUtils {
             }
         }
 
+    }
+
+    public static void updateMemoryLog(List<Service> services) {
+        if (PropertyUtils.isDebug()) {
+            log.info("debug mode no need change memory_check");
+            return;
+        }
+
+        for (Service service : services) {
+            if (service.getOldGenMax() == null
+                    || service.getOldGenUsed() == null
+                    || service.getStartTime() == null) {
+                continue;
+            }
+
+            int rate = service.getOldGenUsed() * 100 / service.getOldGenMax();
+            int rateTag = rate / 10;
+            Integer lastRate = queryLastMemoryRate(service);
+            int lastRateTag = 0;
+            if (lastRate != null) {
+                lastRateTag = lastRate / 10;
+            }
+
+            //很正常，不需要追踪
+            if (lastRateTag < 5 && rateTag < 5) {
+                continue;
+            }
+
+            //状态有变化，需要追踪
+            if (lastRateTag != rateTag) {
+                updateMemoryLog(service);
+            }
+        }
+    }
+
+    private static Integer queryLastMemoryRate(Service service) {
+        Integer rate = null;
+        try {
+            ResultSet rs = dbUtils.statement.executeQuery(String.format("SELECT memory_rate FROM memory_check where service_id = '%s' and service_start_time = '%s' order by create_time desc limit 0,1;",
+                                                                        service.getServiceId(),
+                                                                        service.getStartTime()));
+            if (rs.next()) {
+                rate =  rs.getInt("memory_rate");
+            }
+            rs.close();
+        } catch (Exception e) {
+            log.error("sql connection error:", e);
+        }
+        return rate;
+    }
+
+    private static void updateMemoryLog(Service service) {
+        try {
+            dbUtils.statement.executeUpdate(String.format("insert into memory_check (service_id,service_start_time,memory_rate,memory_max) values('%s','%s',%d,%d)",
+                                                          service.getServiceId(),
+                                                          service.getStartTime(),
+                                                          service.getOldGenUsed() * 100 / service.getOldGenMax(),
+                                                          service.getOldGenMax()));
+        } catch (Exception e) {
+            log.error("sql connection error:", e);
+        }
     }
 
     public static int queryYesterdayErrorCount() {

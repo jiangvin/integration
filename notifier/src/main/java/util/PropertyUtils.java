@@ -24,6 +24,7 @@ public class PropertyUtils {
         propertyMap.put("dbUsername", "root");
         propertyMap.put("dbPassword", "Root@123");
         propertyMap.put("isDebug", "false");
+        propertyMap.put("memoryRateLimit", "90");
     }
 
 
@@ -53,6 +54,15 @@ public class PropertyUtils {
         } catch (Exception e) {
             log.error("catch convert error:", e);
             return true;
+        }
+    }
+
+    public static int getMemoryRateLimit() {
+        try {
+            return Integer.parseInt(propertyUtils.propertyMap.get("memoryRateLimit"));
+        } catch (Exception e) {
+            log.error("catch convert error:", e);
+            return 90;
         }
     }
 
