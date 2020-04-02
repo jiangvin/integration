@@ -60,7 +60,7 @@ public class ConnectCheckUnit implements BaseCheckUnit {
             log.error(String.format("convert info failed: %s\nresult:\n%s",
                                     service.getConnectResult(),
                                     keyInfo));
-            service.setConnectResult(keyInfo, false);
+            service.setConnectResult("抓取信息失败:" + keyInfo, false);
         }
     }
 

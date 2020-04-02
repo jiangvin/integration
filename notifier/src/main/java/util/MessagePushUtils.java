@@ -24,10 +24,14 @@ public class MessagePushUtils {
             regularPush = true;
         }
 
+        boolean allBackToNormal = true;
         StringBuilder content = new StringBuilder();
         for (Service service : services) {
             if (service.getPushType() == MessagePushType.FORCE_PUSH) {
                 content.append(adjustPushMessage(service));
+                if (!service.getConnectFlag()) {
+                    allBackToNormal = false;
+                }
                 regularPush = true;
             }
         }
@@ -35,10 +39,16 @@ public class MessagePushUtils {
             for (Service service : services) {
                 if (service.getPushType() == MessagePushType.REGULAR_PUSH) {
                     content.append(adjustPushMessage(service));
+                    if (!service.getConnectFlag()) {
+                        allBackToNormal = false;
+                    }
                 }
             }
         }
 
+        if (!StringUtils.isEmpty(content.toString()) && allBackToNormal) {
+            content.append("该环境全部服务恢复正常!\n");
+        }
         sendMessage(content.toString());
     }
 
