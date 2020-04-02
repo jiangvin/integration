@@ -1,5 +1,6 @@
 package util;
 
+import lombok.extern.slf4j.Slf4j;
 import model.MessagePushType;
 import model.Service;
 import model.WxMessage;
@@ -12,6 +13,8 @@ import java.util.List;
  * @description
  * @date 2020/3/25
  */
+
+@Slf4j
 public class MessagePushUtils {
     private MessagePushUtils() {
 
@@ -56,6 +59,12 @@ public class MessagePushUtils {
         if (StringUtils.isEmpty(content)) {
             return;
         }
+
+        if (PropertyUtils.isDebug()) {
+            log.info("debug mode no need push message: {}", content);
+            return;
+        }
+
         WxMessage wxMessage = new WxMessage(content);
         HttpUtils.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
     }

@@ -23,6 +23,7 @@ public class PropertyUtils {
         propertyMap.put("dbUrl", "jdbc:mysql://192.168.5.224:3306/service-notifier?useSSL=false&characterEncoding=utf-8");
         propertyMap.put("dbUsername", "root");
         propertyMap.put("dbPassword", "Root@123");
+        propertyMap.put("isDebug", "false");
     }
 
 
@@ -44,6 +45,15 @@ public class PropertyUtils {
 
     public static String getDbPassword() {
         return propertyUtils.propertyMap.get("dbPassword");
+    }
+
+    public static boolean isDebug() {
+        try {
+            return Boolean.parseBoolean(propertyUtils.propertyMap.get("isDebug"));
+        } catch (Exception e) {
+            log.error("catch convert error:", e);
+            return true;
+        }
     }
 
     public static boolean isTargetErrorCount(int count) {

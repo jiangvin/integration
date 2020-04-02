@@ -81,6 +81,11 @@ public class DbUtils {
     }
 
     public static void updateCheckLog(List<Service> services) {
+        if (PropertyUtils.isDebug()) {
+            log.info("debug mode no need change db");
+            return;
+        }
+
         for (Service service : services) {
             if (!service.isNeedSave()) {
                 log.info("{} needn't save into database", service.getServiceId());
