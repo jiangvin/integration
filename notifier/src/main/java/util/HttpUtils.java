@@ -49,7 +49,7 @@ public class HttpUtils {
             ResponseEntity<String> responseStr = httpUtils.restTemplate.getForEntity(url, String.class);
             String receiveStr = responseStr.getBody();
             if (receiveStr != null && receiveStr.length() > 128) {
-                receiveStr = receiveStr.substring(0, 128) + "...";
+                receiveStr = receiveStr.substring(0, 128).replace("\n", " ") + "...";
             }
             log.info("Receive response:{}, try to convert to {}", receiveStr, type.getName());
             if (type == String.class) {
