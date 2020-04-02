@@ -10,7 +10,7 @@ import lombok.NonNull;
  */
 
 @Data
-public class ServiceNotifier {
+public class Service {
 
     @NonNull
     private String serviceId;

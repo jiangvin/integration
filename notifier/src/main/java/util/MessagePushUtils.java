@@ -1,7 +1,7 @@
 package util;
 
 import model.MessagePushType;
-import model.ServiceNotifier;
+import model.Service;
 import model.WxMessage;
 import org.springframework.util.StringUtils;
 
@@ -17,7 +17,7 @@ public class MessagePushUtils {
 
     }
 
-    public static void sendMessage(List<ServiceNotifier> serviceNotifiers) {
+    public static void sendMessage(List<Service> services) {
         boolean regularPush = false;
         long minutesOfHour = TimeUtils.getMinutesOfHour();
         if (minutesOfHour < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
@@ -25,16 +25,16 @@ public class MessagePushUtils {
         }
 
         StringBuilder content = new StringBuilder();
-        for (ServiceNotifier serviceNotifier : serviceNotifiers) {
-            if (serviceNotifier.getPushType() == MessagePushType.FORCE_PUSH) {
-                content.append(adjustPushMessage(serviceNotifier));
+        for (Service service : services) {
+            if (service.getPushType() == MessagePushType.FORCE_PUSH) {
+                content.append(adjustPushMessage(service));
                 regularPush = true;
             }
         }
         if (regularPush) {
-            for (ServiceNotifier serviceNotifier : serviceNotifiers) {
-                if (serviceNotifier.getPushType() == MessagePushType.REGULAR_PUSH) {
-                    content.append(adjustPushMessage(serviceNotifier));
+            for (Service service : services) {
+                if (service.getPushType() == MessagePushType.REGULAR_PUSH) {
+                    content.append(adjustPushMessage(service));
                 }
             }
         }
@@ -50,15 +50,15 @@ public class MessagePushUtils {
         HttpUtils.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
     }
 
-    private static String adjustPushMessage(ServiceNotifier serviceNotifier) {
-        if (serviceNotifier.getConnectFlag()) {
-            return String.format("%s: %s\n", serviceNotifier.getServiceId(), serviceNotifier.getConnectResult());
+    private static String adjustPushMessage(Service service) {
+        if (service.getConnectFlag()) {
+            return String.format("%s: %s\n", service.getServiceId(), service.getConnectResult());
         }
 
         return String.format("%s: %s[连续异常%d次]\n",
-                             serviceNotifier.getServiceId(),
-                             adjustErrorMessage(serviceNotifier.getConnectResult()),
-                             serviceNotifier.getErrorCount());
+                             service.getServiceId(),
+                             adjustErrorMessage(service.getConnectResult()),
+                             service.getErrorCount());
     }
 
     private static String adjustErrorMessage(String error) {

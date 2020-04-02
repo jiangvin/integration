@@ -1,7 +1,7 @@
 package util;
 
 import lombok.extern.slf4j.Slf4j;
-import model.ServiceNotifier;
+import model.Service;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,18 +38,18 @@ public class DbUtils {
         }
     }
 
-    public static List<ServiceNotifier> queryServiceNotifiers() {
-        List<ServiceNotifier> serviceNotifiers = new ArrayList<>();
+    public static List<Service> queryServices() {
+        List<Service> services = new ArrayList<>();
         try {
             ResultSet rs = dbUtils.statement.executeQuery("select * from service");
             while (rs.next()) {
-                serviceNotifiers.add(new ServiceNotifier(rs.getString("service_id"), rs.getString("url")));
+                services.add(new Service(rs.getString("service_id"), rs.getString("url")));
             }
             rs.close();
         } catch (Exception e) {
             log.error("sql connection error:", e);
         }
-        return serviceNotifiers;
+        return services;
     }
 
     public static int queryErrorCount(String serviceId) {
@@ -80,18 +80,18 @@ public class DbUtils {
         return startTime;
     }
 
-    public static void updateCheckLog(List<ServiceNotifier> serviceNotifiers) {
-        for (ServiceNotifier serviceNotifier : serviceNotifiers) {
-            if (!serviceNotifier.isNeedSave()) {
-                log.info("{} needn't save into database", serviceNotifier.getServiceId());
+    public static void updateCheckLog(List<Service> services) {
+        for (Service service : services) {
+            if (!service.isNeedSave()) {
+                log.info("{} needn't save into database", service.getServiceId());
                 continue;
             }
             try {
                 dbUtils.statement.executeUpdate(String.format("insert into check_log (service_id,success,result,error_count) values('%s',%s,'%s',%d)",
-                                                              serviceNotifier.getServiceId(),
-                                                              serviceNotifier.getConnectFlag(),
-                                                              serviceNotifier.getConnectResult(),
-                                                              serviceNotifier.getErrorCount()));
+                                                              service.getServiceId(),
+                                                              service.getConnectFlag(),
+                                                              service.getConnectResult(),
+                                                              service.getErrorCount()));
             } catch (Exception e) {
                 log.error("sql connection error:", e);
             }

@@ -3,7 +3,7 @@ package service;
 import model.CustomException;
 import model.CustomExceptionType;
 import model.MessagePushType;
-import model.ServiceNotifier;
+import model.Service;
 import util.DbUtils;
 import util.HttpUtils;
 import util.MessagePushUtils;
@@ -26,35 +26,35 @@ public class HealthCheckService {
     private static final String VERSION_TAG = "version=";
 
     public void start() {
-        List<ServiceNotifier> serviceNotifiers = DbUtils.queryServiceNotifiers();
-        if (serviceNotifiers.isEmpty()) {
-            throw new CustomException(CustomExceptionType.NO_DATA, "找不到查询数据!");
+        List<Service> services = DbUtils.queryServices();
+        if (services.isEmpty()) {
+            throw new CustomException(CustomExceptionType.NO_DATA, "找不到服务数据!");
         }
 
         //网络检查
-        for (ServiceNotifier serviceNotifier : serviceNotifiers) {
+        for (Service service : services) {
             try {
-                String version = findVersion(serviceNotifier);
+                String version = findVersion(service);
                 if (version == null) {
-                    serviceNotifier.setConnectResult("找不到版本信息", false);
+                    service.setConnectResult("找不到版本信息", false);
                     continue;
                 }
-                serviceNotifier.setConnectResult(version, true);
+                service.setConnectResult(version, true);
             } catch (Exception e) {
-                serviceNotifier.setConnectResult(e.getMessage(), false);
+                service.setConnectResult(e.getMessage(), false);
             }
         }
 
-        checkVersion(serviceNotifiers);
-        updateErrorCount(serviceNotifiers);
-        DbUtils.updateCheckLog(serviceNotifiers);
-        MessagePushUtils.sendMessage(serviceNotifiers);
+        checkVersion(services);
+        updateErrorCount(services);
+        DbUtils.updateCheckLog(services);
+        MessagePushUtils.sendMessage(services);
     }
 
-    private void checkVersion(List<ServiceNotifier> serviceNotifiers) {
+    private void checkVersion(List<Service> services) {
         //统计版本号
         HashMap<String, Integer> versionCountMap = new HashMap<>(16);
-        serviceNotifiers.stream().filter(ServiceNotifier::getConnectFlag).forEach(i -> {
+        services.stream().filter(Service::getConnectFlag).forEach(i -> {
             if (versionCountMap.containsKey(i.getConnectResult())) {
                 versionCountMap.put(i.getConnectResult(), versionCountMap.get(i.getConnectResult()) + 1);
             } else {
@@ -80,62 +80,62 @@ public class HealthCheckService {
         }
 
         int rate = maxVersionCount * 100 / total;
-        for (ServiceNotifier serviceNotifier : serviceNotifiers) {
-            if (!serviceNotifier.getConnectFlag()) {
+        for (Service service : services) {
+            if (!service.getConnectFlag()) {
                 continue;
             }
 
-            if (serviceNotifier.getConnectResult().equals(maxVersion)) {
+            if (service.getConnectResult().equals(maxVersion)) {
                 continue;
             }
 
-            serviceNotifier.setConnectResult(String.format("版本异常:%s (%d%%的版本为%s)",
-                                                           serviceNotifier.getConnectResult(),
-                                                           rate,
-                                                           maxVersion), false);
+            service.setConnectResult(String.format("版本异常:%s (%d%%的版本为%s)",
+                                                   service.getConnectResult(),
+                                                   rate,
+                                                   maxVersion), false);
         }
     }
 
-    private void updateErrorCount(List<ServiceNotifier> serviceNotifiers) {
-        for (ServiceNotifier serviceNotifier : serviceNotifiers) {
-            int lastCount = DbUtils.queryErrorCount(serviceNotifier.getServiceId());
+    private void updateErrorCount(List<Service> services) {
+        for (Service service : services) {
+            int lastCount = DbUtils.queryErrorCount(service.getServiceId());
 
             //一直正常
-            if (serviceNotifier.getConnectFlag() && lastCount == 0) {
-                serviceNotifier.setNeedSave(false);
+            if (service.getConnectFlag() && lastCount == 0) {
+                service.setNeedSave(false);
                 continue;
             }
 
             //恢复正常
-            if (serviceNotifier.getConnectFlag() && lastCount != 0) {
+            if (service.getConnectFlag() && lastCount != 0) {
                 String msg = "恢复正常";
-                Timestamp startTime = DbUtils.queryErrorStartTime(serviceNotifier.getServiceId());
+                Timestamp startTime = DbUtils.queryErrorStartTime(service.getServiceId());
                 if (startTime != null) {
                     String durationMsg = String.format(",异常持续时间[%s]~[%s]", startTime.toString(), TimeUtils.now().toString());
                     msg += durationMsg;
                 }
-                serviceNotifier.setConnectResult(msg);
+                service.setConnectResult(msg);
                 if (lastCount >= PropertyUtils.PUSH_FOR_ERROR_COUNT) {
-                    serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
+                    service.setPushType(MessagePushType.FORCE_PUSH);
                 }
                 continue;
             }
 
             //异常
-            if (!serviceNotifier.getConnectFlag()) {
+            if (!service.getConnectFlag()) {
                 int errorCount = lastCount + 1;
-                serviceNotifier.setErrorCount(errorCount);
+                service.setErrorCount(errorCount);
                 if (PropertyUtils.isTargetErrorCount(errorCount)) {
-                    serviceNotifier.setPushType(MessagePushType.FORCE_PUSH);
+                    service.setPushType(MessagePushType.FORCE_PUSH);
                 } else if (errorCount > PropertyUtils.PUSH_FOR_ERROR_COUNT) {
-                    serviceNotifier.setPushType(MessagePushType.REGULAR_PUSH);
+                    service.setPushType(MessagePushType.REGULAR_PUSH);
                 }
             }
         }
     }
 
-    private String findVersion(ServiceNotifier serviceNotifier) {
-        String str = HttpUtils.getRequest(serviceNotifier.getUrl(), String.class);
+    private String findVersion(Service service) {
+        String str = HttpUtils.getRequest(service.getUrl(), String.class);
         if (!str.contains(BUILD_DATE_TAG)) {
             return null;
         }
