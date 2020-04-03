@@ -25,7 +25,7 @@ public class Notifier {
     private static void sendStartMessage() {
         long hours = TimeUtils.getHoursOfDay();
         long minutes = TimeUtils.getMinutesOfHour();
-        if (hours == 9 && minutes < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
+        if (hours == 9 && minutes < PropertyUtils.getInterval()) {
             MessagePushUtils.sendMessage(String.format("监控开始运行(运行时间: 09:00 ~ 21:00) [昨天累计异常次数:%d]", DbUtils.queryYesterdayErrorCount()));
         }
     }

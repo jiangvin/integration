@@ -25,12 +25,19 @@ public class PropertyUtils {
         propertyMap.put("dbPassword", "Root@123");
         propertyMap.put("isDebug", "false");
         propertyMap.put("memoryRateLimit", "90");
+        propertyMap.put("interval", "3");
     }
 
-
-
-    public static final int REGULAR_PUSH_MINUTES_OF_HOUR = 3;
     public static final int PUSH_FOR_ERROR_COUNT = 3;
+
+    public static int getInterval() {
+        try {
+            return Integer.parseInt(propertyUtils.propertyMap.get("interval"));
+        } catch (Exception e) {
+            log.error("catch convert error:", e);
+            return 3;
+        }
+    }
 
     public static String getWxPostUrl() {
         return propertyUtils.propertyMap.get("wxPostUrl");

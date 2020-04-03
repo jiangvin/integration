@@ -23,7 +23,7 @@ public class MessagePushUtils {
     public static void sendMessage(List<Service> services) {
         boolean regularPush = false;
         long minutesOfHour = TimeUtils.getMinutesOfHour();
-        if (minutesOfHour < PropertyUtils.REGULAR_PUSH_MINUTES_OF_HOUR) {
+        if (minutesOfHour < PropertyUtils.getInterval()) {
             regularPush = true;
         }
 
