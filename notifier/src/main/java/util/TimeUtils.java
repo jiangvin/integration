@@ -23,4 +23,40 @@ public class TimeUtils {
     public static Timestamp now() {
         return new Timestamp(System.currentTimeMillis());
     }
+
+    public static String getTimeStr(Timestamp start, Timestamp end) {
+        long durationSeconds = (end.getTime() - start.getTime()) / 1000;
+
+        long days = (durationSeconds / 60 / 60 / 24);
+        long hours = (durationSeconds / 60 / 60) % 24;
+        long minutes = (durationSeconds / 60) % 60;
+        long seconds = durationSeconds % 60;
+
+        String str = "";
+        if (days != 0) {
+            str += days + "天";
+
+            if (hours == 0 && minutes == 0 && seconds == 0) {
+                return str;
+            }
+        }
+
+        if (hours != 0) {
+            str += hours + "小时";
+
+            if (minutes == 0 && seconds == 0) {
+                return str;
+            }
+        }
+
+        if (minutes != 0) {
+            str += minutes + "分";
+
+            if (seconds == 0) {
+                return str;
+            }
+        }
+
+        return str + seconds + "秒";
+    }
 }

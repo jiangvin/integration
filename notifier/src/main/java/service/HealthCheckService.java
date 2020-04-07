@@ -64,7 +64,7 @@ public class HealthCheckService {
                 String msg = "恢复正常";
                 Timestamp startTime = DbUtils.queryErrorStartTime(service.getServiceId());
                 if (startTime != null) {
-                    String durationMsg = String.format(",异常持续时间[%s]~[%s]", startTime.toString(), TimeUtils.now().toString());
+                    String durationMsg = String.format(",异常持续时间:%s", TimeUtils.getTimeStr(startTime, TimeUtils.now()));
                     msg += durationMsg;
                 }
                 service.setConnectResult(msg);
