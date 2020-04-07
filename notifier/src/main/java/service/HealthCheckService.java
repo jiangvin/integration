@@ -40,13 +40,15 @@ public class HealthCheckService {
         if (services.isEmpty()) {
             throw new CustomException(CustomExceptionType.NO_DATA, "找不到服务数据!");
         }
-
         log.info("Find service count: {}", services.size());
+
+        sendStartMessage(services);
         checkUnitList.forEach(i -> i.start(services));
 
         updateErrorCount(services);
         DbUtils.updateCheckLog(services);
         MessagePushUtils.sendMessage(services);
+        sendEndMessage(services);
     }
 
     private void updateErrorCount(List<Service> services) {
@@ -84,6 +86,44 @@ public class HealthCheckService {
                     service.setPushType(MessagePushType.REGULAR_PUSH);
                 }
             }
+        }
+    }
+
+    private void sendStartMessage(List<Service> services) {
+        long hours = TimeUtils.getHoursOfDay();
+        long minutes = TimeUtils.getMinutesOfHour();
+
+        if (hours == PropertyUtils.getStartHour() && minutes < PropertyUtils.getInterval()) {
+            MessagePushUtils.sendMessage(String.format("监控开始运行\n服务数量:%d\n运行时间: %02d:00 ~ %02d:00\n[昨天累计异常次数:%d]",
+                                                       services.size(),
+                                                       PropertyUtils.getStartHour(),
+                                                       PropertyUtils.getEndHour(),
+                                                       DbUtils.queryYesterdayErrorCount()));
+        }
+    }
+
+    private void sendEndMessage(List<Service> services) {
+        long hours = TimeUtils.getHoursOfDay();
+        long minutes = TimeUtils.getMinutesOfHour();
+        if (hours != (PropertyUtils.getEndHour() - 1) || minutes < (60 - PropertyUtils.getInterval())) {
+            return;
+        }
+
+        //统计错误数量
+        int errorCount = 0;
+        for (Service service : services) {
+            if (!service.getConnectFlag()) {
+                ++errorCount;
+            }
+        }
+
+        if (errorCount == 0) {
+            MessagePushUtils.sendMessage("当日监控结束，目前所有服务都正常");
+        } else {
+            MessagePushUtils.sendMessage(String.format("当日监控结束，目前仍有%d%%的服务处于异常状态(%d / %d)",
+                                                       errorCount * 100 / services.size(),
+                                                       errorCount,
+                                                       services.size()));
         }
     }
 }
