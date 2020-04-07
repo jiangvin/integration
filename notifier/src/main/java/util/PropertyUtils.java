@@ -26,17 +26,26 @@ public class PropertyUtils {
         propertyMap.put("isDebug", "false");
         propertyMap.put("memoryRateLimit", "90");
         propertyMap.put("interval", "3");
+        propertyMap.put("startHour", "9");
+        propertyMap.put("endHour", "22");
     }
 
     public static final int PUSH_FOR_ERROR_COUNT = 3;
 
     public static int getInterval() {
-        try {
-            return Integer.parseInt(propertyUtils.propertyMap.get("interval"));
-        } catch (Exception e) {
-            log.error("catch convert error:", e);
-            return 3;
-        }
+        return convertStrToInt("interval", 3);
+    }
+
+    public static int getStartHour() {
+        return convertStrToInt("startHour", 9);
+    }
+
+    public static int getEndHour() {
+        return convertStrToInt("endHour", 22);
+    }
+
+    public static int getMemoryRateLimit() {
+        return convertStrToInt("memoryRateLimit", 90);
     }
 
     public static String getWxPostUrl() {
@@ -64,15 +73,6 @@ public class PropertyUtils {
         }
     }
 
-    public static int getMemoryRateLimit() {
-        try {
-            return Integer.parseInt(propertyUtils.propertyMap.get("memoryRateLimit"));
-        } catch (Exception e) {
-            log.error("catch convert error:", e);
-            return 90;
-        }
-    }
-
     public static boolean isTargetErrorCount(int count) {
         return count == PUSH_FOR_ERROR_COUNT
                || count == (PUSH_FOR_ERROR_COUNT * 3 + 1)
@@ -96,6 +96,15 @@ public class PropertyUtils {
             String value = arg.substring(valueStart, valueEnd);
             log.info("get key={},value={}", key, value);
             propertyUtils.propertyMap.put(key, value);
+        }
+    }
+
+    private static int convertStrToInt(String str, int defaultValue) {
+        try {
+            return Integer.parseInt(propertyUtils.propertyMap.get(str));
+        } catch (Exception e) {
+            log.error("catch convert error:", e);
+            return defaultValue;
         }
     }
 }
