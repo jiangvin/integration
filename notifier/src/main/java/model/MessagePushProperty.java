@@ -67,16 +67,28 @@ public class MessagePushProperty {
         updateAllStatus(service);
     }
 
-    public String generatePushContent() {
+    public String generatePushContent(int totalCount) {
         if (StringUtils.isEmpty(content.toString())) {
             return null;
         }
 
+        int contentLines = content.toString().split("\n").length;
+
         if (allBackToNormal) {
-            content.append("该环境全部服务恢复正常!\n");
-            return content.toString();
+            String firstLine =  content.toString().split("\n")[0];
+
+            if (contentLines == totalCount && firstLine.contains(",")) {
+                //全部服务同一时间恢复正常
+                return "该环境全部服务恢复正常," + firstLine.split(",")[1];
+            } else {
+                content.append("该环境全部服务恢复正常!\n");
+                return content.toString();
+            }
         }
 
+        if (contentLines != totalCount) {
+            allDown = false;
+        }
         if (allDown) {
             AllDownProperty target = new AllDownProperty("", 0);
             target.messageGroupCount = 0;

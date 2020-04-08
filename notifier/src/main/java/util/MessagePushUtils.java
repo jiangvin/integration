@@ -32,7 +32,7 @@ public class MessagePushUtils {
             services.forEach(messagePushProperty::processRegularPush);
         }
 
-        sendMessage(messagePushProperty.generatePushContent());
+        sendMessage(messagePushProperty.generatePushContent(services.size()));
     }
 
     public static void sendMessage(String content) {
