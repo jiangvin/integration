@@ -29,9 +29,8 @@ public class MessagePushProperty {
 
     private boolean regularPush = false;
 
-    private boolean allBackToNormal = true;
+    private PushStatus pushStatus = PushStatus.NONE;
 
-    private boolean allDown = true;
     private Map<String, AllDownProperty> allDownMessageCountMap = new HashMap<>(16);
 
     public MessagePushProperty() {
@@ -74,7 +73,7 @@ public class MessagePushProperty {
 
         int contentLines = content.toString().split("\n").length;
 
-        if (allBackToNormal) {
+        if (pushStatus == PushStatus.BACK_TO_NORMAL) {
             String firstLine =  content.toString().split("\n")[0];
 
             if (contentLines == totalCount && firstLine.contains(",")) {
@@ -86,10 +85,7 @@ public class MessagePushProperty {
             }
         }
 
-        if (contentLines != totalCount) {
-            allDown = false;
-        }
-        if (allDown) {
+        if (pushStatus == PushStatus.DOWN && contentLines == totalCount) {
             AllDownProperty target = new AllDownProperty("", 0);
             target.messageGroupCount = 0;
             for (Map.Entry<String, AllDownProperty> kv : allDownMessageCountMap.entrySet()) {
@@ -107,12 +103,12 @@ public class MessagePushProperty {
 
     private void updateAllStatus(Service service) {
         if (service.getConnectFlag()) {
-            allDown = false;
+            updatePushStatus(PushStatus.BACK_TO_NORMAL);
             return;
         }
 
-        allBackToNormal = false;
-        if (!allDown) {
+        updatePushStatus(PushStatus.DOWN);
+        if (this.pushStatus != PushStatus.DOWN) {
             return;
         }
 
@@ -122,6 +118,18 @@ public class MessagePushProperty {
             allDownMessageCountMap.put(service.getConnectResult(),
                                        new AllDownProperty(service.getConnectResult(),
                                                            service.getErrorCount()));
+        }
+    }
+
+    private void updatePushStatus(PushStatus pushStatus) {
+        if (this.pushStatus == pushStatus) {
+            return;
+        }
+
+        if (this.pushStatus == PushStatus.NONE) {
+            this.pushStatus = pushStatus;
+        } else {
+            this.pushStatus = PushStatus.MIXED;
         }
     }
 
