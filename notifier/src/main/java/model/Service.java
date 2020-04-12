@@ -38,6 +38,10 @@ public class Service {
 
     private int errorCount;
 
+    private Integer requestCount;
+
+    private Integer requestSeconds;
+
     private boolean needSave = true;
 
     public void setConnectResult(String result, boolean flag) {
