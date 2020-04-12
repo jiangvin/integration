@@ -19,14 +19,6 @@ public class ConnectCheckUnit implements BaseCheckUnit {
     private static final String VERSION_TAG = "version=";
     private static final String START_TIME_TAG = "start_time=";
 
-    private static final String MEMORY_MAX_PRE_1 = "jvm_memory_max_bytes";
-    private static final String MEMORY_USED_PRE_1 = "jvm_memory_used_bytes";
-    private static final String OLD_GEN_TAG_1 = "&area=\"heap\",id=\"PS Old Gen\",}";
-
-    private static final String MEMORY_MAX_PRE_2 = "jvm_memory_pool_bytes_max";
-    private static final String MEMORY_USED_PRE_2 = "jvm_memory_pool_bytes_used";
-    private static final String OLD_GEN_TAG_2 = "&pool=\"PS Old Gen\",}";
-
     @Override
     public void start(List<Service> services) {
         for (Service service : services) {
@@ -45,21 +37,16 @@ public class ConnectCheckUnit implements BaseCheckUnit {
 
     private void findBaseInfo(Service service) {
         findStartTimeAndVersion(service);
-        findMemoryInfo(service);
 
-        if (service.getVersion() == null
-                || service.getStartTime() == null
-                || service.getOldGenMax() == null
-                || service.getOldGenUsed() == null) {
-            String keyInfo = String.format("MemoryMax:%d,MemoryUsed:%d,Version:%s,StartTime:%s",
-                                           service.getOldGenMax(),
-                                           service.getOldGenUsed(),
+        if (service.getVersion() == null || service.getStartTime() == null) {
+            String keyInfo = String.format("Version:%s,StartTime:%s",
                                            service.getVersion(),
                                            service.getStartTime());
 
-            log.error(String.format("convert info failed: %s\nresult:\n%s",
-                                    service.getConnectResult(),
-                                    keyInfo));
+            log.error("{}:convert info failed:\n{}\nresult: {}",
+                      service.getServiceId(),
+                      service.getConnectResult(),
+                      keyInfo);
             service.setConnectResult("抓取信息失败:" + keyInfo, false);
         }
     }
@@ -87,35 +74,6 @@ public class ConnectCheckUnit implements BaseCheckUnit {
             } catch (Exception e) {
                 log.error(String.format("Timestamp %s convert error:", startTimeStr), e);
             }
-        }
-    }
-
-    private void findMemoryInfo(Service service) {
-        String str = service.getConnectResult();
-
-        service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_PRE_1 + OLD_GEN_TAG_1));
-        if (service.getOldGenMax() == null) {
-            service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_PRE_2 + OLD_GEN_TAG_2));
-        }
-
-        service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_PRE_1 + OLD_GEN_TAG_1));
-        if (service.getOldGenUsed() == null) {
-            service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_PRE_2 + OLD_GEN_TAG_2));
-        }
-    }
-
-    private Integer strConvertMemoryInt(String str, String key) {
-        if (!str.contains(key)) {
-            return null;
-        }
-
-        String doubleStr = str.split(key)[1].split("\n")[0];
-        try {
-            double value = Double.parseDouble(doubleStr) / 1024 / 1024;
-            return (int) value;
-        } catch (Exception e) {
-            log.error(String.format("double %s convert error:", doubleStr), e);
-            return null;
         }
     }
 }

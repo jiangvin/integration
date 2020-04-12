@@ -15,10 +15,28 @@ import java.util.List;
 
 @Slf4j
 public class MemoryCheckUnit implements BaseCheckUnit {
+    private static final String MEMORY_MAX_PRE_1 = "jvm_memory_max_bytes";
+    private static final String MEMORY_USED_PRE_1 = "jvm_memory_used_bytes";
+    private static final String OLD_GEN_TAG_1 = "&area=\"heap\",id=\"PS Old Gen\",}";
+
+    private static final String MEMORY_MAX_PRE_2 = "jvm_memory_pool_bytes_max";
+    private static final String MEMORY_USED_PRE_2 = "jvm_memory_pool_bytes_used";
+    private static final String OLD_GEN_TAG_2 = "&pool=\"PS Old Gen\",}";
+
     @Override
     public void start(List<Service> services) {
         for (Service service : services) {
-            if (service.getOldGenMax() == null || service.getOldGenUsed() == null) {
+            if (!service.getConnectFlag()) {
+                continue;
+            }
+
+            if (!findMemoryInfo(service)) {
+                log.error("{}: can not find memory info ({} / {}) from:\n{}",
+                          service.getServiceId(),
+                          service.getOldGenUsed(),
+                          service.getOldGenMax(),
+                          service.getConnectResult());
+                service.setConnectResult("找不到内存信息", false);
                 continue;
             }
 
@@ -31,8 +49,39 @@ public class MemoryCheckUnit implements BaseCheckUnit {
                 service.setConnectResult(errorMsg, false);
                 log.error("{}:{}", service.getServiceId(), errorMsg);
             }
+
+        }
+        DbUtils.updateMemoryLog(services);
+    }
+
+    private boolean findMemoryInfo(Service service) {
+        String str = service.getConnectResult();
+
+        service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_PRE_1 + OLD_GEN_TAG_1));
+        if (service.getOldGenMax() == null) {
+            service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_PRE_2 + OLD_GEN_TAG_2));
         }
 
-        DbUtils.updateMemoryLog(services);
+        service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_PRE_1 + OLD_GEN_TAG_1));
+        if (service.getOldGenUsed() == null) {
+            service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_PRE_2 + OLD_GEN_TAG_2));
+        }
+
+        return service.getOldGenMax() != null && service.getOldGenUsed() != null;
+    }
+
+    private Integer strConvertMemoryInt(String str, String key) {
+        if (!str.contains(key)) {
+            return null;
+        }
+
+        String doubleStr = str.split(key)[1].split("\n")[0];
+        try {
+            double value = Double.parseDouble(doubleStr) / 1024 / 1024;
+            return (int) value;
+        } catch (Exception e) {
+            log.error(String.format("double %s convert error:", doubleStr), e);
+            return null;
+        }
     }
 }
