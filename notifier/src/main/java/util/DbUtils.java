@@ -43,7 +43,9 @@ public class DbUtils {
         try {
             ResultSet rs = dbUtils.statement.executeQuery("select * from service");
             while (rs.next()) {
-                services.add(new Service(rs.getString("service_id"), rs.getString("url")));
+                Service service = new Service(rs.getString("service_id"), rs.getString("url"));
+                service.setCoPhone(rs.getString("component_owner_phone"));
+                services.add(service);
             }
             rs.close();
         } catch (Exception e) {

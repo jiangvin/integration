@@ -40,6 +40,8 @@ public class Service {
 
     private boolean needSave = true;
 
+    private String coPhone;
+
     public void setConnectResult(String result, boolean flag) {
         this.connectFlag = flag;
         this.connectResult = result;

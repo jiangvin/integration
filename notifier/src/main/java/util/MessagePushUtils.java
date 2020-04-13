@@ -32,20 +32,24 @@ public class MessagePushUtils {
             services.forEach(messagePushProperty::processRegularPush);
         }
 
-        sendMessage(messagePushProperty.generatePushContent(services.size()));
+        sendMessage(messagePushProperty.generatePushContent(services.size()), messagePushProperty.getMentionedList());
     }
 
     public static void sendMessage(String content) {
+        sendMessage(content, null);
+    }
+
+    private static void sendMessage(String content, List<String> mentionedList) {
         if (StringUtils.isEmpty(content)) {
             return;
         }
 
+        WxMessage wxMessage = new WxMessage(content, mentionedList);
         if (PropertyUtils.isDebug()) {
-            log.info("debug mode no need push message: {}", content);
+            log.info("debug mode no need push message: {}", wxMessage.toString());
             return;
         }
 
-        WxMessage wxMessage = new WxMessage(content);
         HttpUtils.postJsonRequest(PropertyUtils.getWxPostUrl(), String.class, wxMessage);
     }
 }

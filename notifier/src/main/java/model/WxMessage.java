@@ -3,6 +3,8 @@ package model;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.util.List;
+
 /**
  * @author 蒋文龙(Vin)
  * @description
@@ -12,12 +14,15 @@ import lombok.NonNull;
 @Data
 public class WxMessage {
 
-    private String msgtype = "markdown";
+    private String msgtype = "text";
 
     @NonNull
-    private Markdown markdown;
+    private WxText text;
 
-    public WxMessage(String content) {
-        this.markdown = new Markdown(content);
+    public WxMessage(String content, List<String> mobileList) {
+        this.text = new WxText(content);
+        if (mobileList != null && !mobileList.isEmpty()) {
+            this.text.setMentioned_mobile_list(mobileList);
+        }
     }
 }

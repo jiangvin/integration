@@ -6,7 +6,9 @@ import org.springframework.util.StringUtils;
 import util.PropertyUtils;
 import util.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +28,7 @@ public class MessagePushProperty {
     }
 
     StringBuilder content = new StringBuilder();
+    List<String> mentionedList = new ArrayList<>();
 
     private boolean regularPush = false;
 
@@ -50,6 +53,11 @@ public class MessagePushProperty {
         service.setConnectResult(adjustErrorMessage(service.getConnectResult()));
         content.append(adjustPushMessage(service));
         updateAllStatus(service);
+
+        //提醒负责人,只在强制推送时提醒
+        if (service.getCoPhone() != null && !service.getConnectFlag()) {
+            mentionedList.add(service.getCoPhone());
+        }
 
         //强制推送时候，那些定期推送的信息也会一起带出推送
         regularPush = true;
@@ -93,6 +101,13 @@ public class MessagePushProperty {
                     target = kv.getValue();
                 }
             }
+
+            //全部环境都异常的时候提醒所有人
+            mentionedList.clear();
+            if (PropertyUtils.isTargetErrorCount(target.getErrorCount())) {
+                mentionedList.add("@all");
+            }
+
             return String.format("该环境全部服务异常: %s[连续异常%d次]\n",
                                  target.getErrorMessage(),
                                  target.getErrorCount());
