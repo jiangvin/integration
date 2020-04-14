@@ -44,6 +44,11 @@ public class MessagePushUtils {
             return;
         }
 
+        //去掉最后一个换行符号
+        if (content.lastIndexOf("\n") == content.length() - 1) {
+            content = content.substring(0, content.length() - 1);
+        }
+
         WxMessage wxMessage = new WxMessage(content, mentionedList);
         if (PropertyUtils.isDebug()) {
             log.info("debug mode no need push message: {}", wxMessage.toString());
