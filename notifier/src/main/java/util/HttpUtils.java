@@ -53,7 +53,7 @@ public class HttpUtils {
             }
             log.info("Receive response:{}, try to convert to {}", receiveStr, type.getName());
             if (type == String.class) {
-                return (T) responseStr.getBody();
+                return type.cast(responseStr.getBody());
             } else {
                 return httpUtils.objectMapper.readValue(responseStr.getBody(), type);
             }
@@ -72,7 +72,7 @@ public class HttpUtils {
             ResponseEntity<String> responseStr = httpUtils.restTemplate.postForEntity(url, request , String.class);
             log.info("Receive response:{}, try to convert to {}", responseStr.getBody(), type.getName());
             if (type == String.class) {
-                return (T) responseStr.getBody();
+                return type.cast(responseStr.getBody());
             } else {
                 return httpUtils.objectMapper.readValue(responseStr.getBody(), type);
             }
