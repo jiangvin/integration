@@ -130,7 +130,13 @@ public class MessagePushProperty {
         }
 
         if (allDownMessageCountMap.containsKey(service.getConnectResult())) {
-            allDownMessageCountMap.get(service.getConnectResult()).messageGroupCount += 1;
+            AllDownProperty allDownProperty = allDownMessageCountMap.get(service.getConnectResult());
+            allDownProperty.messageGroupCount += 1;
+
+            //更新错误数量，整合错误时错误数量为最小值
+            if (service.getErrorCount() < allDownProperty.getErrorCount()) {
+                allDownProperty.setErrorCount(service.getErrorCount());
+            }
         } else {
             allDownMessageCountMap.put(service.getConnectResult(),
                                        new AllDownProperty(service.getConnectResult(),
