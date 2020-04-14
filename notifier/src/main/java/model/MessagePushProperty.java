@@ -55,7 +55,9 @@ public class MessagePushProperty {
         updateAllStatus(service);
 
         //提醒负责人,只在强制推送时提醒
-        if (service.getCoPhone() != null && !service.getConnectFlag()) {
+        if (!service.getConnectFlag()
+                && service.getCoPhone() != null
+                && !mentionedList.contains(service.getCoPhone())) {
             mentionedList.add(service.getCoPhone());
         }
 
@@ -102,9 +104,9 @@ public class MessagePushProperty {
                 }
             }
 
-            //全部环境都异常的时候提醒所有人
-            mentionedList.clear();
-            if (PropertyUtils.isTargetErrorCount(target.getErrorCount())) {
+            //全部环境都异常并且通知列表里面有超过一个人时提醒所有人
+            if (mentionedList.size() > 1) {
+                mentionedList.clear();
                 mentionedList.add("@all");
             }
 
