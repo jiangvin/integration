@@ -1,6 +1,7 @@
 package model;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.util.StringUtils;
 import util.PropertyUtils;
@@ -17,7 +18,6 @@ import java.util.Map;
  * @date 2020/4/7
  */
 
-@Data
 public class MessagePushProperty {
 
     @Data
@@ -27,9 +27,12 @@ public class MessagePushProperty {
         private int messageGroupCount = 1;
     }
 
-    StringBuilder content = new StringBuilder();
-    List<String> mentionedList = new ArrayList<>();
+    private StringBuilder content = new StringBuilder();
 
+    @Getter
+    private List<String> mentionedList = new ArrayList<>();
+
+    @Getter
     private boolean regularPush = false;
 
     private PushStatus pushStatus = PushStatus.NONE;
