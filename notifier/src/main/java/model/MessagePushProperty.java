@@ -27,13 +27,13 @@ public class MessagePushProperty {
         private int messageGroupCount = 1;
     }
 
-    private StringBuilder content = new StringBuilder();
-
     @Getter
     private List<String> mentionedList = new ArrayList<>();
 
     @Getter
     private boolean regularPush = false;
+
+    private StringBuilder content = new StringBuilder();
 
     private PushStatus pushStatus = PushStatus.NONE;
 
@@ -51,18 +51,7 @@ public class MessagePushProperty {
         if (service.getPushType() != MessagePushType.FORCE_PUSH) {
             return;
         }
-
-        //优化推送的内容
-        service.setConnectResult(adjustErrorMessage(service.getConnectResult()));
-        content.append(adjustPushMessage(service));
-        updateAllStatus(service);
-
-        //提醒负责人,只在强制推送时提醒
-        if (!service.getConnectFlag()
-                && service.getCoPhone() != null
-                && !mentionedList.contains(service.getCoPhone())) {
-            mentionedList.add(service.getCoPhone());
-        }
+        baseProcessPush(service);
 
         //强制推送时候，那些定期推送的信息也会一起带出推送
         regularPush = true;
@@ -72,11 +61,22 @@ public class MessagePushProperty {
         if (service.getPushType() != MessagePushType.REGULAR_PUSH) {
             return;
         }
+        baseProcessPush(service);
+    }
 
+    private void baseProcessPush(Service service) {
         //优化推送的内容
         service.setConnectResult(adjustErrorMessage(service.getConnectResult()));
         content.append(adjustPushMessage(service));
         updateAllStatus(service);
+
+        //提醒负责人,只在错误数量低于20的推送时提醒
+        if (!service.getConnectFlag()
+                && service.getCoPhone() != null
+                && service.getErrorCount() <= PropertyUtils.MAX_PUSH_FOR_ERROR_COUNT
+                && !mentionedList.contains(service.getCoPhone())) {
+            mentionedList.add(service.getCoPhone());
+        }
     }
 
     public String generatePushContent(int totalCount) {

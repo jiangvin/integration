@@ -70,7 +70,7 @@ public class HealthCheckService {
                     msg += durationMsg;
                 }
                 service.setConnectResult(msg);
-                if (lastCount >= PropertyUtils.PUSH_FOR_ERROR_COUNT) {
+                if (lastCount >= PropertyUtils.MIN_PUSH_FOR_ERROR_COUNT) {
                     service.setPushType(MessagePushType.FORCE_PUSH);
                 }
                 continue;
@@ -82,7 +82,7 @@ public class HealthCheckService {
                 service.setErrorCount(errorCount);
                 if (PropertyUtils.isTargetErrorCount(errorCount)) {
                     service.setPushType(MessagePushType.FORCE_PUSH);
-                } else if (errorCount > PropertyUtils.PUSH_FOR_ERROR_COUNT) {
+                } else if (errorCount > PropertyUtils.MIN_PUSH_FOR_ERROR_COUNT) {
                     service.setPushType(MessagePushType.REGULAR_PUSH);
                 }
             }

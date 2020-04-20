@@ -30,7 +30,9 @@ public class PropertyUtils {
         propertyMap.put("endHour", "22");
     }
 
-    public static final int PUSH_FOR_ERROR_COUNT = 3;
+    public static final int MIN_PUSH_FOR_ERROR_COUNT = 3;
+
+    public static final int MAX_PUSH_FOR_ERROR_COUNT = MIN_PUSH_FOR_ERROR_COUNT * 7 - 1;
 
     public static int getInterval() {
         return convertStrToInt("interval", 3);
@@ -74,9 +76,9 @@ public class PropertyUtils {
     }
 
     public static boolean isTargetErrorCount(int count) {
-        return count == PUSH_FOR_ERROR_COUNT
-               || count == (PUSH_FOR_ERROR_COUNT * 3 + 1)
-               || count == (PUSH_FOR_ERROR_COUNT * 7 - 1);
+        return count == MIN_PUSH_FOR_ERROR_COUNT
+               || count == (MIN_PUSH_FOR_ERROR_COUNT * 3 + 1)
+               || count == MAX_PUSH_FOR_ERROR_COUNT;
     }
 
     public static void setArgs(String[] args) {
