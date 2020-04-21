@@ -128,7 +128,8 @@ public class DbUtils {
             }
 
             //很正常，不需要追踪
-            if (lastRateTag < 5 && rateTag < 5) {
+            int tag = PropertyUtils.getMemoryTag(service.getServiceId());
+            if (lastRateTag < tag && rateTag < tag) {
                 continue;
             }
 

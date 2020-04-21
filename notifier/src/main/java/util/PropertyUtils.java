@@ -1,6 +1,7 @@
 package util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,8 @@ public class PropertyUtils {
     private static PropertyUtils propertyUtils = new PropertyUtils();
 
     private Map<String, String> propertyMap = new HashMap<>();
+
+    private Map<String, Integer> memoryTagMap = null;
 
     private PropertyUtils() {
         propertyMap.put("wxPostUrl", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=01a4d06b-9f42-4104-a125-9be13b46fbd3");
@@ -35,19 +38,19 @@ public class PropertyUtils {
     public static final int MAX_PUSH_FOR_ERROR_COUNT = MIN_PUSH_FOR_ERROR_COUNT * 7 - 1;
 
     public static int getInterval() {
-        return convertStrToInt("interval", 3);
+        return convertPropertyStrToInt("interval", 3);
     }
 
     public static int getStartHour() {
-        return convertStrToInt("startHour", 9);
+        return convertPropertyStrToInt("startHour", 9);
     }
 
     public static int getEndHour() {
-        return convertStrToInt("endHour", 22);
+        return convertPropertyStrToInt("endHour", 22);
     }
 
     public static int getMemoryRateLimit() {
-        return convertStrToInt("memoryRateLimit", 90);
+        return convertPropertyStrToInt("memoryRateLimit", 90);
     }
 
     public static String getWxPostUrl() {
@@ -73,6 +76,35 @@ public class PropertyUtils {
             log.error("catch convert error:", e);
             return true;
         }
+    }
+
+    public static int getMemoryTag(String serviceId) {
+        return getOrCreateMemoryTagMap().getOrDefault(serviceId, 5);
+    }
+
+    private static Map<String, Integer> getOrCreateMemoryTagMap() {
+        if (propertyUtils.memoryTagMap != null) {
+            return propertyUtils.memoryTagMap;
+        }
+
+        propertyUtils.memoryTagMap = new HashMap<>();
+        String tagMsg = propertyUtils.propertyMap.get("memoryTag");
+        if (StringUtils.isEmpty(tagMsg)) {
+            return propertyUtils.memoryTagMap;
+        }
+
+        String[] tagInfos = tagMsg.split(";");
+        for (String tagInfo : tagInfos) {
+            String[] kv = tagInfo.split(":");
+            if (kv.length != 2) {
+                continue;
+            }
+
+            String key = kv[0];
+            int value = convertStrToInt(kv[1], 5);
+            propertyUtils.memoryTagMap.put(key, value);
+        }
+        return propertyUtils.memoryTagMap;
     }
 
     public static boolean isTargetErrorCount(int count) {
@@ -101,9 +133,13 @@ public class PropertyUtils {
         }
     }
 
+    private static int convertPropertyStrToInt(String str, int defaultValue) {
+        return convertStrToInt(propertyUtils.propertyMap.get(str), defaultValue);
+    }
+
     private static int convertStrToInt(String str, int defaultValue) {
         try {
-            return Integer.parseInt(propertyUtils.propertyMap.get(str));
+            return Integer.parseInt(str);
         } catch (Exception e) {
             log.error("catch convert error:", e);
             return defaultValue;
