@@ -6,6 +6,7 @@ import model.CustomExceptionType;
 import model.MessagePushType;
 import model.Service;
 import service.checkunit.BaseCheckUnit;
+import service.checkunit.ConnectGatewayCheckUnit;
 import service.checkunit.ConnectSpringCheckUnit;
 import service.checkunit.ConnectWebCheckUnit;
 import service.checkunit.MemoryCheckUnit;
@@ -35,6 +36,7 @@ public class HealthCheckService {
         checkUnitList.add(new ConnectWebCheckUnit());
         checkUnitList.add(new VersionCheckUnit());
         checkUnitList.add(new MemoryCheckUnit());
+        checkUnitList.add(new ConnectGatewayCheckUnit());
     }
 
     public void start() {
