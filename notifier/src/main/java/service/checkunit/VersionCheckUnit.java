@@ -14,12 +14,12 @@ import java.util.Map;
  */
 
 @Slf4j
-public class VersionCheckUnit implements BaseCheckUnit {
+public class VersionCheckUnit extends BaseCheckUnit {
 
     @Override
-    public void start(List<Service> services) {
+    void startCheck(List<Service> services) {
         HashMap<String, Integer> versionCountMap = new HashMap<>(16);
-        services.stream().filter(i -> i.getVersion() != null).forEach(i -> {
+        services.forEach(i -> {
             String version = i.getVersionWithoutPatch();
             if (versionCountMap.containsKey(version)) {
                 versionCountMap.put(version, versionCountMap.get(version) + 1);
@@ -62,5 +62,10 @@ public class VersionCheckUnit implements BaseCheckUnit {
             service.setConnectResult(errorMsg, false);
             log.error("{}:{}", service.getServiceId(), errorMsg);
         }
+    }
+
+    @Override
+    boolean isCheck(Service service) {
+        return service.getVersion() != null;
     }
 }

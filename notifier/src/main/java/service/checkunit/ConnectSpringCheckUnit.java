@@ -2,6 +2,7 @@ package service.checkunit;
 
 import lombok.extern.slf4j.Slf4j;
 import model.Service;
+import model.ServiceType;
 import util.HttpUtils;
 
 import java.sql.Timestamp;
@@ -14,13 +15,13 @@ import java.util.List;
  */
 
 @Slf4j
-public class ConnectCheckUnit implements BaseCheckUnit {
+public class ConnectSpringCheckUnit extends BaseCheckUnit {
     private static final String STATUS = "zcloud_service_status&";
     private static final String VERSION_TAG = "version=";
     private static final String START_TIME_TAG = "start_time=";
 
     @Override
-    public void start(List<Service> services) {
+    void startCheck(List<Service> services) {
         for (Service service : services) {
             try {
                 String str = HttpUtils.getRequest(service.getUrl(), String.class)
@@ -33,6 +34,11 @@ public class ConnectCheckUnit implements BaseCheckUnit {
                 service.setConnectResult(e.getMessage(), false);
             }
         }
+    }
+
+    @Override
+    boolean isCheck(Service service) {
+        return service.getServiceType() == ServiceType.SPRING1 || service.getServiceType() == ServiceType.SPRING2;
     }
 
     private void findBaseInfo(Service service) {

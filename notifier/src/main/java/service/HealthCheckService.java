@@ -6,7 +6,7 @@ import model.CustomExceptionType;
 import model.MessagePushType;
 import model.Service;
 import service.checkunit.BaseCheckUnit;
-import service.checkunit.ConnectCheckUnit;
+import service.checkunit.ConnectSpringCheckUnit;
 import service.checkunit.MemoryCheckUnit;
 import service.checkunit.VersionCheckUnit;
 import util.DbUtils;
@@ -30,7 +30,7 @@ public class HealthCheckService {
 
     public HealthCheckService() {
         checkUnitList = new ArrayList<>();
-        checkUnitList.add(new ConnectCheckUnit());
+        checkUnitList.add(new ConnectSpringCheckUnit());
         checkUnitList.add(new VersionCheckUnit());
         checkUnitList.add(new MemoryCheckUnit());
     }

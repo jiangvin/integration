@@ -2,6 +2,7 @@ package service.checkunit;
 
 import lombok.extern.slf4j.Slf4j;
 import model.Service;
+import model.ServiceType;
 import util.DbUtils;
 import util.PropertyUtils;
 
@@ -14,7 +15,7 @@ import java.util.List;
  */
 
 @Slf4j
-public class MemoryCheckUnit implements BaseCheckUnit {
+public class MemoryCheckUnit extends BaseCheckUnit {
     private static final String MEMORY_MAX_PRE_1 = "jvm_memory_max_bytes";
     private static final String MEMORY_USED_PRE_1 = "jvm_memory_used_bytes";
     private static final String OLD_GEN_TAG_1 = "&area=\"heap\",id=\"PS Old Gen\",}";
@@ -24,12 +25,8 @@ public class MemoryCheckUnit implements BaseCheckUnit {
     private static final String OLD_GEN_TAG_2 = "&pool=\"PS Old Gen\",}";
 
     @Override
-    public void start(List<Service> services) {
+    void startCheck(List<Service> services) {
         for (Service service : services) {
-            if (!service.getConnectFlag()) {
-                continue;
-            }
-
             if (!findMemoryInfo(service)) {
                 log.error("{}: can not find memory info ({} / {}) from:\n{}",
                           service.getServiceId(),
@@ -52,6 +49,13 @@ public class MemoryCheckUnit implements BaseCheckUnit {
 
         }
         DbUtils.updateMemoryLog(services);
+    }
+
+    @Override
+    boolean isCheck(Service service) {
+        return service.getConnectFlag()
+               && (service.getServiceType() == ServiceType.SPRING1
+                   || service.getServiceType() == ServiceType.SPRING2);
     }
 
     private boolean findMemoryInfo(Service service) {
