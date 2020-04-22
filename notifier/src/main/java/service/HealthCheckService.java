@@ -45,11 +45,12 @@ public class HealthCheckService {
         log.info("Find service count: {}", services.size());
 
         sendStartMessage(services);
-        checkUnitList.forEach(i -> i.start(services));
 
+        checkUnitList.forEach(i -> i.start(services));
         updateErrorCount(services);
         DbUtils.updateCheckLog(services);
         MessagePushUtils.sendMessage(services);
+
         sendEndMessage(services);
     }
 

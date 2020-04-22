@@ -7,6 +7,8 @@ import util.HttpUtils;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author 蒋文龙(Vin)
@@ -16,9 +18,10 @@ import java.util.List;
 
 @Slf4j
 public class ConnectSpringCheckUnit extends BaseCheckUnit {
-    private static final String STATUS = "zcloud_service_status&";
-    private static final String VERSION_TAG = "version=";
-    private static final String START_TIME_TAG = "start_time=";
+
+    private static final Pattern STATUS = Pattern.compile("zcloud_service_status\\{.+}");
+    private static final Pattern VERSION_TAG = Pattern.compile("version=\"[0-9.]+\"");
+    private static final Pattern START_TIME_TAG = Pattern.compile("start_time=\"[^\"]+\"");
 
     @Override
     void startCheck(List<Service> services) {
@@ -26,8 +29,7 @@ public class ConnectSpringCheckUnit extends BaseCheckUnit {
             try {
                 String str = HttpUtils.getRequest(service.getUrl(), String.class)
                              .replace("\\\"", "\"")
-                             .replace("\\n", "\n")
-                             .replace("{", "&");
+                             .replace("\\n", "\n");
                 service.setConnectResult(str, true);
                 findBaseInfo(service);
             } catch (Exception e) {
@@ -58,22 +60,25 @@ public class ConnectSpringCheckUnit extends BaseCheckUnit {
     }
 
     private void findStartTimeAndVersion(Service service) {
-        String str = service.getConnectResult();
-        if (!str.contains(STATUS)) {
+        Matcher m = STATUS.matcher(service.getConnectResult());
+        if (!m.find()) {
             return;
         }
-
-        String statusInfo = str.split(STATUS)[1].split("}")[0];
+        String statusInfo = m.group();
 
         //找寻版本号
-        if (statusInfo.contains(VERSION_TAG)) {
-            String version = statusInfo.split(VERSION_TAG)[1].split(",")[0].replace("\"", "");
+        m = VERSION_TAG.matcher(statusInfo);
+        if (m.find()) {
+            String versionInfo = m.group();
+            String version = versionInfo.split("=")[1]
+                             .replace("\"", "");
             service.setVersion(version);
         }
 
         //找寻启动时间
-        if (statusInfo.contains(START_TIME_TAG)) {
-            String startTimeStr = statusInfo.split(START_TIME_TAG)[1].split(",")[0].replace("\"", "");
+        m = START_TIME_TAG.matcher(statusInfo);
+        if (m.find()) {
+            String startTimeStr = m.group().split("=")[1].replace("\"", "");
             try {
                 Timestamp startTime = Timestamp.valueOf(startTimeStr);
                 service.setStartTime(startTime);

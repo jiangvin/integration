@@ -19,8 +19,7 @@ import java.util.regex.Pattern;
 public class ConnectWebCheckUnit extends BaseCheckUnit {
 
     private static final Pattern JS_PATH = Pattern.compile("/js/app.[\\w]+.js");
-
-    private static final Pattern VERSION_TAG = Pattern.compile("\\{version:\"[0-9.]+\"\\}");
+    private static final Pattern VERSION_TAG = Pattern.compile("\\{version:\"[0-9.]+\"}");
 
 
     @Override

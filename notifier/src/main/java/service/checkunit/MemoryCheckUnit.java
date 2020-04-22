@@ -7,6 +7,8 @@ import util.DbUtils;
 import util.PropertyUtils;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author 蒋文龙(Vin)
@@ -16,13 +18,15 @@ import java.util.List;
 
 @Slf4j
 public class MemoryCheckUnit extends BaseCheckUnit {
-    private static final String MEMORY_MAX_PRE_1 = "jvm_memory_max_bytes";
-    private static final String MEMORY_USED_PRE_1 = "jvm_memory_used_bytes";
-    private static final String OLD_GEN_TAG_1 = "&area=\"heap\",id=\"PS Old Gen\",}";
 
-    private static final String MEMORY_MAX_PRE_2 = "jvm_memory_pool_bytes_max";
-    private static final String MEMORY_USED_PRE_2 = "jvm_memory_pool_bytes_used";
-    private static final String OLD_GEN_TAG_2 = "&pool=\"PS Old Gen\",}";
+    private static final Pattern MEMORY_USED_1 = Pattern.compile("jvm_memory_used_bytes\\{area=\"heap\",id=\"PS Old Gen\",} [^\\n]+");
+    private static final Pattern MEMORY_MAX_1 = Pattern.compile("jvm_memory_max_bytes\\{area=\"heap\",id=\"PS Old Gen\",} [^\\n]+");
+
+    /**
+     * for support spring1.x
+     */
+    private static final Pattern MEMORY_USED_2 = Pattern.compile("jvm_memory_pool_bytes_used\\{pool=\"PS Old Gen\",} [^\\n]+");
+    private static final Pattern MEMORY_MAX_2 = Pattern.compile("jvm_memory_pool_bytes_max\\{pool=\"PS Old Gen\",} [^\\n]+");
 
     @Override
     void startCheck(List<Service> services) {
@@ -61,25 +65,27 @@ public class MemoryCheckUnit extends BaseCheckUnit {
     private boolean findMemoryInfo(Service service) {
         String str = service.getConnectResult();
 
-        service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_PRE_1 + OLD_GEN_TAG_1));
+        service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_1));
         if (service.getOldGenMax() == null) {
-            service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_PRE_2 + OLD_GEN_TAG_2));
+            service.setOldGenMax(strConvertMemoryInt(str, MEMORY_MAX_2));
         }
 
-        service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_PRE_1 + OLD_GEN_TAG_1));
+        service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_1));
         if (service.getOldGenUsed() == null) {
-            service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_PRE_2 + OLD_GEN_TAG_2));
+            service.setOldGenUsed(strConvertMemoryInt(str, MEMORY_USED_2));
         }
 
         return service.getOldGenMax() != null && service.getOldGenUsed() != null;
     }
 
-    private Integer strConvertMemoryInt(String str, String key) {
-        if (!str.contains(key)) {
+    private Integer strConvertMemoryInt(String str, Pattern pattern) {
+        Matcher m = pattern.matcher(str);
+        if (!m.find()) {
             return null;
         }
 
-        String doubleStr = str.split(key)[1].split("\n")[0];
+        str = m.group();
+        String doubleStr = str.split("} ")[1];
         try {
             double value = Double.parseDouble(doubleStr) / 1024 / 1024;
             return (int) value;
