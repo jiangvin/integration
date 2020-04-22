@@ -42,6 +42,8 @@ public class Service {
 
     private String coPhone;
 
+    private ServiceType serviceType = ServiceType.UNKNOWN;
+
     public void setConnectResult(String result, boolean flag) {
         this.connectFlag = flag;
         this.connectResult = result;

@@ -2,6 +2,7 @@ package util;
 
 import lombok.extern.slf4j.Slf4j;
 import model.Service;
+import model.ServiceType;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,7 +46,12 @@ public class DbUtils {
             while (rs.next()) {
                 Service service = new Service(rs.getString("service_id"), rs.getString("url"));
                 service.setCoPhone(rs.getString("component_owner_phone"));
-                services.add(service);
+                service.setServiceType(ServiceType.getServiceType(rs.getString("service_type")));
+                if (service.getServiceType() == ServiceType.UNKNOWN) {
+                    log.warn("{}:unknown type, will be ignored!", service.getServiceId());
+                } else {
+                    services.add(service);
+                }
             }
             rs.close();
         } catch (Exception e) {
