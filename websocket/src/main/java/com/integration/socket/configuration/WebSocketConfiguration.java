@@ -1,10 +1,13 @@
 package com.integration.socket.configuration;
 
+import com.integration.socket.handler.PrincipalHandshakeHandler;
+import com.integration.socket.factory.WebSocketDecoratorFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 /**
  * @author 蒋文龙(Vin)
@@ -15,6 +18,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
+
+    private final WebSocketDecoratorFactory webSocketDecoratorFactory;
+    private final PrincipalHandshakeHandler principalHandshakeHandler;
+
+    public WebSocketConfiguration(WebSocketDecoratorFactory webSocketDecoratorFactory, PrincipalHandshakeHandler principalHandshakeHandler) {
+        this.webSocketDecoratorFactory = webSocketDecoratorFactory;
+        this.principalHandshakeHandler = principalHandshakeHandler;
+    }
 
     /**
      * 注册 Stomp的端点
@@ -27,6 +38,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/websocket-simple")
         .setAllowedOrigins("*")
+        .setHandshakeHandler(principalHandshakeHandler)
         .withSockJS();
     }
 
@@ -37,10 +49,11 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/queue");
+        registry.setUserDestinationPrefix("/user");
     }
 
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        configureClientInboundChannel(registration);
-//    }
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.addDecoratorFactory(webSocketDecoratorFactory);
+    }
 }

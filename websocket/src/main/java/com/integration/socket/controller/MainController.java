@@ -1,11 +1,14 @@
 package com.integration.socket.controller;
 
 import com.integration.socket.model.MessageDto;
+import com.integration.socket.service.SocketSessionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Controller("/")
 public class MainController {
+
+    @Autowired
+    private SocketSessionService socketSessionService;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     /**
      * 收到消息的计数
@@ -45,9 +54,15 @@ public class MainController {
         return new MessageDto("receive [" + count.incrementAndGet() + "] records");
     }
 
+
     @GetMapping("/mock")
-    @SendTo("/topic/receive")
-    public MessageDto mock() {
-        return new MessageDto("receive [" + count.incrementAndGet() + "] records");
+    @ResponseBody
+    public String mock() {
+        MessageDto messageDto = new MessageDto("hello!!!!!");
+        simpMessagingTemplate.convertAndSendToUser(
+            "vin",
+            "/queue/sendUser",
+            messageDto);
+        return "ok";
     }
 }

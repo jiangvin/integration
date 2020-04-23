@@ -13,11 +13,12 @@
 <body onload="disconnect()">
 <div>
     <div>
+        <label>名字</label><input type="text" id="name" />
         <button id="connect" onclick="connect();">连接</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">断开连接</button>
     </div>
     <div id="conversationDiv">
-        <label>输入你的名字</label><input type="text" id="name" />
+        <label></label><input type="text" id="msg" />
         <button id="sendName" onclick="sendName();">发送</button>
         <p id="response"></p>
     </div>
@@ -34,14 +35,14 @@
     }
 
     function connect() {
-        // websocket的连接地址，此值等于WebSocketMessageBrokerConfigurer中registry.addEndpoint("/websocket-simple").withSockJS()配置的地址
-        var socket = new SockJS('/websocket-simple');
+        var name = $('#name').val();
+        var socket = new SockJS('/websocket-simple?name=' + name);
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
             setConnected(true);
             console.log('Connected: ' + frame);
             // 客户端订阅消息的目的地址：此值BroadcastCtl中被@SendTo("/topic/getResponse")注解的里配置的值
-            stompClient.subscribe('/topic/receive', function(respnose){
+            stompClient.subscribe('/user/queue/sendUser', function(respnose){
                 showResponse(JSON.parse(respnose.body).message);
             });
         });
