@@ -3,7 +3,6 @@ package com.integration.socket.service;
 import com.integration.socket.model.MessageDto;
 import com.integration.socket.model.MessageType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OnlineUserService {
     private ConcurrentHashMap<String, String> sessionMap = new ConcurrentHashMap<>();
 
-    @Lazy
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
+    public OnlineUserService(@Lazy SimpMessagingTemplate simpMessagingTemplate) {
+        this.simpMessagingTemplate = simpMessagingTemplate;
+    }
 
     public void add(String key, String sessionId) {
         log.info("add new session:{}", key);
