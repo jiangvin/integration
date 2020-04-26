@@ -59,6 +59,9 @@ public class MainController {
     @ResponseBody
     public String mock() {
         MessageDto messageDto = new MessageDto("hello!!!!!");
+        simpMessagingTemplate.convertAndSend(
+            "/topic/sendStatus",
+            messageDto);
         simpMessagingTemplate.convertAndSendToUser(
             "vin",
             "/queue/sendUser",

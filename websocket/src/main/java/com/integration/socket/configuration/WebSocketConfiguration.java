@@ -52,8 +52,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.setUserDestinationPrefix("/user");
     }
 
-    @Override
-    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.addDecoratorFactory(webSocketDecoratorFactory);
-    }
+//    @Override
+//    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+//        registration.addDecoratorFactory(webSocketDecoratorFactory);
+//    }
 }

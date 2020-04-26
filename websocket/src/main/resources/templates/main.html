@@ -18,7 +18,10 @@
         <button id="disconnect" disabled="disabled" onclick="disconnect();">断开连接</button>
     </div>
     <div id="conversationDiv">
-        <label></label><input type="text" id="msg" />
+        <p>
+            <label>当前人数:</label><label id="status">0</label>
+        </p>
+        <label>信息</label><input type="text" id="msg" />
         <button id="sendName" onclick="sendName();">发送</button>
         <p id="response"></p>
     </div>
@@ -42,12 +45,14 @@
             setConnected(true);
             console.log('Connected: ' + frame);
             // 客户端订阅消息的目的地址：此值BroadcastCtl中被@SendTo("/topic/getResponse")注解的里配置的值
-            stompClient.subscribe('/user/queue/sendUser', function(respnose){
-                showResponse(JSON.parse(respnose.body).message);
+            stompClient.subscribe('/topic/sendStatus', function (response) {
+                showStatus(JSON.parse(response.body).message);
+            });
+            stompClient.subscribe('/user/queue/sendUser', function (response) {
+                showResponse(JSON.parse(response.body).message);
             });
         });
     }
-
 
     function disconnect() {
         if (stompClient != null) {
@@ -58,15 +63,21 @@
     }
 
     function sendName() {
-        var name = $('#name').val();
+        var msg = $('#msg').val();
         // 客户端消息发送的目的：服务端使用BroadcastCtl中@MessageMapping("/receive")注解的方法来处理发送过来的消息
-        stompClient.send("/send", {}, JSON.stringify({ 'message': name }));
+        stompClient.send("/send", {}, JSON.stringify({ 'message': msg }));
     }
 
     function showResponse(message) {
         var response = $("#response");
-        response.html(message + "\r\n" + response.html());
+        response.html("<p>" + message + "</p>" + response.html());
     }
+
+    function showStatus(message) {
+        var status = $("#status");
+        status.html(message);
+    }
+
 </script>
 </body>
 </html>
