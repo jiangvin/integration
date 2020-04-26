@@ -17,4 +17,8 @@ public class MessageDto {
     private String message;
 
     private MessageType messageType = MessageType.USER_MESSAGE;
+
+    public MessageDto(String message) {
+        this.message = message;
+    }
 }

@@ -1,6 +1,9 @@
 package com.integration.socket.service;
 
+import com.integration.socket.model.MessageDto;
+import com.integration.socket.model.MessageType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ public class OnlineUserService {
     private ConcurrentHashMap<String, String> sessionMap = new ConcurrentHashMap<>();
 
     @Lazy
+    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     public void add(String key, String sessionId) {
@@ -33,5 +37,35 @@ public class OnlineUserService {
 
     public String get(String key) {
         return sessionMap.get(key);
+    }
+
+    public void sendJoinMessageAndStatus(String username) {
+        if (sessionMap.get(username) == null) {
+            return;
+        }
+
+        simpMessagingTemplate.convertAndSend(
+            "/topic/send",
+            new MessageDto(String.valueOf(sessionMap.size()), MessageType.USER_COUNT));
+
+        simpMessagingTemplate.convertAndSend(
+            "/topic/send",
+            new MessageDto(username + "加入了!", MessageType.SYSTEM_MESSAGE));
+    }
+
+    public void removeAndSendMessageStatus(String username) {
+        if (sessionMap.get(username) == null) {
+            return;
+        }
+
+        remove(username);
+
+        simpMessagingTemplate.convertAndSend(
+            "/topic/send",
+            new MessageDto(String.valueOf(sessionMap.size()), MessageType.USER_COUNT));
+
+        simpMessagingTemplate.convertAndSend(
+            "/topic/send",
+            new MessageDto(username + "离开了!", MessageType.SYSTEM_MESSAGE));
     }
 }

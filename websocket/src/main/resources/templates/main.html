@@ -73,15 +73,18 @@
             case "USER_COUNT":
                 showStatus(messageDto.message);
                 break;
+            case "SYSTEM_MESSAGE":
+                showMessage(messageDto.message, "color: red");
+                break;
             default:
-                showMessage(messageDto.message);
+                showMessage(messageDto.message, "color: black");
                 break;
         }
     }
 
-    function showMessage(message) {
+    function showMessage(message, style) {
         var response = $("#response");
-        response.html("<p>" + message + "</p>" + response.html());
+        response.html("<p style='" + style +  ";'>" + message + "</p>" + response.html());
     }
 
     function showStatus(message) {
