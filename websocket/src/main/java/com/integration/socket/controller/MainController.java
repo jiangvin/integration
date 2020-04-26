@@ -1,17 +1,15 @@
 package com.integration.socket.controller;
 
 import com.integration.socket.model.MessageDto;
-import com.integration.socket.service.OnlineUserService;
+import com.integration.socket.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Objects;
 
 /**
  * @author 蒋文龙(Vin)
@@ -23,22 +21,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Controller("/")
 public class MainController {
 
-    @Autowired
-    private OnlineUserService onlineUserService;
+    private final MessageService messageService;
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-    /**
-     * 收到消息的计数
-     */
-    private AtomicInteger count = new AtomicInteger(0);
+    public MainController(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @GetMapping("/")
     public ModelAndView helloWorld() {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("main");
-        mav.getModel().put("name", "Hello Thymeleaf!");
+        mav.getModel().put("name", "Hello World!");
         return mav;
     }
 
@@ -49,23 +42,9 @@ public class MainController {
      * @return
      */
     @MessageMapping("/send")
-    public MessageDto connect(MessageDto messageDto) {
-        log.info("receive:{}", messageDto.toString());
-        return new MessageDto("receive [" + count.incrementAndGet() + "] records");
-    }
-
-
-    @GetMapping("/mock")
-    @ResponseBody
-    public String mock() {
-        MessageDto messageDto = new MessageDto("hello!!!!!");
-        simpMessagingTemplate.convertAndSend(
-            "/topic/sendStatus",
-            messageDto);
-        simpMessagingTemplate.convertAndSendToUser(
-            "vin",
-            "/queue/sendUser",
-            messageDto);
-        return "ok";
+    public void connect(MessageDto messageDto, SimpMessageHeaderAccessor accessor) {
+        String username = Objects.requireNonNull(accessor.getUser()).getName();
+        log.info("receive:{} from user:{}", messageDto.toString(), username);
+        messageService.receiveMessage(messageDto, username);
     }
 }

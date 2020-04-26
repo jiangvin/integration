@@ -60,6 +60,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        ChannelRegistration channelRegistration = registration.setInterceptors(messageInterceptor);
+        registration.interceptors(messageInterceptor);
     }
 }
