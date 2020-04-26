@@ -2,8 +2,11 @@ package com.integration.socket.configuration;
 
 import com.integration.socket.factory.WebSocketDecoratorFactory;
 import com.integration.socket.handler.PrincipalHandshakeHandler;
+import com.integration.socket.interceptor.MessageInterceptor;
 import com.integration.socket.interceptor.WebSocketHandshakeInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -20,16 +23,18 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
+    private final MessageInterceptor messageInterceptor;
     private final WebSocketHandshakeInterceptor webSocketHandshakeInterceptor;
     private final PrincipalHandshakeHandler principalHandshakeHandler;
     private final WebSocketDecoratorFactory webSocketDecoratorFactory;
 
     public WebSocketConfiguration(PrincipalHandshakeHandler principalHandshakeHandler,
                                   WebSocketHandshakeInterceptor webSocketHandshakeInterceptor,
-                                  WebSocketDecoratorFactory webSocketDecoratorFactory) {
+                                  WebSocketDecoratorFactory webSocketDecoratorFactory, MessageInterceptor messageInterceptor) {
         this.principalHandshakeHandler = principalHandshakeHandler;
         this.webSocketHandshakeInterceptor = webSocketHandshakeInterceptor;
         this.webSocketDecoratorFactory = webSocketDecoratorFactory;
+        this.messageInterceptor = messageInterceptor;
     }
 
     /**
@@ -61,5 +66,10 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
         registration.addDecoratorFactory(webSocketDecoratorFactory);
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        ChannelRegistration channelRegistration = registration.setInterceptors(messageInterceptor);
     }
 }
