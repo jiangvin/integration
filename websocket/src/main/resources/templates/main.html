@@ -21,7 +21,11 @@
         <p>
             <label>当前人数:</label><label id="status">0</label>
         </p>
-        <label>信息</label><input type="text" id="msg" />
+        <label>对</label>
+        <select id="userSelector">
+            <option value="-1">所有人</option>
+        </select>
+        <label>说</label><input type="text" id="msg" />
         <button id="sendName" onclick="send();">发送</button>
         <p id="response"></p>
     </div>
@@ -29,6 +33,30 @@
 
 <script type="text/javascript">
     var stompClient = null;
+
+    function setSelectorItems(users) {
+        var selector = $('#userSelector')[0];
+        //除了第一个以外删除其他所有元素
+        var length = selector.options.length;
+        for (i = length-1; i > 0; --i) {
+            selector.options[i] = null;
+        }
+
+        for (i = 0; i < users.length; ++i) {
+            var opt = document.createElement('option');
+            opt.text = users[i];
+            opt.value = i;
+            selector.add(opt);
+        }
+    }
+
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
 
     function setConnected(connected) {
         document.getElementById('connect').disabled = connected;
@@ -63,9 +91,14 @@
     }
 
     function send() {
+        var selectOpt = $('#userSelector')[0].selectedOptions[0];
+        var sendTo = null;
+        if (selectOpt.value !== "-1") {
+            sendTo = selectOpt.text;
+        }
         var msg = $('#msg').val();
         // 客户端消息发送的目的：服务端使用BroadcastCtl中@MessageMapping("/receive")注解的方法来处理发送过来的消息
-        stompClient.send("/send", {}, JSON.stringify({ 'message': msg }));
+        stompClient.send("/send", {}, JSON.stringify({ 'message': msg, 'sendTo': sendTo }));
     }
 
     function receive(messageDto) {
@@ -88,8 +121,10 @@
     }
 
     function showStatus(message) {
+        var users = JSON.parse(message);
+        setSelectorItems(users);
         var status = $("#status");
-        status.html(message);
+        status.html(users.length);
     }
 
 </script>

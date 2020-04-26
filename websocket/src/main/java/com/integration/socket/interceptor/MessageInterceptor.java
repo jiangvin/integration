@@ -2,6 +2,7 @@ package com.integration.socket.interceptor;
 
 import com.integration.socket.service.MessageService;
 import com.integration.socket.service.OnlineUserService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
@@ -35,6 +36,7 @@ public class MessageInterceptor implements ChannelInterceptor {
         this.messageService = messageService;
     }
 
+    @SneakyThrows
     @Override
     public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
@@ -51,12 +53,12 @@ public class MessageInterceptor implements ChannelInterceptor {
             log.info("user:{} subscribe the path:{}", username, destination);
             if (TOPIC_PATH.equals(destination)) {
                 //新用户订阅了公共消息，这时候发送公共推送，确保新用户也能收到
-                messageService.sendUserStatusAndMessage(onlineUserService.getUserCount(), username, false);
+                messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, false);
             }
         } else if (StompCommand.DISCONNECT.equals(command)) {
             log.info("user:{} disconnected successfully!", username);
             onlineUserService.remove(username);
-            messageService.sendUserStatusAndMessage(onlineUserService.getUserCount(), username, true);
+            messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
         } else {
             log.info("user:{} send nonsupport command:{}", username, command);
         }

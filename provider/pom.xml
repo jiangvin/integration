@@ -16,7 +16,12 @@
     </parent>
 
     <dependencies>
-
+        <!--for utils-->
+        <dependency>
+            <groupId>com.integration</groupId>
+            <artifactId>util</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

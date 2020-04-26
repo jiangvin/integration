@@ -3,6 +3,8 @@ package com.integration.socket.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,7 +32,9 @@ public class OnlineUserService {
         return sessionMap.get(key);
     }
 
-    public int getUserCount() {
-        return sessionMap.size();
+    public List<String> getUserList() {
+        List<String> users = new ArrayList<>();
+        sessionMap.forEach((key, value) -> users.add(key));
+        return users;
     }
 }
