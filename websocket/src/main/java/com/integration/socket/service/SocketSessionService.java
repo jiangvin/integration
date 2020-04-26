@@ -1,12 +1,7 @@
 package com.integration.socket.service;
 
-import com.integration.socket.model.MessageDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,15 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @Slf4j
 public class SocketSessionService {
-    private ConcurrentHashMap<String, WebSocketSession> sessionMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> sessionMap = new ConcurrentHashMap<>();
 
-    @Autowired
-    @Lazy
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-    public void add(String key, WebSocketSession webSocketSession) {
+    public void add(String key, String sessionId) {
         log.info("add new session:{}", key);
-        sessionMap.put(key, webSocketSession);
+        sessionMap.put(key, sessionId);
     }
 
     public void remove(String key) {
@@ -35,13 +26,7 @@ public class SocketSessionService {
         sessionMap.remove(key);
     }
 
-    public WebSocketSession get(String key) {
+    public String get(String key) {
         return sessionMap.get(key);
-    }
-
-    public void sendStatusToAll() {
-        simpMessagingTemplate.convertAndSend(
-            "/topic/sendStatus",
-            new MessageDto(String.valueOf(sessionMap.size())));
     }
 }

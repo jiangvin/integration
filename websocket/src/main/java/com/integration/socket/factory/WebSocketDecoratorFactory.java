@@ -2,6 +2,7 @@ package com.integration.socket.factory;
 
 import com.integration.socket.service.SocketSessionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
@@ -27,21 +28,21 @@ public class WebSocketDecoratorFactory implements WebSocketHandlerDecoratorFacto
     }
 
     @Override
-    public WebSocketHandler decorate(WebSocketHandler handler) {
+    @NonNull
+    public WebSocketHandler decorate(@NonNull WebSocketHandler handler) {
         return new WebSocketHandlerDecorator(handler) {
             @Override
-            public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+            public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
                 Principal principal = session.getPrincipal();
                 if (principal != null) {
                     // 身份校验成功，缓存socket连接
-                    socketSessionService.add(principal.getName(), session);
+                    socketSessionService.add(principal.getName(), session.getId());
                 }
                 super.afterConnectionEstablished(session);
-                socketSessionService.sendStatusToAll();
             }
 
             @Override
-            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+            public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus closeStatus) throws Exception {
                 Principal principal = session.getPrincipal();
                 if (principal != null) {
                     // 身份校验成功，移除socket连接

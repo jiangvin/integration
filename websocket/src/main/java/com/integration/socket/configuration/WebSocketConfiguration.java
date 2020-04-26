@@ -1,7 +1,8 @@
 package com.integration.socket.configuration;
 
-import com.integration.socket.handler.PrincipalHandshakeHandler;
 import com.integration.socket.factory.WebSocketDecoratorFactory;
+import com.integration.socket.handler.PrincipalHandshakeHandler;
+import com.integration.socket.interceptor.WebSocketHandshakeInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -19,12 +20,16 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketDecoratorFactory webSocketDecoratorFactory;
+    private final WebSocketHandshakeInterceptor webSocketHandshakeInterceptor;
     private final PrincipalHandshakeHandler principalHandshakeHandler;
+    private final WebSocketDecoratorFactory webSocketDecoratorFactory;
 
-    public WebSocketConfiguration(WebSocketDecoratorFactory webSocketDecoratorFactory, PrincipalHandshakeHandler principalHandshakeHandler) {
-        this.webSocketDecoratorFactory = webSocketDecoratorFactory;
+    public WebSocketConfiguration(PrincipalHandshakeHandler principalHandshakeHandler,
+                                  WebSocketHandshakeInterceptor webSocketHandshakeInterceptor,
+                                  WebSocketDecoratorFactory webSocketDecoratorFactory) {
         this.principalHandshakeHandler = principalHandshakeHandler;
+        this.webSocketHandshakeInterceptor = webSocketHandshakeInterceptor;
+        this.webSocketDecoratorFactory = webSocketDecoratorFactory;
     }
 
     /**
@@ -39,6 +44,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.addEndpoint("/websocket-simple")
         .setAllowedOrigins("*")
         .setHandshakeHandler(principalHandshakeHandler)
+        .addInterceptors(webSocketHandshakeInterceptor)
         .withSockJS();
     }
 
@@ -52,8 +58,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.setUserDestinationPrefix("/user");
     }
 
-//    @Override
-//    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-//        registration.addDecoratorFactory(webSocketDecoratorFactory);
-//    }
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.addDecoratorFactory(webSocketDecoratorFactory);
+    }
 }
