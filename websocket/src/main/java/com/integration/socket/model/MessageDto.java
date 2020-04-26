@@ -15,4 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageDto {
     private String message;
+
+    private MessageType messageType = MessageType.USER_MESSAGE;
 }
