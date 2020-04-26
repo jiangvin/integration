@@ -1,6 +1,6 @@
 package com.integration.socket.interceptor;
 
-import com.integration.socket.service.SocketSessionService;
+import com.integration.socket.service.OnlineUserService;
 import com.integration.util.exception.ExceptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
@@ -25,10 +25,10 @@ import java.util.Map;
 @Slf4j
 public class WebSocketHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 
-    private final SocketSessionService socketSessionService;
+    private final OnlineUserService onlineUserService;
 
-    public WebSocketHandshakeInterceptor(SocketSessionService socketSessionService) {
-        this.socketSessionService = socketSessionService;
+    public WebSocketHandshakeInterceptor(OnlineUserService onlineUserService) {
+        this.onlineUserService = onlineUserService;
     }
 
 
@@ -44,7 +44,7 @@ public class WebSocketHandshakeInterceptor extends HttpSessionHandshakeIntercept
             throw new ExceptionUtil.BadRequestException(ExceptionUtil.Type.INVALID_USER_NAME);
         }
 
-        if (socketSessionService.get(name) != null) {
+        if (onlineUserService.get(name) != null) {
             throw new ExceptionUtil.ForbiddenException(ExceptionUtil.Type.USER_NAME_ALREADY_EXISTS);
         }
         return super.beforeHandshake(request, response, webSocketHandler, attributes);

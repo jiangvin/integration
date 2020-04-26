@@ -1,6 +1,8 @@
 package com.integration.socket.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,8 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
-public class SocketSessionService {
+public class OnlineUserService {
     private ConcurrentHashMap<String, String> sessionMap = new ConcurrentHashMap<>();
+
+    @Lazy
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public void add(String key, String sessionId) {
         log.info("add new session:{}", key);

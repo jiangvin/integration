@@ -1,6 +1,6 @@
 package com.integration.socket.factory;
 
-import com.integration.socket.service.SocketSessionService;
+import com.integration.socket.service.OnlineUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -21,10 +21,10 @@ import java.security.Principal;
 @Slf4j
 public class WebSocketDecoratorFactory implements WebSocketHandlerDecoratorFactory {
 
-    private final SocketSessionService socketSessionService;
+    private final OnlineUserService onlineUserService;
 
-    public WebSocketDecoratorFactory(SocketSessionService socketSessionService) {
-        this.socketSessionService = socketSessionService;
+    public WebSocketDecoratorFactory(OnlineUserService onlineUserService) {
+        this.onlineUserService = onlineUserService;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class WebSocketDecoratorFactory implements WebSocketHandlerDecoratorFacto
                 Principal principal = session.getPrincipal();
                 if (principal != null) {
                     // 身份校验成功，缓存socket连接
-                    socketSessionService.add(principal.getName(), session.getId());
+                    onlineUserService.add(principal.getName(), session.getId());
                 }
                 super.afterConnectionEstablished(session);
             }
@@ -46,7 +46,7 @@ public class WebSocketDecoratorFactory implements WebSocketHandlerDecoratorFacto
                 Principal principal = session.getPrincipal();
                 if (principal != null) {
                     // 身份校验成功，移除socket连接
-                    socketSessionService.remove(principal.getName());
+                    onlineUserService.remove(principal.getName());
                 }
                 super.afterConnectionClosed(session, closeStatus);
             }

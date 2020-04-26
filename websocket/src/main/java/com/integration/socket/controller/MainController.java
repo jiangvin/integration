@@ -1,7 +1,7 @@
 package com.integration.socket.controller;
 
 import com.integration.socket.model.MessageDto;
-import com.integration.socket.service.SocketSessionService;
+import com.integration.socket.service.OnlineUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainController {
 
     @Autowired
-    private SocketSessionService socketSessionService;
+    private OnlineUserService onlineUserService;
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
