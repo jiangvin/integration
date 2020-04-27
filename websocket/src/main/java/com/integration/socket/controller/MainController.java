@@ -29,6 +29,7 @@ public class MainController {
 
     @GetMapping("/")
     public ModelAndView helloWorld() {
+        log.info("request main view");
         ModelAndView mav = new ModelAndView();
         mav.setViewName("main");
         mav.getModel().put("name", "Hello World!");

@@ -12,7 +12,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.security.Principal;
 
 import static com.integration.socket.service.MessageService.TOPIC_PATH;
 
@@ -40,9 +40,14 @@ public class MessageInterceptor implements ChannelInterceptor {
     @Override
     public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String username = Objects.requireNonNull(accessor.getUser()).getName();
         StompCommand command = accessor.getCommand();
+        Principal principal = accessor.getUser();
+        if (principal == null || principal.getName() == null) {
+            log.warn("can not get username from command:{}", command);
+            return;
+        }
 
+        String username = principal.getName();
         if (StompCommand.CONNECT.equals(command)) {
             //有新用户加入
             log.info("user:{} connected successfully!", username);
