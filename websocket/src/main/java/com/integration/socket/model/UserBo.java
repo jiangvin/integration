@@ -24,6 +24,6 @@ public class UserBo {
      * @return 如果订阅了TOPIC_PATH和QUEUE_PATH则算完成了订阅
      */
     public boolean isFinishSubscribe() {
-        return subscribeList.contains(MessageService.TOPIC_PATH) && subscribeList.contains(MessageService.QUEUE_PATH);
+        return subscribeList.contains(MessageService.TOPIC_PATH) && subscribeList.contains("/user" + MessageService.QUEUE_PATH);
     }
 }

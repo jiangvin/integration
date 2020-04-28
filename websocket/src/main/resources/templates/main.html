@@ -62,6 +62,7 @@
         document.getElementById('connect').disabled = connected;
         document.getElementById('disconnect').disabled = !connected;
         document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+        $("#status")[0].textContent = "0";
         $('#response').html();
     }
 
@@ -80,6 +81,17 @@
                 receive(JSON.parse(response.body));
             });
         });
+
+        //有可能因为异步时间差导致没有收到消息
+        //showStatus(httpGet("/users"));
+    }
+
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl);
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
     }
 
     function disconnect() {

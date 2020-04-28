@@ -2,13 +2,17 @@ package com.integration.socket.controller;
 
 import com.integration.socket.model.MessageDto;
 import com.integration.socket.service.MessageService;
+import com.integration.socket.service.OnlineUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,10 +25,13 @@ import java.util.Objects;
 @Controller("/")
 public class MainController {
 
+
+    private final OnlineUserService onlineUserService;
     private final MessageService messageService;
 
-    public MainController(MessageService messageService) {
+    public MainController(MessageService messageService, OnlineUserService onlineUserService) {
         this.messageService = messageService;
+        this.onlineUserService = onlineUserService;
     }
 
     @GetMapping("/")
@@ -34,6 +41,13 @@ public class MainController {
         mav.setViewName("main");
         mav.getModel().put("name", "Hello World!");
         return mav;
+    }
+
+    @GetMapping("/users")
+    @ResponseBody
+    public List<String> getUsers() {
+        log.info("request users");
+        return onlineUserService.getUserList();
     }
 
     @GetMapping("/fruit")

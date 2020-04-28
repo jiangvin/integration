@@ -23,7 +23,7 @@ public class MessageService {
 
     public static final String TOPIC_PATH = "/topic/send";
 
-    public static final String QUEUE_PATH = "queue/send";
+    public static final String QUEUE_PATH = "/queue/send";
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
