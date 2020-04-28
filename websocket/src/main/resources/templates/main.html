@@ -5,11 +5,11 @@
     <title th:text="${name}"></title>
 </head>
 <!-- jquery  -->
-<script src="static/js/jquery.js"></script>
+<script src="/js/jquery.js"></script>
 <!-- stomp协议的客户端脚本 -->
-<script src="static/js/stomp.js"></script>
+<script src="/js/stomp.js"></script>
 <!-- SockJS的客户端脚本 -->
-<script src="static/js/sockjs.js"></script>
+<script src="/js/sockjs.js"></script>
 <body onload="disconnect()">
 <div>
     <div>
@@ -19,7 +19,9 @@
     </div>
     <div id="conversationDiv">
         <p>
-            <label>当前人数:</label><label id="status">0</label>
+            <label>当前人数:</label>
+            <label id="status">0</label>
+            <button onclick="refreshStatus();">刷新</button>
         </p>
         <label>对</label>
         <select id="userSelector">
@@ -50,12 +52,10 @@
         }
     }
 
-    function httpGet(theUrl)
-    {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-        xmlHttp.send( null );
-        return xmlHttp.responseText;
+    function refreshStatus() {
+        $.getJSON('/users', function(data) {
+            showStatus(data);
+        });
     }
 
     function setConnected(connected) {
@@ -81,17 +81,6 @@
                 receive(JSON.parse(response.body));
             });
         });
-
-        //有可能因为异步时间差导致没有收到消息
-        //showStatus(httpGet("/users"));
-    }
-
-    function httpGet(theUrl)
-    {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl);
-        xmlHttp.send( null );
-        return xmlHttp.responseText;
     }
 
     function disconnect() {
@@ -116,7 +105,7 @@
     function receive(messageDto) {
         switch (messageDto.messageType) {
             case "USER_COUNT":
-                showStatus(messageDto.message);
+                showStatus(JSON.parse(messageDto.message));
                 break;
             case "SYSTEM_MESSAGE":
                 showMessage(messageDto.message, "color: red");
@@ -132,8 +121,7 @@
         response.html("<p style='" + style +  ";'>" + message + "</p>" + response.html());
     }
 
-    function showStatus(message) {
-        var users = JSON.parse(message);
+    function showStatus(users) {
         setSelectorItems(users);
         var status = $("#status");
         status.html(users.length);
