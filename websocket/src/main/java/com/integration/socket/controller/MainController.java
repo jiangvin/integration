@@ -36,6 +36,14 @@ public class MainController {
         return mav;
     }
 
+    @GetMapping("/fruit")
+    public ModelAndView fruitGame() {
+        log.info("request fruit view");
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("fruit");
+        return mav;
+    }
+
     /**
      * MessageMapping：指定要接收消息的地址，类似@RequestMapping
      * SendTo: 默认消息将被发送到与传入消息相同的目的地，但是目的地前面附加前缀（默认情况下为“/topic”}
