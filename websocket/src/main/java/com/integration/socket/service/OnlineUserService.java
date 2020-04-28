@@ -1,5 +1,6 @@
 package com.integration.socket.service;
 
+import com.integration.socket.model.UserBo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +17,23 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @Slf4j
 public class OnlineUserService {
-    private ConcurrentHashMap<String, String> sessionMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, UserBo> sessionMap = new ConcurrentHashMap<>();
 
     public void add(String key, String sessionId) {
-        sessionMap.put(key, sessionId);
+        sessionMap.put(key, new UserBo(key, sessionId));
         log.info("add new session:{}({})", key, sessionMap.size());
     }
 
-    public void remove(String key) {
+    public boolean remove(String key) {
+        if (!sessionMap.containsKey(key)) {
+            return false;
+        }
         sessionMap.remove(key);
         log.info("remove session:{}({})", key, sessionMap.size());
+        return true;
     }
 
-    public String get(String key) {
+    public UserBo get(String key) {
         return sessionMap.get(key);
     }
 

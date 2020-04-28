@@ -1,5 +1,6 @@
 package com.integration.socket.interceptor;
 
+import com.integration.socket.model.UserBo;
 import com.integration.socket.service.MessageService;
 import com.integration.socket.service.OnlineUserService;
 import lombok.SneakyThrows;
@@ -13,8 +14,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
-
-import static com.integration.socket.service.MessageService.TOPIC_PATH;
 
 /**
  * @author 蒋文龙(Vin)
@@ -43,29 +42,42 @@ public class MessageInterceptor implements ChannelInterceptor {
         StompCommand command = accessor.getCommand();
         Principal principal = accessor.getUser();
         if (principal == null || principal.getName() == null) {
-            log.warn("can not get username from command:{}", command);
             return;
         }
 
         String username = principal.getName();
         if (StompCommand.CONNECT.equals(command)) {
+
             //有新用户加入
-            log.info("user:{} connected successfully!", username);
+            log.info("user:{} try to connect...", username);
             onlineUserService.add(username, accessor.getSessionId());
         } else if (StompCommand.SUBSCRIBE.equals(command)) {
+
             //新用户订阅了消息
+            if (onlineUserService.get(username) == null) {
+                return;
+            }
+
+            UserBo userBo = onlineUserService.get(username);
             String destination = accessor.getDestination();
-            log.info("user:{} subscribe the path:{}", username, destination);
-            if (TOPIC_PATH.equals(destination)) {
-                //新用户订阅了公共消息，这时候发送公共推送，确保新用户也能收到
+            log.info("user:{} try to subscribe the path:{}...", username, destination);
+            userBo.getSubscribeList().add(destination);
+
+            //新用户订阅了公共消息，这时候发送公共推送，确保新用户也能收到
+            if (userBo.isFinishSubscribe()) {
                 messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, false);
             }
         } else if (StompCommand.DISCONNECT.equals(command)) {
-            log.info("user:{} disconnected successfully!", username);
-            onlineUserService.remove(username);
+
+            //用户离开
+            if (!onlineUserService.remove(username)) {
+                return;
+            }
+
+            log.info("user:{} try to disconnected...", username);
             messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
         } else {
-            log.info("user:{} send nonsupport command:{}", username, command);
+            log.info("user:{} send nonsupport command:{}...", username, command);
         }
     }
 }
