@@ -40,6 +40,11 @@ public class HealthCheckService {
     }
 
     public void start() {
+        if (!DbUtils.checkInstance()) {
+            log.info("other instance process this job, close it!");
+            return;
+        }
+
         List<Service> services = DbUtils.queryServices();
         if (services.isEmpty()) {
             throw new CustomException(CustomExceptionType.NO_DATA, "找不到服务数据!");

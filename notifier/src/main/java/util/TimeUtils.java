@@ -24,6 +24,10 @@ public class TimeUtils {
         return new Timestamp(System.currentTimeMillis());
     }
 
+    public static Timestamp getTimeWithOffset(long millis) {
+        return new Timestamp(System.currentTimeMillis() + millis);
+    }
+
     public static String getTimeStr(Timestamp start, Timestamp end) {
         long durationSeconds = (end.getTime() - start.getTime()) / 1000;
 

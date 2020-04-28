@@ -31,11 +31,21 @@ public class PropertyUtils {
         propertyMap.put("interval", "3");
         propertyMap.put("startHour", "9");
         propertyMap.put("endHour", "22");
+        propertyMap.put("instanceId", "default-bot");
+        propertyMap.put("priority", "1");
     }
 
     public static final int MIN_PUSH_FOR_ERROR_COUNT = 3;
 
     public static final int MAX_PUSH_FOR_ERROR_COUNT = MIN_PUSH_FOR_ERROR_COUNT * 7 - 1;
+
+    public static String getInstanceId() {
+        return propertyUtils.propertyMap.get("instanceId");
+    }
+
+    public static int getPriority() {
+        return convertPropertyStrToInt("priority", 1);
+    }
 
     public static int getInterval() {
         return convertPropertyStrToInt("interval", 3);

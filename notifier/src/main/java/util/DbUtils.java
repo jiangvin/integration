@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,38 @@ public class DbUtils {
             statement = connection.createStatement();
         } catch (Exception e) {
             log.error("sql connection error:", e);
+        }
+    }
+
+    public static boolean checkInstance() {
+        if (PropertyUtils.isDebug()) {
+            return true;
+        }
+
+        try {
+            //时间上乘110，多算一些，排除几秒内的时间差
+            int update = dbUtils.statement.executeUpdate(format("INSERT INTO check_instance (instance_id, priority, description) " +
+                                                                "select '{0}', {1}, 'running' from dual where not exists (select instance_id from check_instance " +
+                                                                "where update_time >= '{2}' and (priority <= {1} or description = 'running') and instance_id != '{0}') " +
+                                                                "ON DUPLICATE KEY UPDATE priority = {1}, description = 'running', update_time = current_timestamp();",
+                                                                PropertyUtils.getInstanceId(),
+                                                                PropertyUtils.getPriority(),
+                                                                format(TimeUtils.getTimeWithOffset((long)(PropertyUtils.getInterval() * 60000 * 1.1 * -1)))));
+            if (update != 0) {
+                return true;
+            }
+
+            //被其他服务占用了，只做记录
+            dbUtils.statement.executeUpdate(format("INSERT INTO check_instance " +
+                                                   "(instance_id, priority, description) VALUES " +
+                                                   "('{0}', {1}, 'waiting') " +
+                                                   "ON DUPLICATE KEY UPDATE " +
+                                                   "priority = {1}, description = 'waiting', update_time = current_timestamp();",
+                                                   PropertyUtils.getInstanceId(), PropertyUtils.getPriority()));
+            return false;
+        } catch (Exception e) {
+            log.error("sql connection error:", e);
+            return false;
         }
     }
 
@@ -194,5 +228,13 @@ public class DbUtils {
     protected void finalize() throws SQLException {
         statement.close();
         connection.close();
+    }
+
+    private static String format(String key, Object...args) {
+        return MessageFormat.format(key.replace("'", "''"), args);
+    }
+
+    private static String format(Timestamp timestamp) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(timestamp);
     }
 }
