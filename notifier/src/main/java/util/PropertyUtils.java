@@ -3,6 +3,10 @@ package util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +35,6 @@ public class PropertyUtils {
         propertyMap.put("interval", "3");
         propertyMap.put("startHour", "9");
         propertyMap.put("endHour", "22");
-        propertyMap.put("instanceId", "default-bot");
         propertyMap.put("priority", "1");
     }
 
@@ -40,7 +43,27 @@ public class PropertyUtils {
     public static final int MAX_PUSH_FOR_ERROR_COUNT = MIN_PUSH_FOR_ERROR_COUNT * 7 - 1;
 
     public static String getInstanceId() {
-        return propertyUtils.propertyMap.get("instanceId");
+        return propertyUtils.propertyMap.getOrDefault("instanceId", generateInstanceId());
+    }
+
+    private static String generateInstanceId() {
+        try {
+            Enumeration allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+            InetAddress ip;
+            while (allNetInterfaces.hasMoreElements()) {
+                NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
+                Enumeration addresses = netInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    ip = (InetAddress) addresses.nextElement();
+                    if (ip instanceof Inet4Address && !ip.getHostAddress().startsWith("127.")) {
+                        return "bot-" + ip.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error("generate ip error:", ex);
+        }
+        return "bot-default";
     }
 
     public static int getPriority() {

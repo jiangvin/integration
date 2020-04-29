@@ -50,7 +50,7 @@ public class DbUtils {
             //时间上乘110，多算一些，排除几秒内的时间差
             int update = dbUtils.statement.executeUpdate(format("INSERT INTO check_instance (instance_id, priority, description) " +
                                                                 "select '{0}', {1}, 'running' from dual where not exists (select instance_id from check_instance " +
-                                                                "where update_time >= '{2}' and (priority <= {1} or description = 'running') and instance_id != '{0}') " +
+                                                                "where update_time >= '{2}' and (priority < {1} or description = 'running') and instance_id != '{0}') " +
                                                                 "ON DUPLICATE KEY UPDATE priority = {1}, description = 'running', update_time = current_timestamp();",
                                                                 PropertyUtils.getInstanceId(),
                                                                 PropertyUtils.getPriority(),
