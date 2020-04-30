@@ -1,0 +1,48 @@
+
+
+function Stage(params) {
+    this.params = params||{};
+    this.settings = {
+        index:0,                        //布景索引
+        status:0,						//布景状态,0表示未激活/结束,1表示正常,2表示暂停,3表示临时,4表示异常
+        items:[],						//对象队列
+        timeout:0,						//倒计时(用于过程动画状态判断)
+    };
+    Common.extend(this,this.settings,this.params);
+
+    this.draw = function(context) {
+        this.items.forEach(function (item) {
+            item.draw(context)
+        });
+    };
+
+    //更新相关
+    this.canUpdate = function() {
+        return this.status === 1;
+    };
+    this.update = function() {
+        if (!this.canUpdate()) {
+            return;
+        }
+
+        this.items.forEach(function (item) {
+            if (item.canUpdate()) {
+                item.update();
+            }
+        });
+    };
+
+    this.createItem = function(options) {
+        const item = new Item(options);
+        //关系绑定
+        item.stage = this;
+        item.index = this.items.length;
+        this.items.push(item);
+        return item;
+    };
+
+    //事件绑定
+    this.bind = function(eventType, callback) {
+        window.addEventListener(eventType,callback);
+    }
+}

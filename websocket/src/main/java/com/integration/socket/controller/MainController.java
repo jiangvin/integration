@@ -4,7 +4,6 @@ import com.integration.socket.model.MessageDto;
 import com.integration.socket.service.MessageService;
 import com.integration.socket.service.OnlineUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
@@ -36,7 +35,6 @@ public class MainController {
 
     @GetMapping("/")
     public ModelAndView helloWorld() {
-        log.info("request main view");
         ModelAndView mav = new ModelAndView();
         mav.setViewName("main");
         mav.getModel().put("name", "Hello World!");
@@ -50,11 +48,10 @@ public class MainController {
         return onlineUserService.getUserList();
     }
 
-    @GetMapping("/fruit")
+    @GetMapping("/tank")
     public ModelAndView fruitGame() {
-        log.info("request fruit view");
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("fruit");
+        mav.setViewName("index");
         return mav;
     }
 
