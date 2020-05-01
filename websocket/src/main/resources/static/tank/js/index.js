@@ -116,18 +116,17 @@
 			}
 
 			//开始连接
-			const socket = new SockJS('/websocket-simple?name=' + name);
-			stompClient = Stomp.over(socket);
+			stompClient = Common.getOrCreateStompClient(name);
 			stompClient.connect({}, function(frame) {
 				Common.addMessage("网络连接中: " + frame,"#ffffff");
 
 				stage.updateAfterConnect(name);
 				// 客户端订阅消息, 公共消息和私有消息
 				stompClient.subscribe('/topic/send', function (response) {
-					// receive(JSON.parse(response.body));
+					Common.receiveWebSocket(JSON.parse(response.body));
 				});
 				stompClient.subscribe('/user/queue/send', function (response) {
-					// receive(JSON.parse(response.body));
+					Common.receiveWebSocket(JSON.parse(response.body));
 				});
 			});
 		});

@@ -100,7 +100,7 @@ Common.inputBindMessageControl = function() {
             //关闭输入框前先处理文字信息
             const text = input.val();
             if (text !== "") {
-                Common.addMessage(text,"#FFF");
+                _stompClient.send("/send", {}, JSON.stringify({ 'message': text }));
                 input.val("");
             }
             _inputEnable = !_inputEnable;
@@ -113,6 +113,29 @@ Common.inputBindMessageControl = function() {
         }
 
     });
+};
+
+//网络通信
+let _stompClient;
+Common.getOrCreateStompClient = function(name) {
+    if (!_stompClient) {
+        const socket = new SockJS('/websocket-simple?name=' + name);
+        _stompClient = Stomp.over(socket);
+    }
+    return _stompClient;
+};
+Common.receiveWebSocket = function(messageDto) {
+    switch (messageDto.messageType) {
+        case "USER_MESSAGE":
+            Common.addMessage(messageDto.message, "#FFF");
+            break;
+        case "SYSTEM_MESSAGE":
+            Common.addMessage(messageDto.message, "#FF0");
+            break;
+        default:
+            //todo 下发到具体stage里面
+            break;
+    }
 };
 
 //测试类

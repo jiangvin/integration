@@ -84,7 +84,7 @@ function Game() {
     //显示消息
     this.drawMessage = function (context) {
         let height = Common.height() - 40;
-        context.font = '14px Helvetica';
+        context.font = '16px Helvetica';
         context.textAlign = 'left';
         context.textBaseline = 'bottom';
         Common.messages().forEach(function (message) {
@@ -94,7 +94,7 @@ function Game() {
             context.globalAlpha = (message.lifetime / 300);
             context.fillStyle = message.color;
             context.fillText(message.context,25,height);
-            height -= 15;
+            height -= 18;
         });
         context.globalAlpha = 1;
         if (Common.messages().length !== 0 && Common.messages()[0].lifetime <= 0) {

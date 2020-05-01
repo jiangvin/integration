@@ -79,9 +79,15 @@ public class MessageService {
 
         sendMessage(new MessageDto(objectMapper.writeValueAsString(users), MessageType.USER_COUNT));
         if (isLeave) {
-            sendMessage(new MessageDto(username + "离开了!", MessageType.SYSTEM_MESSAGE));
+            sendMessage(new MessageDto(String.format("%s 离开了!,当前人数: %d",
+                                                     username,
+                                                     users.size()),
+                                       MessageType.SYSTEM_MESSAGE));
         } else {
-            sendMessage(new MessageDto(username + "加入了!", MessageType.SYSTEM_MESSAGE));
+            sendMessage(new MessageDto(String.format("%s 加入了!,当前人数: %d",
+                                                     username,
+                                                     users.size()),
+                                       MessageType.SYSTEM_MESSAGE));
         }
     }
 }
