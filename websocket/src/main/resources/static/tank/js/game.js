@@ -93,7 +93,7 @@ function Game() {
             }
             context.globalAlpha = (message.lifetime / 300);
             context.fillStyle = message.color;
-            context.fillText(message.context,25,height);
+            context.fillText("[" + message.date.format("hh:mm:ss") + "] " + message.context,25,height);
             height -= 18;
         });
         context.globalAlpha = 1;
