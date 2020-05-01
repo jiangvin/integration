@@ -8,8 +8,13 @@ function Game() {
     const canvas = Common.getCanvas();
     const context = Common.getContext();
 
+    const thisGame = this;
+
     //帧率相关
     let _framesPerSecond = 60;
+
+    //定时触发器类
+    let _events = [];
 
     //用户类
     let _users = [];
@@ -28,7 +33,6 @@ function Game() {
     let _handler;
 
     //网络连接
-    let thisGame = this;
     this.getStompClient = function () {
         return _stompClient;
     };
@@ -46,6 +50,8 @@ function Game() {
                 thisGame.receiveFromServer(JSON.parse(response.body));
             });
         });
+
+        thisGame.addEvent("USER_CHECK");
     };
     this.receiveFromServer = function(messageDto) {
         switch (messageDto.messageType) {
@@ -69,7 +75,6 @@ function Game() {
         let totalFrames = 0;
         let lastFrames = 0;
         let lastDate = Date.now();
-        const thisGame = this;
         const step = function () {
 
             //计算帧数
@@ -86,13 +91,9 @@ function Game() {
             context.fillStyle = '#2b2b2b';
             context.fillRect(0, 0, canvas.width, canvas.height);
 
+            thisGame.updateEvents();
+
             const stage = thisGame.currentStage();
-
-            //这里迟早会删掉
-            if (stage.timeout) {
-                stage.timeout--;
-            }
-
             stage.update();
             stage.draw(context);
 
@@ -155,6 +156,43 @@ function Game() {
         //消息全部过期，清除
         if (_messages.length !== 0 && _messages[0].lifetime <= 0) {
             _messages = [];
+        }
+    };
+
+    //事件类
+    this.addEvent = function (eventType,timeout) {
+        let event = {};
+        event.eventType = eventType;
+        event.timeout = timeout ? timeout : 100; //默认100帧倒计时，不到1.5秒
+        console.log("add event:" + event.eventType + " timeout:" + event.timeout);
+        _events.push(event);
+    };
+    this.updateEvents = function () {
+        for (let i = 0; i < _events.length; ++i) {
+            const event = _events[i];
+            if (event.timeout > 0) {
+                --event.timeout;
+            } else {
+                thisGame.processEvent(event);
+                //删除事件
+                _events.splice(i,1);
+                --i;
+            }
+        }
+    };
+    this.processEvent = function (event) {
+        console.log("process event:" + event.eventType);
+        switch (event.eventType) {
+            case "USER_CHECK":
+                if (_users.length === 0) {
+                    $.ajaxSettings.async = true; //异步执行
+                    $.getJSON('/user/getAll', function(result) {
+                        _users = result;
+                    });
+                }
+                break;
+            default:
+                break;
         }
     };
 
