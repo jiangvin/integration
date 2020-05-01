@@ -73,6 +73,13 @@ Common.getInputText = function() {
 Common.inputEnable = function(enable) {
     document.getElementById('input').style.visibility = enable ? 'visible' : 'hidden';
 };
+Common.inputResize = function() {
+    const input = $('#input');
+    input.attr("placeholder","请输入信息");
+    input.val("");
+    input.removeClass("input-name");
+    input.addClass("input-message");
+};
 
 //测试类
 Common.images = function() {

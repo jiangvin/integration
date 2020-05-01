@@ -17,20 +17,28 @@ canvas {
 input {
     position: absolute;
     color: #5E6C77;
-    left: 40%;
-    top: 70px;
-    width: 20%;
-    text-align: center;
     border: 2px solid #5E6C77;
     font-size: 1.5em;
     padding: .1em;
     border-radius: .25em;
     background: transparent;
+    text-align: center;
 }
 input:focus {
     outline: none;
     color: #A2ACB3;
     border-color: #A2ACB3;
+    text-align: center;
+}
+input.input-name {
+    left: 40%;
+    top: 70px;
+    width: 20%;
+}
+input.input-message {
+    left: 15%;
+    top: 80%;
+    width: 70%;
 }
 
 button {
