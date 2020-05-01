@@ -1,6 +1,6 @@
 //主程序,业务逻辑
 (function() {
-	const game = new Game('canvas');
+	const game = Common.getGame();
 	//启动页
 	(function() {
 		const stage = game.createStage({
@@ -98,7 +98,7 @@
 
         	//检测是否输入名字
         	if (name === "") {
-        		Common.addMessage("名字不能为空!","#ff0000");
+        		game.addMessage("名字不能为空!","#ff0000");
         		return;
 			}
 
@@ -108,7 +108,7 @@
 			$.getJSON('/user/checkName?name=' + name, function(result) {
 				success = result.success;
 				if (!result.success) {
-					Common.addMessage(result.message, "#ff0000");
+					game.addMessage(result.message, "#ff0000");
 				}
 			});
 			if (!success) {
@@ -116,19 +116,9 @@
 			}
 
 			//开始连接
-			stompClient = Common.getOrCreateStompClient(name);
-			stompClient.connect({}, function(frame) {
-				Common.addMessage("网络连接中: " + frame,"#ffffff");
+			game.clientConnect(name);
 
-				stage.updateAfterConnect(name);
-				// 客户端订阅消息, 公共消息和私有消息
-				stompClient.subscribe('/topic/send', function (response) {
-					Common.receiveWebSocket(JSON.parse(response.body));
-				});
-				stompClient.subscribe('/user/queue/send', function (response) {
-					Common.receiveWebSocket(JSON.parse(response.body));
-				});
-			});
+			stage.updateAfterConnect(name);
 		});
 
         stage.updateAfterConnect = function (name) {

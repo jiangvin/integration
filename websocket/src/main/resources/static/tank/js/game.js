@@ -11,6 +11,12 @@ function Game() {
     //帧率相关
     let _framesPerSecond = 60;
 
+    //左下角消息类
+    let _messages = [];
+
+    //webSocket网络通信
+    let _stompClient;
+
     //布景相关
     const _stages = [];
     const _index = 0;
@@ -18,7 +24,41 @@ function Game() {
     //帧动画控制
     let _handler;
 
-    //动画开始
+    //网络连接
+    let thisGame = this;
+    this.getStompClient = function () {
+        return _stompClient;
+    };
+    this.clientConnect = function (name) {
+        const socket = new SockJS('/websocket-simple?name=' + name);
+        _stompClient = Stomp.over(socket);
+        _stompClient.connect({}, function(frame) {
+            thisGame.addMessage("网络连接中: " + frame,"#ffffff");
+
+            // 客户端订阅消息, 公共消息和私有消息
+            _stompClient.subscribe('/topic/send', function (response) {
+                thisGame.receiveWebSocket(JSON.parse(response.body));
+            });
+            _stompClient.subscribe('/user/queue/send', function (response) {
+                thisGame.receiveWebSocket(JSON.parse(response.body));
+            });
+        });
+    };
+    this.receiveWebSocket = function(messageDto) {
+        switch (messageDto.messageType) {
+            case "USER_MESSAGE":
+                thisGame.addMessage(messageDto.message, "#FFF");
+                break;
+            case "SYSTEM_MESSAGE":
+                thisGame.addMessage(messageDto.message, "#FF0");
+                break;
+            default:
+                //todo 下发到具体stage里面
+                break;
+        }
+    };
+
+    //动画相关
     this.start = function() {
         let totalFrames = 0;
         let lastFrames = 0;
@@ -57,7 +97,6 @@ function Game() {
         };
         _handler = requestAnimationFrame(step);
     };
-    //动画结束
     this.stop = function(){
         _handler && cancelAnimationFrame(_handler);
     };
@@ -81,13 +120,21 @@ function Game() {
       return _stages[_index];
     };
 
-    //显示消息
+    //消息类
+    this.addMessage = function (context,color) {
+        let message = {};
+        message.date = new Date();
+        message.lifetime = 300; //显示时间300帧，5秒
+        message.context = context;
+        message.color = color;
+        _messages.unshift(message); //塞在头部
+    };
     this.drawMessage = function (context) {
         let height = Common.height() - 40;
         context.font = '16px Helvetica';
         context.textAlign = 'left';
         context.textBaseline = 'bottom';
-        Common.messages().forEach(function (message) {
+        _messages.forEach(function (message) {
             if (message.lifetime > 0) {
                 message.lifetime -= 1;
             }
@@ -96,11 +143,15 @@ function Game() {
             context.fillText("[" + message.date.format("hh:mm:ss") + "] " + message.context,25,height);
             height -= 18;
         });
+
         context.globalAlpha = 1;
-        if (Common.messages().length !== 0 && Common.messages()[0].lifetime <= 0) {
-            Common.clearMessages();
+
+        //消息全部过期，清除
+        if (_messages.length !== 0 && _messages[0].lifetime <= 0) {
+            _messages = [];
         }
     };
+
     //显示版权信息和帧率信息
     this.drawInfo = function (context) {
         //版权信息

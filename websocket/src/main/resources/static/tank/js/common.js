@@ -8,6 +8,14 @@ Common.extend = function(target, settings, params) {
     return target;
 };
 
+let _game;
+Common.getGame = function() {
+    if (!_game) {
+        _game = new Game("canvas");
+    }
+    return _game;
+};
+
 let _canvas;
 Common.getCanvas = function() {
     if (!_canvas) {
@@ -36,22 +44,6 @@ Common.getContext = function() {
         _context = canvas.getContext('2d');
     }
     return _context;
-};
-
-let _messages = [];
-Common.addMessage = function(context, color) {
-    let message = {};
-    message.date = new Date();
-    message.lifetime = 300; //显示时间300帧，5秒
-    message.context = context;
-    message.color = color;
-    _messages.unshift(message); //塞在头部
-};
-Common.messages = function() {
-    return _messages;
-};
-Common.clearMessages = function() {
-    _messages = [];
 };
 
 //按钮
@@ -101,7 +93,7 @@ Common.inputBindMessageControl = function() {
             //关闭输入框前先处理文字信息
             const text = input.val();
             if (text !== "") {
-                _stompClient.send("/send", {}, JSON.stringify({ 'message': text }));
+                Common.getGame().getStompClient().send("/send", {}, JSON.stringify({ 'message': text }));
                 input.val("");
             }
             _inputEnable = !_inputEnable;
@@ -114,29 +106,6 @@ Common.inputBindMessageControl = function() {
         }
 
     });
-};
-
-//网络通信
-let _stompClient;
-Common.getOrCreateStompClient = function(name) {
-    if (!_stompClient) {
-        const socket = new SockJS('/websocket-simple?name=' + name);
-        _stompClient = Stomp.over(socket);
-    }
-    return _stompClient;
-};
-Common.receiveWebSocket = function(messageDto) {
-    switch (messageDto.messageType) {
-        case "USER_MESSAGE":
-            Common.addMessage(messageDto.message, "#FFF");
-            break;
-        case "SYSTEM_MESSAGE":
-            Common.addMessage(messageDto.message, "#FF0");
-            break;
-        default:
-            //todo 下发到具体stage里面
-            break;
-    }
 };
 
 //工具类
