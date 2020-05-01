@@ -62,10 +62,16 @@ Common.buttonBind = function(callback) {
 Common.buttonUnbind = function() {
     $('#button').unbind('click');
 };
+Common.buttonEnable = function(enable) {
+    document.getElementById('button').style.visibility = enable ? 'visible' : 'hidden';
+};
 
 //输入框
 Common.getInputText = function() {
     return $('#input').val();
+};
+Common.inputEnable = function(enable) {
+    document.getElementById('input').style.visibility = enable ? 'visible' : 'hidden';
 };
 
 //测试类

@@ -119,8 +119,11 @@
 			const socket = new SockJS('/websocket-simple?name=' + name);
 			stompClient = Stomp.over(socket);
 			stompClient.connect({}, function(frame) {
-				// setConnected(true);
-				Common.addMessage("网络连接中: " + frame,"#ffffff")
+				Common.addMessage("网络连接中: " + frame,"#ffffff");
+
+				//隐藏输入框和按钮
+				Common.inputEnable(false);
+				Common.buttonEnable(false);
 				// 客户端订阅消息的目的地址：此值BroadcastCtl中被@SendTo("/topic/getResponse")注解的里配置的值
 				stompClient.subscribe('/topic/send', function (response) {
 					// receive(JSON.parse(response.body));
