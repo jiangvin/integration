@@ -6,7 +6,7 @@ package com.integration.socket.model;
  * @date 2020/4/26
  */
 public enum MessageType {
-    USER_COUNT,
+    USERS,
     USER_MESSAGE,
     SYSTEM_MESSAGE
 }

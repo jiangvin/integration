@@ -61,8 +61,8 @@ function Game() {
             case "SYSTEM_MESSAGE":
                 thisGame.addMessage(messageDto.message, "#FF0");
                 break;
-            case "USER_COUNT":
-                _users = JSON.parse(messageDto.message);
+            case "USERS":
+                _users = messageDto.message;
                 break;
             default:
                 //todo 下发到具体stage里面

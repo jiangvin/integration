@@ -108,8 +108,8 @@
 
     function receive(messageDto) {
         switch (messageDto.messageType) {
-            case "USER_COUNT":
-                showStatus(JSON.parse(messageDto.message));
+            case "USERS":
+                showStatus(messageDto.message);
                 break;
             case "SYSTEM_MESSAGE":
                 showMessage(messageDto.message, "color: red");

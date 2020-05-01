@@ -2,8 +2,8 @@ package com.integration.socket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.model.MessageType;
+import com.integration.socket.model.dto.MessageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class MessageService {
             messageDto.setMessage(String.format("%s: %s", sendFrom, messageDto.getMessage()));
             sendMessage(messageDto);
         } else {
-            messageDto.setMessage(String.format("%s->%s: %s", sendFrom, messageDto.getSendTo(), messageDto.getMessage()));
+            messageDto.setMessage(String.format("%s → %s: %s", sendFrom, messageDto.getSendTo(), messageDto.getMessage()));
             sendMessageToUser(messageDto, sendFrom);
         }
     }
@@ -77,7 +77,7 @@ public class MessageService {
             return;
         }
 
-        sendMessage(new MessageDto(objectMapper.writeValueAsString(users), MessageType.USER_COUNT));
+        sendMessage(new MessageDto(users, MessageType.USERS));
         if (isLeave) {
             sendMessage(new MessageDto(String.format("%s 离开了! 当前人数: %d",
                                                      username,

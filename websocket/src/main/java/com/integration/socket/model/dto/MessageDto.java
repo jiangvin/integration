@@ -18,17 +18,17 @@ import lombok.NonNull;
 public class MessageDto {
 
     @NonNull
-    private String message;
+    private Object message;
 
     private MessageType messageType = MessageType.USER_MESSAGE;
 
     private String sendTo;
 
-    public MessageDto(String message) {
+    public MessageDto(Object message) {
         this.message = message;
     }
 
-    public MessageDto(String message, MessageType messageType) {
+    public MessageDto(Object message, MessageType messageType) {
         this.message = message;
         this.messageType = messageType;
     }
