@@ -187,7 +187,11 @@ function Game() {
                 if (_users.length === 0) {
                     $.ajaxSettings.async = true; //异步执行
                     $.getJSON('/user/getAll', function(result) {
-                        _users = result;
+                        if (result.success) {
+                            _users = result.data;
+                        } else {
+                            thisGame.addMessage(result.message,"#F00");
+                        }
                     });
                 }
                 break;
