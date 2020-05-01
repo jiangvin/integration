@@ -133,12 +133,13 @@
 		});
 
         stage.updateAfterConnect = function (name) {
-        	//重设输入框的属性，使其变成消息输入框
-			Common.inputResize();
-
 			//隐藏输入框和按钮
 			Common.inputEnable(false);
 			Common.buttonEnable(false);
+
+        	//重设输入框的属性和事件
+			Common.inputResize();
+			Common.inputBindMessageControl();
 
 			//新增文字描述来取代按钮和输入框
 			this.createItem( {

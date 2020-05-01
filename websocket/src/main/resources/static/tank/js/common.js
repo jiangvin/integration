@@ -67,11 +67,14 @@ Common.buttonEnable = function(enable) {
 };
 
 //输入框
+let _bindMessageControl;
+let _inputEnable = true;
 Common.getInputText = function() {
     return $('#input').val();
 };
 Common.inputEnable = function(enable) {
-    document.getElementById('input').style.visibility = enable ? 'visible' : 'hidden';
+    _inputEnable = enable;
+    document.getElementById('input').style.visibility = _inputEnable ? 'visible' : 'hidden';
 };
 Common.inputResize = function() {
     const input = $('#input');
@@ -79,6 +82,37 @@ Common.inputResize = function() {
     input.val("");
     input.removeClass("input-name");
     input.addClass("input-message");
+};
+Common.inputBindMessageControl = function() {
+    if (_bindMessageControl) {
+        return;
+    }
+
+    _bindMessageControl = true;
+    window.addEventListener("keydown",function (e) {
+        if (e.key !== "Enter") {
+            return;
+        }
+
+        const input = $('#input');
+        if (_inputEnable) {
+            //关闭输入框
+            //关闭输入框前先处理文字信息
+            const text = input.val();
+            if (text !== "") {
+                Common.addMessage(text,"#FFF");
+                input.val("");
+            }
+            _inputEnable = !_inputEnable;
+            Common.inputEnable(_inputEnable);
+        } else {
+            //打开输入框
+            _inputEnable = !_inputEnable;
+            Common.inputEnable(_inputEnable);
+            input.focus();
+        }
+
+    });
 };
 
 //测试类
