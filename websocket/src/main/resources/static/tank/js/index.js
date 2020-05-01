@@ -94,7 +94,7 @@
             }
         });
         Common.buttonBind(function () {
-        	const name = Common.getInputText();
+        	const name = Common.inputText();
 
         	//检测是否输入名字
         	if (name === "") {

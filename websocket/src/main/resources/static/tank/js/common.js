@@ -62,7 +62,7 @@ Common.buttonEnable = function(enable) {
 //输入框
 let _bindMessageControl;
 let _inputEnable = true;
-Common.getInputText = function() {
+Common.inputText = function() {
     return $('#input').val();
 };
 Common.inputEnable = function(enable) {
