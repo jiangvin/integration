@@ -129,6 +129,7 @@
 			game.clientConnect(name);
 
 			stage.updateAfterConnect(name);
+			tankLogo.id = name;
 		});
 
         stage.updateAfterConnect = function (name) {

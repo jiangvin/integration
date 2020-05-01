@@ -3,6 +3,7 @@
 function Item(params) {
     this.params = params||{};
     this.settings = {
+        id:"",
         index: 0,
         stage: null,
         image: null,            //相应图片
@@ -25,6 +26,17 @@ function Item(params) {
 
         //绘图
         drawImage:function(context) {
+            if (this.id !== "") {
+                context.font = '14px Helvetica';
+                context.textAlign = 'center';
+                context.textBaseline = 'bottom';
+                context.fillStyle = '#FFF';
+                context.fillText(
+                    this.id,
+                    this.x ,
+                    this.y - this.image.height / this.image.heightPics / 2 - 5);
+            }
+
             context.drawImage(this.image,
             	this.orientation * this.image.width / this.image.widthPics, 0,
             	this.image.width / this.image.widthPics, this.image.height / this.image.heightPics,
