@@ -48,6 +48,16 @@
 				context.fillText('Tank World',Common.width() / 2,40);
 			}
 		});
+		//提示信息
+		stage.createItem({
+			draw:function(context) {
+				context.font = '24px Helvetica';
+				context.textAlign = 'center';
+				context.textBaseline = 'middle';
+				context.fillStyle = '#949494';
+				context.fillText('上下左右移动，回车说话',Common.width() / 2,Common.height() - 70);
+			}
+		});
 		//事件绑定
 		stage.bind('keydown',function(e) {
 			switch (e.key) {
