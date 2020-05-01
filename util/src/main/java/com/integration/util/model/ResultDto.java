@@ -1,4 +1,4 @@
-package com.integration.socket.model.dto;
+package com.integration.util.model;
 
 import lombok.Data;
 
@@ -18,5 +18,10 @@ public class ResultDto {
         this.data = data;
         this.success = true;
         this.message = "操作成功";
+    }
+
+    public ResultDto(String errorMessage) {
+        this.success = false;
+        this.message = errorMessage;
     }
 }

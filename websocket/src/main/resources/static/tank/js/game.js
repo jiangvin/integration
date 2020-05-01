@@ -50,6 +50,7 @@ function Game() {
             stage.update();
             stage.draw(context);
 
+            thisGame.drawMessage(context);
             thisGame.drawInfo(context);
 
             _handler = requestAnimationFrame(step);
@@ -80,6 +81,27 @@ function Game() {
       return _stages[_index];
     };
 
+    //显示消息
+    this.drawMessage = function (context) {
+        let height = Common.height() - 40;
+        context.font = '14px Helvetica';
+        context.textAlign = 'left';
+        context.textBaseline = 'bottom';
+        Common.messages().forEach(function (message) {
+            if (message.lifetime > 0) {
+                message.lifetime -= 1;
+            }
+            context.globalAlpha = (message.lifetime / 300);
+            context.fillStyle = message.color;
+            context.fillText(message.context,25,height);
+            height -= 15;
+        });
+        context.globalAlpha = 1;
+        if (Common.messages().length !== 0 && Common.messages()[0].lifetime <= 0) {
+            Common.clearMessages();
+        }
+    };
+    //显示版权信息和帧率信息
     this.drawInfo = function (context) {
         //版权信息
         context.font = '14px Helvetica';

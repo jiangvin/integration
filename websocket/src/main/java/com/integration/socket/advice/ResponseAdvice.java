@@ -1,6 +1,6 @@
 package com.integration.socket.advice;
 
-import com.integration.socket.model.dto.ResultDto;
+import com.integration.util.model.ResultDto;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;

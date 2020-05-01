@@ -103,7 +103,7 @@
         }
         var msg = $('#msg').val();
         // 客户端消息发送的目的：服务端使用BroadcastCtl中@MessageMapping("/receive")注解的方法来处理发送过来的消息
-        stompClient.send("/user/send", {}, JSON.stringify({ 'message': msg, 'sendTo': sendTo }));
+        stompClient.send("/send", {}, JSON.stringify({ 'message': msg, 'sendTo': sendTo }));
     }
 
     function receive(messageDto) {

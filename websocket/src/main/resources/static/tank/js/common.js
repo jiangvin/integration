@@ -25,7 +25,6 @@ Common.getCanvas = function() {
 Common.width = function () {
     return Common.getCanvas().width;
 };
-
 Common.height = function () {
     return Common.getCanvas().height;
 };
@@ -38,6 +37,21 @@ Common.getContext = function() {
     }
     return _context;
 };
+
+let _messages = [];
+Common.addMessage = function(context, color) {
+    let message = {};
+    message.lifetime = 300; //显示时间300帧，5秒
+    message.context = context;
+    message.color = color;
+    _messages.unshift(message); //塞在头部
+};
+Common.messages = function() {
+    return _messages;
+};
+Common.clearMessages = function() {
+    _messages = [];
+}
 
 Common.images = function() {
     let img = document.createElement('img');
