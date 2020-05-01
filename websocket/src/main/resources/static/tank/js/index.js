@@ -121,10 +121,8 @@
 			stompClient.connect({}, function(frame) {
 				Common.addMessage("网络连接中: " + frame,"#ffffff");
 
-				//隐藏输入框和按钮
-				Common.inputEnable(false);
-				Common.buttonEnable(false);
-				// 客户端订阅消息的目的地址：此值BroadcastCtl中被@SendTo("/topic/getResponse")注解的里配置的值
+				stage.updateAfterConnect(name);
+				// 客户端订阅消息, 公共消息和私有消息
 				stompClient.subscribe('/topic/send', function (response) {
 					// receive(JSON.parse(response.body));
 				});
@@ -133,6 +131,23 @@
 				});
 			});
 		});
+
+        stage.updateAfterConnect = function (name) {
+			//隐藏输入框和按钮
+			Common.inputEnable(false);
+			Common.buttonEnable(false);
+
+			//新增文字描述来取代按钮和输入框
+			this.createItem( {
+				draw:function (context) {
+					context.font = '30px Arial';
+					context.textAlign = 'center';
+					context.textBaseline = 'middle';
+					context.fillStyle = '#5E6C77';
+					context.fillText('你的名字: ' + name,Common.width() / 2,85);
+				}
+			})
+		}
 	})();
     game.init();
 })();
