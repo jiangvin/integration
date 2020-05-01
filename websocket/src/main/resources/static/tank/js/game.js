@@ -11,6 +11,9 @@ function Game() {
     //帧率相关
     let _framesPerSecond = 60;
 
+    //用户类
+    let _users = [];
+
     //左下角消息类
     let _messages = [];
 
@@ -37,20 +40,23 @@ function Game() {
 
             // 客户端订阅消息, 公共消息和私有消息
             _stompClient.subscribe('/topic/send', function (response) {
-                thisGame.receiveWebSocket(JSON.parse(response.body));
+                thisGame.receiveFromServer(JSON.parse(response.body));
             });
             _stompClient.subscribe('/user/queue/send', function (response) {
-                thisGame.receiveWebSocket(JSON.parse(response.body));
+                thisGame.receiveFromServer(JSON.parse(response.body));
             });
         });
     };
-    this.receiveWebSocket = function(messageDto) {
+    this.receiveFromServer = function(messageDto) {
         switch (messageDto.messageType) {
             case "USER_MESSAGE":
                 thisGame.addMessage(messageDto.message, "#FFF");
                 break;
             case "SYSTEM_MESSAGE":
                 thisGame.addMessage(messageDto.message, "#FF0");
+                break;
+            case "USER_COUNT":
+                _users = JSON.parse(messageDto.message);
                 break;
             default:
                 //todo 下发到具体stage里面
@@ -159,14 +165,18 @@ function Game() {
         context.textAlign = 'right';
         context.textBaseline = 'bottom';
         context.fillStyle = '#AAA';
-        context.fillText('© Created by Vin 2020',Common.width() - 12,Common.height() - 5);
+        context.fillText('© Created by Vin (WX: Jiang_Vin)',Common.width() - 12,Common.height() - 5);
 
         //帧率信息
         context.font = '14px Helvetica';
         context.textAlign = 'left';
         context.textBaseline = 'bottom';
         context.fillStyle = '#AAA';
-        context.fillText('FPS: ' + _framesPerSecond, 10, Common.height() - 5);
+        let text = 'FPS: ' + _framesPerSecond;
+        if (_users.length > 0) {
+            text += ' / USER: ' + _users.length;
+        }
+        context.fillText(text, 10, Common.height() - 5);
     };
 
     //初始化游戏引擎
