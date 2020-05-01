@@ -51,8 +51,24 @@ Common.messages = function() {
 };
 Common.clearMessages = function() {
     _messages = [];
-}
+};
 
+//按钮
+Common.buttonBind = function(callback) {
+    //先删除之前的事件
+    Common.buttonUnbind();
+    $('#button').bind('click',callback);
+};
+Common.buttonUnbind = function() {
+    $('#button').unbind('click');
+};
+
+//输入框
+Common.getInputText = function() {
+    return $('#input').val();
+};
+
+//测试类
 Common.images = function() {
     let img = document.createElement('img');
     img.src = 'tank/image/tank01.png';

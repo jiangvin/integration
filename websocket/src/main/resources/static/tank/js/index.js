@@ -93,6 +93,43 @@
 
             }
         });
+        Common.buttonBind(function () {
+        	const name = Common.getInputText();
+
+        	//检测是否输入名字
+        	if (name === "") {
+        		Common.addMessage("名字不能为空!","#ff0000");
+        		return;
+			}
+
+        	//检测名字是否重复
+			let success;
+			$.ajaxSettings.async = false; //让访问变成同步执行
+			$.getJSON('/user/checkName?name=' + name, function(result) {
+				success = result.success;
+				if (!result.success) {
+					Common.addMessage(result.message, "#ff0000");
+				}
+			});
+			if (!success) {
+				return;
+			}
+
+			//开始连接
+			const socket = new SockJS('/websocket-simple?name=' + name);
+			stompClient = Stomp.over(socket);
+			stompClient.connect({}, function(frame) {
+				// setConnected(true);
+				Common.addMessage("网络连接中: " + frame,"#ffffff")
+				// 客户端订阅消息的目的地址：此值BroadcastCtl中被@SendTo("/topic/getResponse")注解的里配置的值
+				stompClient.subscribe('/topic/send', function (response) {
+					// receive(JSON.parse(response.body));
+				});
+				stompClient.subscribe('/user/queue/send', function (response) {
+					// receive(JSON.parse(response.body));
+				});
+			});
+		});
 	})();
     game.init();
 })();
