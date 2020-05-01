@@ -1,6 +1,6 @@
 package com.integration.socket.interceptor;
 
-import com.integration.socket.model.UserBo;
+import com.integration.socket.model.bo.UserBo;
 import com.integration.socket.service.MessageService;
 import com.integration.socket.service.OnlineUserService;
 import lombok.SneakyThrows;

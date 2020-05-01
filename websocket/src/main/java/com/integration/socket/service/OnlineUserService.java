@@ -1,6 +1,6 @@
 package com.integration.socket.service;
 
-import com.integration.socket.model.UserBo;
+import com.integration.socket.model.bo.UserBo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

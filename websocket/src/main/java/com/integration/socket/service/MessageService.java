@@ -2,7 +2,7 @@ package com.integration.socket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.integration.socket.model.MessageDto;
+import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.model.MessageType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

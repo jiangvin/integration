@@ -1,5 +1,6 @@
-package com.integration.socket.model;
+package com.integration.socket.model.dto;
 
+import com.integration.socket.model.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -53,7 +53,7 @@
     }
 
     function refreshStatus() {
-        $.getJSON('/users', function(data) {
+        $.getJSON('/user/getAll', function(data) {
             showStatus(data);
         });
     }

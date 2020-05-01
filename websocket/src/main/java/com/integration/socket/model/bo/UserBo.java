@@ -1,4 +1,4 @@
-package com.integration.socket.model;
+package com.integration.socket.model.bo;
 
 import com.integration.socket.service.MessageService;
 import lombok.Data;
