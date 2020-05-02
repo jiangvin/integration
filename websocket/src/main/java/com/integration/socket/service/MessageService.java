@@ -1,9 +1,8 @@
 package com.integration.socket.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.integration.socket.model.MessageType;
 import com.integration.socket.model.dto.MessageDto;
+import com.integration.socket.model.dto.TankDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -25,52 +24,82 @@ public class MessageService {
 
     public static final String QUEUE_PATH = "/queue/send";
 
+    private final TankService tankService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public MessageService(SimpMessagingTemplate simpMessagingTemplate) {
+    public MessageService(SimpMessagingTemplate simpMessagingTemplate, TankService tankService) {
         this.simpMessagingTemplate = simpMessagingTemplate;
-    }
-
-    public void receiveMessage(MessageDto messageDto, String sendFrom) {
-        if (StringUtils.isEmpty(messageDto.getSendTo())) {
-            messageDto.setMessage(String.format("%s: %s", sendFrom, messageDto.getMessage()));
-            sendMessage(messageDto);
-        } else {
-            messageDto.setMessage(String.format("%s → %s: %s", sendFrom, messageDto.getSendTo(), messageDto.getMessage()));
-            sendMessageToUser(messageDto, sendFrom);
-        }
+        this.tankService = tankService;
     }
 
     public void sendMessage(MessageDto messageDto) {
-        log.info("send message:{}", messageDto.toString());
-        simpMessagingTemplate.convertAndSend(
-            TOPIC_PATH,
-            messageDto);
+        sendMessage(messageDto, null);
     }
 
-    public void sendMessageToUser(MessageDto messageDto, String sendFrom) {
-        //推给发送方
-        log.info("send message:{} to {}", messageDto.toString(), sendFrom);
-        simpMessagingTemplate.convertAndSendToUser(
-            sendFrom,
-            QUEUE_PATH,
-            messageDto);
+    public void sendMessage(MessageDto messageDto, String sendFrom) {
+        log.info("send message:{} from:{}", messageDto.toString(), sendFrom);
 
-        if (sendFrom.equals(messageDto.getSendTo())) {
+        String sendTo = messageDto.getSendTo();
+        if (StringUtils.isEmpty(sendTo)) {
+            //发送给所有人
+            simpMessagingTemplate.convertAndSend(
+                TOPIC_PATH,
+                messageDto);
+        } else {
+            //发送给指定用户
+            simpMessagingTemplate.convertAndSendToUser(
+                sendTo,
+                QUEUE_PATH,
+                messageDto);
+
+            //补发给发送者一份
+            if (StringUtils.isEmpty(sendFrom) || sendFrom.equals(sendTo)) {
+                return;
+            }
+            simpMessagingTemplate.convertAndSendToUser(
+                sendFrom,
+                QUEUE_PATH,
+                messageDto);
+        }
+    }
+
+    public void receiveMessage(MessageDto messageDto, String sendFrom) {
+        switch (messageDto.getMessageType()) {
+            case USER_MESSAGE:
+                processUserMessage(messageDto, sendFrom);
+                break;
+            case ADD_TANK:
+                processAddTank(messageDto, sendFrom);
+                break;
+            default:
+                log.warn("unsupported messageType:{} from {}", messageDto.getMessageType(), sendFrom);
+                break;
+        }
+    }
+
+    private void processUserMessage(MessageDto messageDto, String sendFrom) {
+        if (StringUtils.isEmpty(messageDto.getSendTo())) {
+            messageDto.setMessage(String.format("%s: %s", sendFrom, messageDto.getMessage()));
+        } else {
+            messageDto.setMessage(String.format("%s → %s: %s", sendFrom, messageDto.getSendTo(), messageDto.getMessage()));
+        }
+        sendMessage(messageDto);
+    }
+
+    private void processAddTank(MessageDto messageDto, String sendFrom) {
+        TankDto tankDto = (TankDto) messageDto.getMessage();
+        tankDto.setId(sendFrom);
+        if (!tankService.addTank(tankDto)) {
             return;
         }
 
-        //推给接受方
-        log.info("send message:{} to {}", messageDto.toString(), messageDto.getSendTo());
-        simpMessagingTemplate.convertAndSendToUser(
-            messageDto.getSendTo(),
-            QUEUE_PATH,
-            messageDto);
+        //收到单位，即将向发送者同步所有单位信息
+        MessageDto sendBack = new MessageDto(tankService.getTankList(), MessageType.TANKS, sendFrom);
+        sendMessage(sendBack);
     }
 
-    public void sendUserStatusAndMessage(List<String> users, String username, boolean isLeave) throws JsonProcessingException {
+
+    public void sendUserStatusAndMessage(List<String> users, String username, boolean isLeave) {
         //没人了，不用更新状态
         if (users.isEmpty()) {
             log.info("no user in service, no need to send message");
