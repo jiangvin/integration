@@ -3,8 +3,10 @@ package com.integration.socket.interceptor;
 import com.integration.socket.model.bo.UserBo;
 import com.integration.socket.service.MessageService;
 import com.integration.socket.service.OnlineUserService;
+import com.integration.socket.service.TankService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -29,10 +31,13 @@ public class MessageInterceptor implements ChannelInterceptor {
 
     private final MessageService messageService;
 
+    private final TankService tankService;
+
     public MessageInterceptor(OnlineUserService onlineUserService,
-                              @Lazy MessageService messageService) {
+                              @Lazy MessageService messageService, TankService tankService) {
         this.onlineUserService = onlineUserService;
         this.messageService = messageService;
+        this.tankService = tankService;
     }
 
     @SneakyThrows
@@ -74,6 +79,7 @@ public class MessageInterceptor implements ChannelInterceptor {
                 return;
             }
 
+            tankService.removeTank(username);
             log.info("user:{} try to disconnected...", username);
             messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
         } else if (!StompCommand.SEND.equals(command)) {

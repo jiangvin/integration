@@ -52,11 +52,19 @@ public class TankService {
     }
 
     public boolean addTank(TankDto tankDto) {
-        TankBo tankBo = TankBo.convert(tankDto);
-        if (tankMap.containsKey(tankBo.getTankId())) {
+        if (tankMap.containsKey(tankDto.getId())) {
             return false;
         }
+        TankBo tankBo = TankBo.convert(tankDto);
         tankMap.put(tankBo.getTankId(), tankBo);
+        return true;
+    }
+
+    public boolean removeTank(String tankId) {
+        if (!tankMap.containsKey(tankId)) {
+            return false;
+        }
+        tankMap.remove(tankId);
         return true;
     }
 

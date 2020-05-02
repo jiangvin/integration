@@ -97,8 +97,8 @@ public class MessageService {
             return;
         }
 
-        //收到单位，即将向发送者同步所有单位信息
-        MessageDto sendBack = new MessageDto(tankService.getTankList(), MessageType.TANKS, sendFrom);
+        //收到单位，即将向所有人同步单位信息
+        MessageDto sendBack = new MessageDto(tankService.getTankList(), MessageType.TANKS);
         sendMessage(sendBack);
     }
 

@@ -8,35 +8,10 @@
             status : 1
 		});
 		//Tank Logo
-		const tankLogo = stage.createItem({
+		const tankLogo = stage.createTank({
 			x: Common.width() / 2,
 			y: Common.height() * .45,
-			image: Common.images(),
-			speed: 1,
-			status: 1,
-			draw: function (context) {
-				this.drawImage(context);
-			},
-			update: function () {
-				if (this.action === 0) {
-					return;
-				}
-
-				switch (this.orientation) {
-					case 0:
-						this.y -= this.speed;
-						break;
-					case 1:
-						this.y += this.speed;
-						break;
-					case 2:
-						this.x -= this.speed;
-						break;
-					case 3:
-						this.x += this.speed;
-						break;
-				}
-			}
+			speed: 1
 		});
 		//游戏名
 		stage.createItem({
@@ -154,7 +129,7 @@
 				}
 			});
 
-			//注册事件，同步单位
+			//注册事件，延迟执行同步单位
 			game.addEvent("SYNC_MY_TANK",function () {
 				Common.sendStompMessage(
 					{
@@ -165,28 +140,6 @@
 						"action": tankLogo.action
 					}, "ADD_TANK");
 			});
-
-			//重载监听函数
-			this.receiveStompMessage = function (messageDto) {
-				switch (messageDto.messageType) {
-					case "TANKS":
-						const tanks = messageDto.message;
-						tanks.forEach(function (tank) {
-							if (stage.items[tank.id] !== null) {
-								//已存在
-								stage.items[tank.id].x = tank.x;
-								stage.items[tank.id].y = tank.y;
-								stage.items[tank.id].orientation = tank.orientation;
-								stage.items[tank.id].action = tank.action;
-							} else {
-								//todo 写不下去了
-								console.log(tank);
-							}
-						});
-						break;
-				}
-
-			}
 		}
 	})();
     game.init();

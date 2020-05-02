@@ -39,7 +39,7 @@ Common.height = function () {
 
 let _context;
 Common.getContext = function() {
-    if (_context == null) {
+    if (!_context) {
         const canvas = this.getCanvas();
         _context = canvas.getContext('2d');
     }

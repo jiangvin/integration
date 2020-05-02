@@ -6,10 +6,36 @@ function Stage(params) {
         index:0,                        //布景索引
         status:0,						//布景状态,0表示未激活/结束,1表示正常,2表示暂停,3表示临时,4表示异常
         items:[],						//对象队列
-        timeout:0,						//倒计时(用于过程动画状态判断)
-        receiveStompMessage:function (messageDto) {}
+        event:[],                       //事件列表
     };
     Common.extend(this,this.settings,this.params);
+
+    this.receiveStompMessage = function (messageDto) {
+        const thisStage = this;
+        switch (messageDto.messageType) {
+            case "TANKS":
+                const tanks = messageDto.message;
+                tanks.forEach(function (tank) {
+                    if (thisStage.items[tank.id]) {
+                        //已存在
+                        thisStage.items[tank.id].x = tank.x;
+                        thisStage.items[tank.id].y = tank.y;
+                        thisStage.items[tank.id].orientation = tank.orientation;
+                        thisStage.items[tank.id].action = tank.action;
+                    } else {
+                        thisStage.createTank({
+                            id:tank.id,
+                            x:tank.x,
+                            y:tank.y,
+                            orientation: tank.orientation,
+                            action: tank.action,
+                            speed: tank.speed
+                        });
+                    }
+                });
+                break;
+        }
+    };
 
     this.draw = function(context) {
         this.items.forEach(function (item) {
@@ -46,7 +72,7 @@ function Stage(params) {
     };
     this.updateItemId = function (item, newId) {
         //删除旧id
-        if (item.id !== null && this.items[item.id] !== null) {
+        if (item.id && this.items[item.id]) {
             delete this.items[item.id];
         }
 
@@ -55,8 +81,56 @@ function Stage(params) {
         this.items[newId] = item;
     };
 
+    this.createTank = function (options) {
+        let tankOptions = {};
+        Common.extend(tankOptions,{
+            x:0,
+            y:0,
+            speed:0,
+            image: Common.images(),
+            status: 1,
+            id:"",
+            action:0,
+            orientation:0,
+
+            draw: function (context) {
+                this.drawImage(context);
+            },
+            update: function () {
+                if (this.action === 0) {
+                    return;
+                }
+
+                switch (this.orientation) {
+                    case 0:
+                        this.y -= this.speed;
+                        break;
+                    case 1:
+                        this.y += this.speed;
+                        break;
+                    case 2:
+                        this.x -= this.speed;
+                        break;
+                    case 3:
+                        this.x += this.speed;
+                        break;
+                }
+            }
+        },options);
+        return this.createItem(tankOptions);
+    };
+
     //事件绑定
     this.bind = function(eventType, callback) {
+        if (!this.event[eventType]) {
+            this.event[eventType] = [callback];
+        } else {
+            if (this.event[eventType].includes(callback)) {
+                return; //已经添加，避免重复添加
+            } else {
+                this.event[eventType].push(callback);
+            }
+        }
         window.addEventListener(eventType,callback);
     }
 }
