@@ -1,5 +1,15 @@
 const Common = function() {};
 
+//全局初始化函数，在创建game后启动
+Common.init = function() {
+    //在手机上禁用滑动
+    window.addEventListener('touchmove', function(e) {
+        e.stopPropagation();
+    }, false);
+
+
+};
+
 Common.extend = function(target, settings, params) {
     params = params || {};
     for (let i in settings) {
@@ -12,12 +22,8 @@ let _game;
 Common.getGame = function() {
     if (!_game) {
         _game = new Game("canvas");
+        Common.init();
     }
-
-    window.addEventListener('touchmove', (e) => {
-        e.stopPropagation();
-    }, false);
-
     return _game;
 };
 
