@@ -86,7 +86,7 @@ function Game() {
             thisGame.updateEvents();
             const stage = thisGame.currentStage();
             stage.update();
-        }, 18);
+        }, 17);
 
         //开启渲染
         const step = function () {

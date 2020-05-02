@@ -1,7 +1,6 @@
 package com.integration.socket.service;
 
 import com.integration.socket.model.MessageType;
-import com.integration.socket.model.bo.TankBo;
 import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.model.dto.TankDto;
 import com.integration.util.object.ObjectUtil;
