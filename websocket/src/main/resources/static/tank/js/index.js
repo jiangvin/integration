@@ -126,7 +126,8 @@
 			}
 
 			//开始连接
-			game.clientConnect(name);
+			Common.stompConnect(name);
+			game.addUserCheckEvent();
 
 			stage.updateAfterConnect(name);
 
@@ -155,18 +156,18 @@
 
 			//注册事件，同步单位
 			game.addEvent("SYNC_MY_TANK",function () {
-				Common.sendStompMessage("ADD_TANK",
+				Common.sendStompMessage(
 					{
 						"x": tankLogo.x,
 						"y": tankLogo.y,
 						"speed": tankLogo.speed,
 						"orientation": tankLogo.orientation,
 						"action": tankLogo.action
-					});
+					}, "ADD_TANK");
 			});
 
 			//重载监听函数
-			this.receiveFromServer = function (messageDto) {
+			this.receiveStompMessage = function (messageDto) {
 				switch (messageDto.messageType) {
 					case "TANKS":
 						const tanks = messageDto.message;

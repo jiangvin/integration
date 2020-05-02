@@ -7,7 +7,7 @@ function Stage(params) {
         status:0,						//布景状态,0表示未激活/结束,1表示正常,2表示暂停,3表示临时,4表示异常
         items:[],						//对象队列
         timeout:0,						//倒计时(用于过程动画状态判断)
-        receiveFromServer:function (messageDto) {}
+        receiveStompMessage:function (messageDto) {}
     };
     Common.extend(this,this.settings,this.params);
 

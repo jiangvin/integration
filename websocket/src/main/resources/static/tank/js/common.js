@@ -93,7 +93,7 @@ Common.inputBindMessageControl = function() {
             //关闭输入框前先处理文字信息
             const text = input.val();
             if (text !== "") {
-                Common.sendStompMessage("USER_MESSAGE",text );
+                Common.sendStompMessage(text);
                 input.val("");
             }
             _inputEnable = !_inputEnable;
@@ -109,8 +109,28 @@ Common.inputBindMessageControl = function() {
 };
 
 //网络通信
-Common.sendStompMessage = function(messageType, message, sendTo) {
-    Common.getGame().getStompClient().send("/send", {},
+let _stompClient;
+Common.stompConnect = function(name) {
+    const socket = new SockJS('/websocket-simple?name=' + name);
+    _stompClient = Stomp.over(socket);
+    _stompClient.connect({}, function(frame) {
+        _game.addMessage("网络连接中: " + frame,"#ffffff");
+
+        // 客户端订阅消息, 公共消息和私有消息
+        _stompClient.subscribe('/topic/send', function (response) {
+            _game.receiveStompMessage(JSON.parse(response.body));
+        });
+        _stompClient.subscribe('/user/queue/send', function (response) {
+            _game.receiveStompMessage(JSON.parse(response.body));
+        });
+    });
+};
+Common.sendStompMessage = function(message, messageType, sendTo) {
+    if (!messageType) {
+        messageType = "USER_MESSAGE";
+    }
+
+    _stompClient.send("/send", {},
         JSON.stringify({
           "message": message,
           "messageType": messageType,

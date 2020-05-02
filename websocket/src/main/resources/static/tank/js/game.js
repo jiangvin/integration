@@ -4,11 +4,11 @@
 */
 
 function Game() {
+    const thisGame = this;
+
     //Game的画布初始化，要放在前面
     const canvas = Common.getCanvas();
     const context = Common.getContext();
-
-    const thisGame = this;
 
     //帧率相关
     let _framesPerSecond = 60;
@@ -22,9 +22,6 @@ function Game() {
     //左下角消息类
     let _messages = [];
 
-    //webSocket网络通信
-    let _stompClient;
-
     //布景相关
     const _stages = [];
     const _index = 0;
@@ -32,39 +29,7 @@ function Game() {
     //帧动画控制
     let _handler;
 
-    //网络连接
-    this.getStompClient = function () {
-        return _stompClient;
-    };
-    this.clientConnect = function (name) {
-        const socket = new SockJS('/websocket-simple?name=' + name);
-        _stompClient = Stomp.over(socket);
-        _stompClient.connect({}, function(frame) {
-            thisGame.addMessage("网络连接中: " + frame,"#ffffff");
-
-            // 客户端订阅消息, 公共消息和私有消息
-            _stompClient.subscribe('/topic/send', function (response) {
-                thisGame.receiveFromServer(JSON.parse(response.body));
-            });
-            _stompClient.subscribe('/user/queue/send', function (response) {
-                thisGame.receiveFromServer(JSON.parse(response.body));
-            });
-        });
-
-        thisGame.addEvent("USER_CHECK", function () {
-            if (_users.length === 0) {
-                $.ajaxSettings.async = true; //异步执行
-                $.getJSON('/user/getAll', function(result) {
-                    if (result.success) {
-                        _users = result.data;
-                    } else {
-                        thisGame.addMessage(result.message,"#F00");
-                    }
-                });
-            }
-        });
-    };
-    this.receiveFromServer = function(messageDto) {
+    this.receiveStompMessage = function(messageDto) {
         switch (messageDto.messageType) {
             case "USER_MESSAGE":
                 thisGame.addMessage(messageDto.message, "#FFF");
@@ -77,7 +42,7 @@ function Game() {
                 break;
             default:
                 //给当前场景处理服务消息
-                this.currentStage().receiveFromServer(messageDto);
+                this.currentStage().receiveStompMessage(messageDto);
                 break;
         }
     };
@@ -179,6 +144,20 @@ function Game() {
         event.timeout = timeout ? timeout : 100; //默认100帧倒计时，不到1.5秒
         console.log("add event:" + event.eventType + " timeout:" + event.timeout);
         _events.push(event);
+    };
+    this.addUserCheckEvent = function () {
+        this.addEvent("USER_CHECK", function () {
+            if (_users.length === 0) {
+                $.ajaxSettings.async = true; //异步执行
+                $.getJSON('/user/getAll', function(result) {
+                    if (result.success) {
+                        _users = result.data;
+                    } else {
+                        thisGame.addMessage(result.message,"#F00");
+                    }
+                });
+            }
+        });
     };
     this.updateEvents = function () {
         for (let i = 0; i < _events.length; ++i) {
