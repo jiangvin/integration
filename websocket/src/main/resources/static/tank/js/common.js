@@ -20,12 +20,11 @@ let _canvas;
 Common.getCanvas = function() {
     if (!_canvas) {
         _canvas = document.getElementById("canvas");
-        _canvas.width = window.innerWidth;
-        _canvas.height = window.innerHeight;
+        Common.windowChange();
+
         //自动跟随窗口变化
         window.addEventListener("resize", function () {
-            _canvas.width = window.innerWidth;
-            _canvas.height = window.innerHeight;
+            Common.windowChange();
         });
     }
     return _canvas;
@@ -35,6 +34,34 @@ Common.width = function () {
 };
 Common.height = function () {
     return Common.getCanvas().height;
+};
+Common.windowChange = function() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+
+    let style = "";
+    if(width >= height) { // 横屏
+        style += "width:" + width + "px;";  // 注意旋转后的宽高切换
+        style += "height:" + height + "px;";
+        style += "-webkit-transform: rotate(0); transform: rotate(0);";
+        style += "-webkit-transform-origin: 0 0;";
+        style += "transform-origin: 0 0;";
+        _canvas.width = width;
+        _canvas.height = height;
+    }
+    else { // 竖屏
+        style += "width:" + height + "px;";
+        style += "height:" + width + "px;";
+        style += "-webkit-transform: rotate(90deg); transform: rotate(90deg);";
+        // 注意旋转中点的处理
+        style += "-webkit-transform-origin: " + width / 2 + "px " + width / 2 + "px;";
+        style += "transform-origin: " + width / 2 + "px " + width / 2 + "px;";
+        _canvas.width = height;
+        _canvas.height = width;
+    }
+    let wrapper =  document.getElementById("wrapper");
+    wrapper.style.cssText = style;
 };
 
 let _context;
