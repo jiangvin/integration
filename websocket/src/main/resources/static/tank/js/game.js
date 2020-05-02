@@ -34,7 +34,7 @@ function Game() {
     //运算控制
     let _updateHandler;
 
-    this.receiveStompMessage = function(messageDto) {
+    this.receiveStompMessage = function (messageDto) {
         switch (messageDto.messageType) {
             case "USER_MESSAGE":
                 thisGame.addMessage(messageDto.message, "#FFF");
@@ -53,7 +53,29 @@ function Game() {
     };
 
     //控制相关
-    this.updateControl = function (orientation, action) {
+    this.controlEvent = function (event) {
+        switch (event) {
+            case "Up":
+                thisGame.controlUpdateToServer(0,1);
+                break;
+            case "Down":
+                thisGame.controlUpdateToServer(1,1);
+                break;
+            case "Left":
+                thisGame.controlUpdateToServer(2,1);
+                break;
+            case "Right":
+                thisGame.controlUpdateToServer(3,1);
+                break;
+            case "Stop":
+                thisGame.controlUpdateToServer(null,0);
+                break;
+            default:
+                break;
+        }
+        this.currentStage().controlEvent(event);
+    };
+    this.controlUpdateToServer = function (orientation, action) {
         let update;
         if (orientation !== null && _control.lastOrientation !== orientation) {
             update = true;
@@ -76,7 +98,7 @@ function Game() {
     };
 
     //动画相关
-    this.start = function() {
+    this.start = function () {
         let totalFrames = 0;
         let lastFrames = 0;
         let lastDate = Date.now();
@@ -115,13 +137,13 @@ function Game() {
         };
         _drawHandler = requestAnimationFrame(step);
     };
-    this.stop = function(){
+    this.stop = function () {
         _drawHandler && cancelAnimationFrame(_drawHandler);
         _updateHandler && clearInterval(_updateHandler);
     };
 
     //布景相关
-    this.createStage = function(options){
+    this.createStage = function (options) {
         const stage = new Stage(options);
         stage.index = _stages.length;
         _stages.push(stage);

@@ -6,7 +6,6 @@ function Stage(params) {
         index:0,                        //布景索引
         status:0,						//布景状态,0表示未激活/结束,1表示正常,2表示暂停,3表示临时,4表示异常
         items:[],						//对象队列
-        event:[],                       //事件列表
     };
     Common.extend(this,this.settings,this.params);
 
@@ -124,18 +123,4 @@ function Stage(params) {
         },options);
         return this.createItem(tankOptions);
     };
-
-    //事件绑定
-    this.bind = function(eventType, callback) {
-        if (!this.event[eventType]) {
-            this.event[eventType] = [callback];
-        } else {
-            if (this.event[eventType].includes(callback)) {
-                return; //已经添加，避免重复添加
-            } else {
-                this.event[eventType].push(callback);
-            }
-        }
-        window.addEventListener(eventType,callback);
-    }
 }

@@ -3,27 +3,27 @@ const Common = function() {};
 //全局初始化函数，在创建game后启动
 Common.init = function() {
 
-    //在手机上禁用滑动
-    window.addEventListener('touchmove', function(e) {
-        e.stopPropagation();
-    }, false);
-
-
-    document.addEventListener("plusready",function (e) {
-        console.log("plusready");
-    });
-
-    window.addEventListener('touchstart', function(e) {
-        console.log("touchstart:" + e.touches[0].clientX + " " + e.touches[0].clientY);
-    });
-
-    window.addEventListener('touchmove', function(e) {
-        console.log("touchmove:" + e.touches[0].clientX + " " + e.touches[0].clientY);
-    });
-
-    window.addEventListener('touchend', function(e) {
-        console.log("touchend");
-    });
+    // //在手机上禁用滑动
+    // window.addEventListener('touchmove', function(e) {
+    //     e.stopPropagation();
+    // }, false);
+    //
+    //
+    // document.addEventListener("plusready",function (e) {
+    //     console.log("plusready");
+    // });
+    //
+    // window.addEventListener('touchstart', function(e) {
+    //     console.log("touchstart:" + e.touches[0].clientX + " " + e.touches[0].clientY);
+    // });
+    //
+    // window.addEventListener('touchmove', function(e) {
+    //     console.log("touchmove:" + e.touches[0].clientX + " " + e.touches[0].clientY);
+    // });
+    //
+    // window.addEventListener('touchend', function(e) {
+    //     console.log("touchend");
+    // });
 
 };
 
@@ -91,17 +91,71 @@ Common.windowChange = function() {
     wrapper.style.cssText = style;
 };
 
+//操控相关
 let _touch = null;
 Common.setTouch = function(touch) {
     if (_touch !== null) {
         return;
     }
+    _touch = touch;
+    if (_touch) {
 
-  _touch = touch;
+    } else {
+        Common.bindKeyboard();
+    }
+
 };
 Common.getTouch = function() {
     return _touch;
-}
+};
+Common.bindKeyboard = function() {
+    window.addEventListener("keydown",function(e) {
+        let event = null;
+        switch (e.key) {
+            case "Up":
+            case "ArrowUp":
+                event = "Up";
+                break;
+            case "Down":
+            case "ArrowDown":
+                event = "Down";
+                break;
+            case "Left":
+            case "ArrowLeft":
+                event = "Left";
+                break;
+            case "Right":
+            case "ArrowRight":
+                event = "Right";
+                break;
+            default:
+                break;
+        }
+        if (event != null) {
+            _game.controlEvent(event);
+        }
+    });
+    window.addEventListener('keyup',function(e) {
+        let event = null;
+        switch (e.key) {
+            case "ArrowUp":
+            case "ArrowDown":
+            case "ArrowLeft":
+            case "ArrowRight":
+            case "Up":
+            case "Down":
+            case "Left":
+            case "Right":
+                event = "Stop";
+                break;
+            default:
+                break;
+        }
+        if (event != null) {
+            _game.controlEvent(event);
+        }
+    });
+};
 
 let _context;
 Common.getContext = function() {

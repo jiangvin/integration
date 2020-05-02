@@ -34,55 +34,6 @@
 			}
 		});
 		//事件绑定
-		stage.bind('keydown',function(e) {
-			switch (e.key) {
-				case "Up":
-				case "ArrowUp":
-					tankLogo.orientation = 0;
-					tankLogo.action = 1;
-					game.updateControl(0,1);
-					break;
-				case "Down":
-				case "ArrowDown":
-					tankLogo.orientation = 1;
-                    tankLogo.action = 1;
-					game.updateControl(1,1);
-					break;
-				case "Left":
-				case "ArrowLeft":
-					tankLogo.orientation = 2;
-                    tankLogo.action = 1;
-					game.updateControl(2,1);
-					break;
-				case "Right":
-				case "ArrowRight":
-					tankLogo.orientation = 3;
-                    tankLogo.action = 1;
-					game.updateControl(3,1);
-					break;
-				default:
-					break;
-
-			}
-		});
-        stage.bind('keyup',function(e) {
-            switch (e.key) {
-                case "ArrowUp":
-                case "ArrowDown":
-                case "ArrowLeft":
-                case "ArrowRight":
-				case "Up":
-				case "Down":
-				case "Left":
-				case "Right":
-                    tankLogo.action = 0;
-					game.updateControl(null,0);
-                    break;
-                default:
-                    break;
-
-            }
-        });
         Common.buttonBind(function (e) {
         	const name = Common.inputText();
 
@@ -112,6 +63,31 @@
 			game.addUserCheckEvent();
 			stage.updateAfterConnect(name);
 			stage.updateItemId(tankLogo,name);
+			stage.controlEvent = function (event) {
+				switch (event) {
+					case "Up":
+						tankLogo.orientation = 0;
+						tankLogo.action = 1;
+						break;
+					case "Down":
+						tankLogo.orientation = 1;
+						tankLogo.action = 1;
+						break;
+					case "Left":
+						tankLogo.orientation = 2;
+						tankLogo.action = 1;
+						break;
+					case "Right":
+						tankLogo.orientation = 3;
+						tankLogo.action = 1;
+						break;
+					case "Stop":
+						tankLogo.action = 0;
+						break;
+					default:
+						break;
+				}
+			}
 		});
 
         stage.updateAfterConnect = function (name) {
