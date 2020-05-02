@@ -129,7 +129,8 @@
 			game.clientConnect(name);
 
 			stage.updateAfterConnect(name);
-			tankLogo.id = name;
+
+			stage.updateItemId(tankLogo,name);
 		});
 
         stage.updateAfterConnect = function (name) {
@@ -150,7 +151,7 @@
 					context.fillStyle = '#5E6C77';
 					context.fillText('你的名字: ' + name,Common.width() / 2,85);
 				}
-			})
+			});
 
 			//注册事件，同步单位
 			game.addEvent("SYNC_MY_TANK",function () {
@@ -162,7 +163,29 @@
 						"orientation": tankLogo.orientation,
 						"action": tankLogo.action
 					});
-			})
+			});
+
+			//重载监听函数
+			this.receiveFromServer = function (messageDto) {
+				switch (messageDto.messageType) {
+					case "TANKS":
+						const tanks = messageDto.message;
+						tanks.forEach(function (tank) {
+							if (this.items[tank.id] !== null) {
+								//已存在
+								this.items[tank.id].x = tank.x;
+								this.items[tank.id].y = tank.y;
+								this.items[tank.id].orientation = tank.orientation;
+								this.items[tank.id].action = tank.action;
+							} else {
+								//todo 写不下去了
+								console.log(tank);
+							}
+						});
+						break;
+				}
+
+			}
 		}
 	})();
     game.init();

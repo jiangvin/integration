@@ -76,7 +76,8 @@ function Game() {
                 _users = messageDto.message;
                 break;
             default:
-                //todo 下发到具体stage里面
+                //给当前场景处理服务消息
+                this.currentStage().receiveFromServer(messageDto);
                 break;
         }
     };

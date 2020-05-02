@@ -93,7 +93,7 @@ Common.inputBindMessageControl = function() {
             //关闭输入框前先处理文字信息
             const text = input.val();
             if (text !== "") {
-                Common.sendStompMessage(JSON.stringify({ 'message': text }));
+                Common.sendStompMessage("USER_MESSAGE",text );
                 input.val("");
             }
             _inputEnable = !_inputEnable;
