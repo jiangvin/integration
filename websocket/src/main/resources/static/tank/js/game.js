@@ -6,6 +6,10 @@
 function Game() {
     const thisGame = this;
 
+    //状态
+    let _status = 1;  //0:关闭 1:正常 大于1为自定义状态
+    let _statusMessage = "等待连接...";  //当状态大于1时显示的提示字串
+
     //控制
     const _control = {lastOrientation:-1, lastAction:-1};
 
@@ -105,9 +109,21 @@ function Game() {
 
         //开启运算
         _updateHandler = setInterval(function () {
-            thisGame.updateEvents();
-            const stage = thisGame.currentStage();
-            stage.update();
+            switch (_status) {
+                case 0:
+                    //游戏结束
+                    thisGame.stop();
+                    break;
+                case 1:
+                    //游戏正常运行
+                    thisGame.updateEvents();
+                    const stage = thisGame.currentStage();
+                    stage.update();
+                    break;
+                default:
+                    //游戏暂停
+                    break;
+            }
         }, 17);
 
         //开启渲染
@@ -130,9 +146,14 @@ function Game() {
             const stage = thisGame.currentStage();
             stage.draw(context);
 
+            //聊天信息
             thisGame.drawMessage(context);
-            thisGame.drawInfo(context);
+
+            //触控板信息 - 触控模式
             thisGame.drawTouchCycle(context);
+
+            //常规显示信息
+            thisGame.drawInfo(context);
 
             _drawHandler = requestAnimationFrame(step);
         };
@@ -240,6 +261,22 @@ function Game() {
             text += ' / USER: ' + _users.length;
         }
         context.fillText(text, 10, Common.height() - 5);
+
+        //如果暂停，显示暂停信息
+        if (_status !== 1) {
+            //先盖一层蒙版
+            context.globalAlpha = 0.5;
+            context.fillStyle = '#000000';
+            context.fillRect(0, 0, Common.width(), Common.height());
+            context.globalAlpha = 1;
+
+            //再显示文字
+            context.font = 'bold 55px Helvetica';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillStyle = '#FFF';
+            context.fillText(_statusMessage,Common.width() / 2,Common.height() * .4);
+        }
     };
 
     //触屏提示圆
