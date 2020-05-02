@@ -74,7 +74,7 @@ Common.windowChange = function() {
 };
 
 //操控相关
-let _touchControl = {"touch":null};
+let _touchControl = {"touch": null};
 Common.setTouch = function(touch) {
     if (_touchControl.touch !== null) {
         return;
@@ -168,10 +168,13 @@ Common.bindTouch = function() {
         let y = e.touches[0].clientY;
 
         const distance = Common.distance(x,y,_touchControl.centerX,_touchControl.centerY);
-        if (distance <= _touchControl.radius) {
-            _touchControl.touchX = x;
-            _touchControl.touchY = y;
+        if (distance > _touchControl.radius) {
+            //超过外圆，不做任何操作
+            return;
         }
+
+        _touchControl.touchX = x;
+        _touchControl.touchY = y;
         _game.controlEvent(Common.getEventFromTouch());
     });
     window.addEventListener('touchend', function(e) {
@@ -182,37 +185,41 @@ Common.bindTouch = function() {
     window.addEventListener('touchmove', function(e) {
         let x = e.touches[0].clientX;
         let y = e.touches[0].clientY;
+
         const distance = Common.distance(x,y,_touchControl.centerX,_touchControl.centerY);
-        if (distance <= _touchControl.radius) {
+        const radius = _touchControl.radius;
+        if (distance <= radius) {
             _touchControl.touchX = x;
             _touchControl.touchY = y;
         } else {
-            const radius =_touchControl.radius;
-            let newX;
-            let newY;
+            if (_touchControl.touchX == null || _touchControl.touchY == null) {
+                //从头到尾都超过外圆，不做任何操作
+                return;
+            }
+            //开始计算圆外的点和圆心连线的交点
+            //先将圆心移动到坐标原点
             x = x - _touchControl.centerX;
             y = y - _touchControl.centerY;
-            if (x !== 0) {
+
+            if (x === 0) {
+                //x在坐标轴上，特殊处理，不能当公式分母
+                y = y >= 0 ? radius : -radius;
+            } else {
+                let newX;
+                let newY;
                 newX = Math.sqrt(radius * radius * x * x / (x * x + y * y));
                 newY = y * newX / x;
                 if (x < 0) {
                     newX = -newX;
                     newY = -newY;
                 }
-                newX = newX + _touchControl.centerX;
-                newY = newY + _touchControl.centerY;
                 x = newX;
                 y = newY;
-            } else {
-                x = _touchControl.centerX;
-                if (y < 0) {
-                    y = _touchControl.centerY - radius;
-                } else {
-                    y = _touchControl.centerY + radius;
-                }
             }
-            _touchControl.touchX = x;
-            _touchControl.touchY = y;
+
+            //再将圆心移回去
+            _touchControl.touchX = x + _touchControl.centerX;
+            _touchControl.touchY = y + _touchControl.centerY;
         }
         _game.controlEvent(Common.getEventFromTouch());
     });

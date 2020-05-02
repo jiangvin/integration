@@ -251,7 +251,7 @@ function Game() {
         }
 
         //外圆
-        context.globalAlpha = 0.2;
+        context.globalAlpha = 0.1;
         context.fillStyle = '#FFF';
         context.beginPath();
         context.arc(touchInfo.centerX, touchInfo.centerY, touchInfo.radius,0,2 * Math.PI);
@@ -263,7 +263,7 @@ function Game() {
 
         //内圆
         context.beginPath();
-        context.arc(x, y, touchInfo.radius / 2,0,2 * Math.PI);
+        context.arc(x, y, touchInfo.radius / 4,0,2 * Math.PI);
         context.closePath();
         context.fill();
 
