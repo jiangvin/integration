@@ -132,6 +132,7 @@ function Game() {
 
             thisGame.drawMessage(context);
             thisGame.drawInfo(context);
+            thisGame.drawTouchCycle(context);
 
             _drawHandler = requestAnimationFrame(step);
         };
@@ -239,6 +240,41 @@ function Game() {
             text += ' / USER: ' + _users.length;
         }
         context.fillText(text, 10, Common.height() - 5);
+    };
+
+    //触屏提示圆
+    this.drawTouchCycle = function (context) {
+        if (Common.getTouch() !== true) {
+            return;
+        }
+
+        let centerX = Common.width() / 4 / 2;
+        let centerY = Common.height() / 2 / 2;
+        let radius = centerX > centerY ? centerY : centerX;
+        centerY *= 3;
+        if (centerX - radius < 5) {
+            centerX += 10;
+        }
+        if (Common.height() - centerY - radius < 5) {
+            centerY -= 10;
+        }
+
+        //外圆
+        context.globalAlpha = 0.2;
+        context.fillStyle = '#FFF';
+        context.beginPath();
+        context.arc(centerX,centerY,radius,0,2 * Math.PI);
+        context.closePath();
+        context.fill();
+
+        //内圆
+        radius /= 2;
+        context.beginPath();
+        context.arc(centerX,centerY,radius,0,2 * Math.PI);
+        context.closePath();
+        context.fill();
+
+        context.globalAlpha = 1;
     };
 
     //初始化游戏引擎

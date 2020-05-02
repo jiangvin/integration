@@ -2,29 +2,10 @@ const Common = function() {};
 
 //全局初始化函数，在创建game后启动
 Common.init = function() {
-
-    // //在手机上禁用滑动
-    // window.addEventListener('touchmove', function(e) {
-    //     e.stopPropagation();
-    // }, false);
-    //
-    //
-    // document.addEventListener("plusready",function (e) {
-    //     console.log("plusready");
-    // });
-    //
-    // window.addEventListener('touchstart', function(e) {
-    //     console.log("touchstart:" + e.touches[0].clientX + " " + e.touches[0].clientY);
-    // });
-    //
-    // window.addEventListener('touchmove', function(e) {
-    //     console.log("touchmove:" + e.touches[0].clientX + " " + e.touches[0].clientY);
-    // });
-    //
-    // window.addEventListener('touchend', function(e) {
-    //     console.log("touchend");
-    // });
-
+    //在手机上禁用滑动
+    window.addEventListener('touchmove', function(e) {
+        e.stopPropagation();
+    }, false);
 };
 
 Common.extend = function(target, settings, params) {
@@ -99,7 +80,7 @@ Common.setTouch = function(touch) {
     }
     _touch = touch;
     if (_touch) {
-
+        Common.bindTouch();
     } else {
         Common.bindKeyboard();
     }
@@ -155,6 +136,19 @@ Common.bindKeyboard = function() {
             _game.controlEvent(event);
         }
     });
+};
+Common.bindTouch = function() {
+    // window.addEventListener('touchstart', function(e) {
+    //     console.log("touchstart:" + e.touches[0].clientX + " " + e.touches[0].clientY);
+    // });
+    //
+    // window.addEventListener('touchmove', function(e) {
+    //     console.log("touchmove:" + e.touches[0].clientX + " " + e.touches[0].clientY);
+    // });
+    //
+    // window.addEventListener('touchend', function(e) {
+    //     console.log("touchend");
+    // });
 };
 
 let _context;
