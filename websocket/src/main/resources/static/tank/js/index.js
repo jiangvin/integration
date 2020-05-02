@@ -171,12 +171,12 @@
 					case "TANKS":
 						const tanks = messageDto.message;
 						tanks.forEach(function (tank) {
-							if (this.items[tank.id] !== null) {
+							if (stage.items[tank.id] !== null) {
 								//已存在
-								this.items[tank.id].x = tank.x;
-								this.items[tank.id].y = tank.y;
-								this.items[tank.id].orientation = tank.orientation;
-								this.items[tank.id].action = tank.action;
+								stage.items[tank.id].x = tank.x;
+								stage.items[tank.id].y = tank.y;
+								stage.items[tank.id].orientation = tank.orientation;
+								stage.items[tank.id].action = tank.action;
 							} else {
 								//todo 写不下去了
 								console.log(tank);

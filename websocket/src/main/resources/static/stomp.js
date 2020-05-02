@@ -281,9 +281,6 @@
             frame = _ref[_i];
             switch (frame.command) {
               case "CONNECTED":
-                if (typeof _this.debug === "function") {
-                  _this.debug("connected to server " + frame.headers.server);
-                }
                 _this.connected = true;
                 _this._setupHeartbeat(frame.headers);
                 _results.push(typeof _this.connectCallback === "function" ? _this.connectCallback(frame) : void 0);
