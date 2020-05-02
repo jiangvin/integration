@@ -6,6 +6,7 @@ function Stage(params) {
         index:0,                        //布景索引
         status:0,						//布景状态,0表示未激活/结束,1表示正常,2表示暂停,3表示临时,4表示异常
         items:[],						//对象队列
+        controlEvent:function(){}
     };
     Common.extend(this,this.settings,this.params);
 

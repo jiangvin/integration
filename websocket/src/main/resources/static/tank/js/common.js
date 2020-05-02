@@ -70,24 +70,28 @@ Common.windowChange = function() {
     }
     let wrapper =  document.getElementById("wrapper");
     wrapper.style.cssText = style;
+    Common.generateTouchInfo();
 };
 
 //操控相关
-let _touch = null;
+let _touchControl = {"touch":null};
 Common.setTouch = function(touch) {
-    if (_touch !== null) {
+    if (_touchControl.touch !== null) {
         return;
     }
-    _touch = touch;
-    if (_touch) {
+    _touchControl.touch = touch;
+    if (_touchControl.touch) {
         Common.bindTouch();
     } else {
         Common.bindKeyboard();
     }
 
 };
+Common.getTouchInfo = function() {
+    return _touchControl;
+};
 Common.getTouch = function() {
-    return _touch;
+    return _touchControl.touch;
 };
 Common.bindKeyboard = function() {
     window.addEventListener("keydown",function(e) {
@@ -137,18 +141,98 @@ Common.bindKeyboard = function() {
         }
     });
 };
+Common.generateTouchInfo = function() {
+    if (_touchControl.touch !== true) {
+        return;
+    }
+
+    let centerX = Common.width() / 4 / 2;
+    let centerY = Common.height() / 2 / 2;
+    let radius = centerX > centerY ? centerY : centerX;
+    centerY *= 3;
+    if (centerX - radius < 5) {
+        centerX += 10;
+    }
+    if (Common.height() - centerY - radius < 5) {
+        centerY -= 10;
+    }
+
+    _touchControl.centerX = centerX;
+    _touchControl.centerY = centerY;
+    _touchControl.radius = radius;
+};
 Common.bindTouch = function() {
-    // window.addEventListener('touchstart', function(e) {
-    //     console.log("touchstart:" + e.touches[0].clientX + " " + e.touches[0].clientY);
-    // });
-    //
-    // window.addEventListener('touchmove', function(e) {
-    //     console.log("touchmove:" + e.touches[0].clientX + " " + e.touches[0].clientY);
-    // });
-    //
-    // window.addEventListener('touchend', function(e) {
-    //     console.log("touchend");
-    // });
+    Common.generateTouchInfo();
+    window.addEventListener('touchstart', function(e) {
+        let x = e.touches[0].clientX;
+        let y = e.touches[0].clientY;
+
+        const distance = Common.distance(x,y,_touchControl.centerX,_touchControl.centerY);
+        if (distance <= _touchControl.radius) {
+            _touchControl.touchX = x;
+            _touchControl.touchY = y;
+        }
+        _game.controlEvent(Common.getEventFromTouch());
+    });
+    window.addEventListener('touchend', function(e) {
+        _touchControl.touchX = null;
+        _touchControl.touchY = null;
+        _game.controlEvent("Stop");
+    });
+    window.addEventListener('touchmove', function(e) {
+        let x = e.touches[0].clientX;
+        let y = e.touches[0].clientY;
+        const distance = Common.distance(x,y,_touchControl.centerX,_touchControl.centerY);
+        if (distance <= _touchControl.radius) {
+            _touchControl.touchX = x;
+            _touchControl.touchY = y;
+        } else {
+            const radius =_touchControl.radius;
+            let newX;
+            let newY;
+            x = x - _touchControl.centerX;
+            y = y - _touchControl.centerY;
+            if (x !== 0) {
+                newX = Math.sqrt(radius * radius * x * x / (x * x + y * y));
+                newY = y * newX / x;
+                if (x < 0) {
+                    newX = -newX;
+                    newY = -newY;
+                }
+                newX = newX + _touchControl.centerX;
+                newY = newY + _touchControl.centerY;
+                x = newX;
+                y = newY;
+            } else {
+                x = _touchControl.centerX;
+                if (y < 0) {
+                    y = _touchControl.centerY - radius;
+                } else {
+                    y = _touchControl.centerY + radius;
+                }
+            }
+            _touchControl.touchX = x;
+            _touchControl.touchY = y;
+        }
+        _game.controlEvent(Common.getEventFromTouch());
+    });
+};
+Common.getEventFromTouch = function() {
+    let xLength = Math.abs(_touchControl.touchX - _touchControl.centerX);
+    let yLength = Math.abs(_touchControl.touchY - _touchControl.centerY);
+    if (xLength > yLength) {
+        if (_touchControl.touchX < _touchControl.centerX) {
+            return "Left";
+        } else {
+            return "Right";
+        }
+    } else {
+        if (_touchControl.touchY < _touchControl.centerY) {
+            return "Up";
+        } else {
+            return "Down";
+        }
+    }
 };
 
 let _context;
@@ -260,6 +344,13 @@ Common.sendStompMessage = function(message, messageType, sendTo) {
 };
 
 //工具类
+let _id = 0;
+Common.generateId = function() {
+    return "id_" + _id++;
+};
+Common.distance = function(x1,y1,x2,y2) {
+    return Math.sqrt(Math.pow(x1 - x2,2) + Math.pow(y1 - y2, 2));
+};
 Date.prototype.format = function(fmt) {
     const o = {
         "M+": this.getMonth() + 1,               //月份
@@ -279,11 +370,6 @@ Date.prototype.format = function(fmt) {
         }
     }
     return fmt;
-}
-
-let _id = 0;
-Common.generateId = function() {
-    return "id_" + _id++;
 };
 
 //测试类

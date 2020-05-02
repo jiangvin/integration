@@ -63,31 +63,6 @@
 			game.addUserCheckEvent();
 			stage.updateAfterConnect(name);
 			stage.updateItemId(tankLogo,name);
-			stage.controlEvent = function (event) {
-				switch (event) {
-					case "Up":
-						tankLogo.orientation = 0;
-						tankLogo.action = 1;
-						break;
-					case "Down":
-						tankLogo.orientation = 1;
-						tankLogo.action = 1;
-						break;
-					case "Left":
-						tankLogo.orientation = 2;
-						tankLogo.action = 1;
-						break;
-					case "Right":
-						tankLogo.orientation = 3;
-						tankLogo.action = 1;
-						break;
-					case "Stop":
-						tankLogo.action = 0;
-						break;
-					default:
-						break;
-				}
-			}
 		});
 
         stage.updateAfterConnect = function (name) {
@@ -133,7 +108,7 @@
 						"orientation": tankLogo.orientation,
 						"action": tankLogo.action
 					}, "ADD_TANK");
-			});
+			},1);
 		}
 	})();
     game.init();

@@ -244,33 +244,26 @@ function Game() {
 
     //触屏提示圆
     this.drawTouchCycle = function (context) {
-        if (Common.getTouch() !== true) {
-            return;
-        }
+        const touchInfo = Common.getTouchInfo();
 
-        let centerX = Common.width() / 4 / 2;
-        let centerY = Common.height() / 2 / 2;
-        let radius = centerX > centerY ? centerY : centerX;
-        centerY *= 3;
-        if (centerX - radius < 5) {
-            centerX += 10;
-        }
-        if (Common.height() - centerY - radius < 5) {
-            centerY -= 10;
+        if (touchInfo.touch !== true) {
+            return;
         }
 
         //外圆
         context.globalAlpha = 0.2;
         context.fillStyle = '#FFF';
         context.beginPath();
-        context.arc(centerX,centerY,radius,0,2 * Math.PI);
+        context.arc(touchInfo.centerX, touchInfo.centerY, touchInfo.radius,0,2 * Math.PI);
         context.closePath();
         context.fill();
 
+        let x = _touchControl.touchX ? _touchControl.touchX : _touchControl.centerX;
+        let y = _touchControl.touchY ? _touchControl.touchY : _touchControl.centerY;
+
         //内圆
-        radius /= 2;
         context.beginPath();
-        context.arc(centerX,centerY,radius,0,2 * Math.PI);
+        context.arc(x, y, touchInfo.radius / 2,0,2 * Math.PI);
         context.closePath();
         context.fill();
 
