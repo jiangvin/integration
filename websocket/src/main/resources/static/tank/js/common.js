@@ -2,11 +2,28 @@ const Common = function() {};
 
 //全局初始化函数，在创建game后启动
 Common.init = function() {
+
     //在手机上禁用滑动
     window.addEventListener('touchmove', function(e) {
         e.stopPropagation();
     }, false);
 
+
+    document.addEventListener("plusready",function (e) {
+        console.log("plusready");
+    });
+
+    window.addEventListener('touchstart', function(e) {
+        console.log("touchstart:" + e.touches[0].clientX + " " + e.touches[0].clientY);
+    });
+
+    window.addEventListener('touchmove', function(e) {
+        console.log("touchmove:" + e.touches[0].clientX + " " + e.touches[0].clientY);
+    });
+
+    window.addEventListener('touchend', function(e) {
+        console.log("touchend");
+    });
 
 };
 
@@ -74,6 +91,15 @@ Common.windowChange = function() {
     wrapper.style.cssText = style;
 };
 
+let _touch = null;
+Common.setTouch = function(touch) {
+    if (_touch !== null) {
+        return;
+    }
+
+  _touch = touch;
+};
+
 let _context;
 Common.getContext = function() {
     if (!_context) {
@@ -87,13 +113,16 @@ Common.getContext = function() {
 Common.buttonBind = function(callback) {
     //先删除之前的事件
     Common.buttonUnbind();
-    $('#button').bind('click',callback);
+    $('#button1').bind('click',callback);
+    $('#button2').bind('click',callback);
 };
 Common.buttonUnbind = function() {
-    $('#button').unbind('click');
+    $('#button1').unbind('click');
+    $('#button2').unbind('click');
 };
 Common.buttonEnable = function(enable) {
-    document.getElementById('button').style.visibility = enable ? 'visible' : 'hidden';
+    document.getElementById('button1').style.visibility = enable ? 'visible' : 'hidden';
+    document.getElementById('button2').style.visibility = enable ? 'visible' : 'hidden';
 };
 
 //输入框

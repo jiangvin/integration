@@ -83,7 +83,7 @@
 
             }
         });
-        Common.buttonBind(function () {
+        Common.buttonBind(function (e) {
         	const name = Common.inputText();
 
         	//检测是否输入名字
@@ -108,10 +108,9 @@
 			//开始连接
 			Common.stompConnect(name);
 			game.addUserCheckEvent();
-
 			stage.updateAfterConnect(name);
-
 			stage.updateItemId(tankLogo,name);
+            Common.setTouch(e.currentTarget.id === "button2");
 		});
 
         stage.updateAfterConnect = function (name) {

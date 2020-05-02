@@ -211,10 +211,7 @@ function Game() {
         context.fillText('© Created by Vin (WX: Jiang_Vin)',Common.width() - 12,Common.height() - 5);
 
         //帧率信息
-        context.font = '14px Helvetica';
         context.textAlign = 'left';
-        context.textBaseline = 'bottom';
-        context.fillStyle = '#AAA';
         let text = 'FPS: ' + _framesPerSecond;
         if (_users.length > 0) {
             text += ' / USER: ' + _users.length;
