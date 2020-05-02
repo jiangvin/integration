@@ -24,13 +24,13 @@
 			}
 		});
 		//提示信息
-		stage.createItem({
+		const info = stage.createItem({
 			draw:function(context) {
 				context.font = '24px Helvetica';
 				context.textAlign = 'center';
 				context.textBaseline = 'middle';
 				context.fillStyle = '#949494';
-				context.fillText('上下左右移动，回车说话',Common.width() / 2,Common.height() - 70);
+				context.fillText('请选择控制方式',Common.width() / 2,Common.height() - 70);
 			}
 		});
 		//事件绑定
@@ -107,16 +107,30 @@
 
 			//开始连接
 			Common.stompConnect(name);
+            Common.setTouch(e.currentTarget.id === "button2");
+
 			game.addUserCheckEvent();
 			stage.updateAfterConnect(name);
 			stage.updateItemId(tankLogo,name);
-            Common.setTouch(e.currentTarget.id === "button2");
 		});
 
         stage.updateAfterConnect = function (name) {
 			//隐藏输入框和按钮
 			Common.inputEnable(false);
 			Common.buttonEnable(false);
+
+			//更新提示文字
+            delete this.items[info.id];
+            stage.createItem({
+                draw: function (context) {
+                    let text = Common.getTouch() ? "滑动屏幕控制,触屏不能发言" : "键盘上下左右控制,回车发言";
+                    context.font = '24px Helvetica';
+                    context.textAlign = 'center';
+                    context.textBaseline = 'middle';
+                    context.fillStyle = '#949494';
+                    context.fillText(text, Common.width() / 2, Common.height() - 70);
+                }
+            });
 
         	//重设输入框的属性和事件
 			Common.inputResize();

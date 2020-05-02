@@ -99,6 +99,9 @@ Common.setTouch = function(touch) {
 
   _touch = touch;
 };
+Common.getTouch = function() {
+    return _touch;
+}
 
 let _context;
 Common.getContext = function() {
