@@ -21,7 +21,6 @@ public class OnlineUserService {
 
     public void add(String key, String sessionId) {
         sessionMap.put(key, new UserBo(key, sessionId));
-        log.info("add new session:{}({})", key, sessionMap.size());
     }
 
     public boolean remove(String key) {

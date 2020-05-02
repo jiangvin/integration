@@ -126,6 +126,10 @@ Common.stompConnect = function(name) {
     });
 };
 Common.sendStompMessage = function(message, messageType, sendTo) {
+    if (!_stompClient) {
+        return;
+    }
+
     if (!messageType) {
         messageType = "USER_MESSAGE";
     }

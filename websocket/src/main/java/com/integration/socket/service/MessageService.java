@@ -1,6 +1,7 @@
 package com.integration.socket.service;
 
 import com.integration.socket.model.MessageType;
+import com.integration.socket.model.bo.TankBo;
 import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.model.dto.TankDto;
 import com.integration.util.object.ObjectUtil;
@@ -9,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -72,6 +74,9 @@ public class MessageService {
             case ADD_TANK:
                 processAddTank(messageDto, sendFrom);
                 break;
+            case UPDATE_TANK_CONTROL:
+                processTankControl(messageDto, sendFrom);
+                break;
             default:
                 log.warn("unsupported messageType:{} from {}", messageDto.getMessageType(), sendFrom);
                 break;
@@ -99,6 +104,17 @@ public class MessageService {
 
         //收到单位，即将向所有人同步单位信息
         MessageDto sendBack = new MessageDto(tankService.getTankList(), MessageType.TANKS);
+        sendMessage(sendBack);
+    }
+
+    private void processTankControl(MessageDto messageDto, String sendFrom) {
+        TankDto request = ObjectUtil.readValue(messageDto.getMessage(), TankDto.class);
+        if (request == null) {
+            return;
+        }
+        request.setId(sendFrom);
+        TankDto response = TankDto.convert(tankService.updateTankControl(request));
+        MessageDto sendBack = new MessageDto(Collections.singletonList(response), MessageType.TANKS);
         sendMessage(sendBack);
     }
 

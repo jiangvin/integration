@@ -6,6 +6,9 @@
 function Game() {
     const thisGame = this;
 
+    //控制
+    const _control = {lastOrientation:-1, lastAction:-1};
+
     //Game的画布初始化，要放在前面
     const canvas = Common.getCanvas();
     const context = Common.getContext();
@@ -45,6 +48,29 @@ function Game() {
                 this.currentStage().receiveStompMessage(messageDto);
                 break;
         }
+    };
+
+    //控制相关
+    this.updateControl = function (orientation, action) {
+        let update;
+        if (orientation !== null && _control.lastOrientation !== orientation) {
+            update = true;
+        }
+
+        if (action != null && _control.lastAction !== action) {
+            update = true;
+        }
+
+        if (!update) {
+            return;
+        }
+
+        _control.lastOrientation = orientation != null ? orientation :_control.lastOrientation;
+        _control.lastAction = action != null ? action : _control.lastAction;
+        Common.sendStompMessage({
+            orientation: _control.lastOrientation,
+            action: _control.lastAction
+        },"UPDATE_TANK_CONTROL");
     };
 
     //动画相关

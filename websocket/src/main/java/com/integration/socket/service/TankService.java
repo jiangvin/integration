@@ -1,6 +1,7 @@
 package com.integration.socket.service;
 
 import com.integration.socket.model.ActionType;
+import com.integration.socket.model.OrientationType;
 import com.integration.socket.model.bo.TankBo;
 import com.integration.socket.model.dto.TankDto;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,24 @@ public class TankService {
         TankBo tankBo = TankBo.convert(tankDto);
         tankMap.put(tankBo.getTankId(), tankBo);
         return true;
+    }
+
+    public TankBo updateTankControl(TankDto tankDto) {
+        if (!tankMap.containsKey(tankDto.getId())) {
+            return null;
+        }
+
+        TankBo tankBo = tankMap.get(tankDto.getId());
+        //状态只同步朝向和移动命令
+        OrientationType orientationType = OrientationType.convert(tankDto.getOrientation());
+        if (orientationType != OrientationType.UNKNOWN) {
+            tankBo.setOrientationType(orientationType);
+        }
+        ActionType actionType = ActionType.convert(tankDto.getAction());
+        if (actionType != ActionType.UNKNOWN) {
+            tankBo.setActionType(actionType);
+        }
+        return tankBo;
     }
 
     public boolean removeTank(String tankId) {

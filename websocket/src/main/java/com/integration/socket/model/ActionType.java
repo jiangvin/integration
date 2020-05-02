@@ -8,7 +8,7 @@ package com.integration.socket.model;
 public enum ActionType {
     STOP(0),
     RUN(1),
-    UNKNOWN(99);
+    UNKNOWN(-1);
 
     private int value;
 

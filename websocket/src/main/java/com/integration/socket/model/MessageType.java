@@ -22,7 +22,7 @@ public enum MessageType {
      */
     USERS,
     /**
-     * 所有tank列表
+     * tank状态列表
      */
     TANKS,
     /**
@@ -36,4 +36,9 @@ public enum MessageType {
      * 用户新增tank，只在menu页使用
      */
     ADD_TANK,
+
+    /**
+     * 同步状态，为了避免客户端作弊，只传递状态
+     */
+    UPDATE_TANK_CONTROL,
 }
