@@ -29,8 +29,10 @@ function Game() {
     const _stages = [];
     const _index = 0;
 
-    //帧动画控制
-    let _handler;
+    //渲染控制
+    let _drawHandler;
+    //运算控制
+    let _updateHandler;
 
     this.receiveStompMessage = function(messageDto) {
         switch (messageDto.messageType) {
@@ -78,6 +80,15 @@ function Game() {
         let totalFrames = 0;
         let lastFrames = 0;
         let lastDate = Date.now();
+
+        //开启运算
+        _updateHandler = setInterval(function () {
+            thisGame.updateEvents();
+            const stage = thisGame.currentStage();
+            stage.update();
+        }, 18);
+
+        //开启渲染
         const step = function () {
 
             //计算帧数
@@ -94,21 +105,19 @@ function Game() {
             context.fillStyle = '#2b2b2b';
             context.fillRect(0, 0, canvas.width, canvas.height);
 
-            thisGame.updateEvents();
-
             const stage = thisGame.currentStage();
-            stage.update();
             stage.draw(context);
 
             thisGame.drawMessage(context);
             thisGame.drawInfo(context);
 
-            _handler = requestAnimationFrame(step);
+            _drawHandler = requestAnimationFrame(step);
         };
-        _handler = requestAnimationFrame(step);
+        _drawHandler = requestAnimationFrame(step);
     };
     this.stop = function(){
-        _handler && cancelAnimationFrame(_handler);
+        _drawHandler && cancelAnimationFrame(_drawHandler);
+        _updateHandler && clearInterval(_updateHandler);
     };
 
     //布景相关
