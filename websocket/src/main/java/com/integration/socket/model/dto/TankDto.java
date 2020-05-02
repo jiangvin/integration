@@ -12,9 +12,13 @@ import lombok.Data;
 @Data
 public class TankDto {
     private String id;
-    private double x;
-    private double y;
-    private double speed;
+    private Double x;
+    private Double y;
+    private Double speed;
+
+    /**
+     * 客户端最少传输资料，朝向和状态（在玩家控制时传输）
+     */
     private int orientation;
     private int action;
 
