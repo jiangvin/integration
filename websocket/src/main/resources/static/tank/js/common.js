@@ -160,6 +160,11 @@ Date.prototype.format = function(fmt) {
     return fmt;
 }
 
+let _id = 0;
+Common.generateId = function() {
+    return "id_" + _id++;
+};
+
 //测试类
 Common.images = function() {
     let img = document.createElement('img');

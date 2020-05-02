@@ -58,7 +58,7 @@ function Game() {
             ++totalFrames;
             const offset = Date.now() - lastDate;
             if (offset >= 1000) {
-                thisGame.setFps(totalFrames - lastFrames);
+                _framesPerSecond = totalFrames - lastFrames;
                 lastFrames = totalFrames;
                 lastDate += offset;
             }
@@ -83,14 +83,6 @@ function Game() {
     };
     this.stop = function(){
         _handler && cancelAnimationFrame(_handler);
-    };
-
-    //FPS相关
-    this.setFps = function(framesPerSecond) {
-        _framesPerSecond = framesPerSecond;
-        if (_framesPerSecond < 50) {
-            console.log("fps too low,need reload all data!", _framesPerSecond)
-        }
     };
 
     //布景相关

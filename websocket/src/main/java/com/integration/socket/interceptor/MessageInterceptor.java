@@ -1,12 +1,13 @@
 package com.integration.socket.interceptor;
 
+import com.integration.socket.model.MessageType;
 import com.integration.socket.model.bo.UserBo;
+import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.service.MessageService;
 import com.integration.socket.service.OnlineUserService;
 import com.integration.socket.service.TankService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -82,6 +83,7 @@ public class MessageInterceptor implements ChannelInterceptor {
             tankService.removeTank(username);
             log.info("user:{} try to disconnected...", username);
             messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
+            messageService.sendMessage(new MessageDto(username, MessageType.REMOVE_TANK));
         } else if (!StompCommand.SEND.equals(command)) {
             //send类型在controller里面单独处理
             log.info("user:{} send nonsupport command:{}...", username, command);

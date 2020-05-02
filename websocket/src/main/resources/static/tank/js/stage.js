@@ -34,13 +34,19 @@ function Stage(params) {
                     }
                 });
                 break;
+            case "REMOVE_TANK":
+                const tankId = messageDto.message;
+                if (thisStage.items[tankId]) {
+                    delete thisStage.items[tankId];
+                }
+                break;
         }
     };
 
     this.draw = function(context) {
-        this.items.forEach(function (item) {
-            item.draw(context)
-        });
+        for (let k in this.items) {
+            this.items[k].draw(context);
+        }
     };
 
     //更新相关
@@ -52,22 +58,21 @@ function Stage(params) {
             return;
         }
 
-        this.items.forEach(function (item) {
-            if (item.canUpdate()) {
-                item.update();
+        for (let k in this.items) {
+            if (this.items[k].canUpdate()) {
+                this.items[k].update();
             }
-        });
+        }
     };
 
     this.createItem = function(options) {
         const item = new Item(options);
         //关系绑定
         item.stage = this;
-        item.index = this.items.length;
-        this.items.push(item);
-        if (item.id !== "") {
-            this.items[item.id] = item;
+        if (item.id === "") {
+            item.id = Common.generateId();
         }
+        this.items[item.id] = item;
         return item;
     };
     this.updateItemId = function (item, newId) {

@@ -4,7 +4,6 @@ function Item(params) {
     this.params = params||{};
     this.settings = {
         id:"",
-        index: 0,
         stage: null,
         image: null,            //相应图片
         x:0,					//位置坐标:横坐标

@@ -25,6 +25,10 @@ public enum MessageType {
      * 所有tank列表
      */
     TANKS,
+    /**
+     * 删除
+     */
+    REMOVE_TANK,
 
     /**
      * 单向发送
