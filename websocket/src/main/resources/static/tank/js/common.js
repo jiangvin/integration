@@ -13,6 +13,11 @@ Common.getGame = function() {
     if (!_game) {
         _game = new Game("canvas");
     }
+
+    window.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
+    }, false);
+
     return _game;
 };
 
@@ -38,7 +43,6 @@ Common.height = function () {
 Common.windowChange = function() {
     const width = window.innerWidth;
     const height = window.innerHeight;
-
 
     let style = "";
     if(width >= height) { // 横屏
