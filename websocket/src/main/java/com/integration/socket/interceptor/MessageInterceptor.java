@@ -76,7 +76,8 @@ public class MessageInterceptor implements ChannelInterceptor {
 
             log.info("user:{} try to disconnected...", username);
             messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
-        } else {
+        } else if (!StompCommand.SEND.equals(command)) {
+            //send类型在controller里面单独处理
             log.info("user:{} send nonsupport command:{}...", username, command);
         }
     }
