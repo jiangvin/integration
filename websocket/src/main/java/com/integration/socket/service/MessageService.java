@@ -3,6 +3,7 @@ package com.integration.socket.service;
 import com.integration.socket.model.MessageType;
 import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.model.dto.TankDto;
+import com.integration.util.object.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,10 @@ public class MessageService {
     }
 
     private void processAddTank(MessageDto messageDto, String sendFrom) {
-        TankDto tankDto = (TankDto) messageDto.getMessage();
+        TankDto tankDto = ObjectUtil.readValue(messageDto.getMessage(), TankDto.class);
+        if (tankDto == null) {
+            return;
+        }
         tankDto.setId(sendFrom);
         if (!tankService.addTank(tankDto)) {
             return;

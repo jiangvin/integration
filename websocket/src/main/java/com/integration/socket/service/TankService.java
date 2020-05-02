@@ -27,7 +27,7 @@ public class TankService {
      * 刷新频率17毫秒，模拟1秒60帧刷新模式
      */
     @Scheduled(fixedDelay = 17)
-    private void update() {
+    public void update() {
         for (Map.Entry<String, TankBo> kv : tankMap.entrySet()) {
             TankBo tankBo = kv.getValue();
             if (tankBo.getActionType() == ActionType.RUN) {

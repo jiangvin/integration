@@ -12,8 +12,8 @@ import lombok.Data;
 @Data
 public class TankDto {
     private String id;
-    private int x;
-    private int y;
+    private double x;
+    private double y;
     private double speed;
     private int orientation;
     private int action;
@@ -21,8 +21,8 @@ public class TankDto {
     public static TankDto convert(TankBo tankBo) {
         TankDto tankDto = new TankDto();
         tankDto.setId(tankBo.getTankId());
-        tankDto.setX((int) tankBo.getX());
-        tankDto.setY((int) tankBo.getY());
+        tankDto.setX(tankBo.getX());
+        tankDto.setY(tankBo.getY());
         tankDto.setSpeed(tankBo.getSpeed());
         tankDto.setOrientation(tankBo.getOrientationType().getValue());
         tankDto.setAction(tankBo.getActionType().getValue());

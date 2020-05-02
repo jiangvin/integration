@@ -51,7 +51,18 @@ function Game() {
             });
         });
 
-        thisGame.addEvent("USER_CHECK");
+        thisGame.addEvent("USER_CHECK", function () {
+            if (_users.length === 0) {
+                $.ajaxSettings.async = true; //异步执行
+                $.getJSON('/user/getAll', function(result) {
+                    if (result.success) {
+                        _users = result.data;
+                    } else {
+                        thisGame.addMessage(result.message,"#F00");
+                    }
+                });
+            }
+        });
     };
     this.receiveFromServer = function(messageDto) {
         switch (messageDto.messageType) {
@@ -160,9 +171,10 @@ function Game() {
     };
 
     //事件类
-    this.addEvent = function (eventType,timeout) {
+    this.addEvent = function (eventType,callBack,timeout) {
         let event = {};
         event.eventType = eventType;
+        event.callback = callBack;
         event.timeout = timeout ? timeout : 100; //默认100帧倒计时，不到1.5秒
         console.log("add event:" + event.eventType + " timeout:" + event.timeout);
         _events.push(event);
@@ -173,30 +185,12 @@ function Game() {
             if (event.timeout > 0) {
                 --event.timeout;
             } else {
-                thisGame.processEvent(event);
+                console.log("process event:" + event.eventType);
+                event.callback();
                 //删除事件
                 _events.splice(i,1);
                 --i;
             }
-        }
-    };
-    this.processEvent = function (event) {
-        console.log("process event:" + event.eventType);
-        switch (event.eventType) {
-            case "USER_CHECK":
-                if (_users.length === 0) {
-                    $.ajaxSettings.async = true; //异步执行
-                    $.getJSON('/user/getAll', function(result) {
-                        if (result.success) {
-                            _users = result.data;
-                        } else {
-                            thisGame.addMessage(result.message,"#F00");
-                        }
-                    });
-                }
-                break;
-            default:
-                break;
         }
     };
 

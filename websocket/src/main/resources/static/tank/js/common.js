@@ -93,7 +93,7 @@ Common.inputBindMessageControl = function() {
             //关闭输入框前先处理文字信息
             const text = input.val();
             if (text !== "") {
-                Common.getGame().getStompClient().send("/send", {}, JSON.stringify({ 'message': text }));
+                Common.sendStompMessage(JSON.stringify({ 'message': text }));
                 input.val("");
             }
             _inputEnable = !_inputEnable;
@@ -106,6 +106,16 @@ Common.inputBindMessageControl = function() {
         }
 
     });
+};
+
+//网络通信
+Common.sendStompMessage = function(messageType, message, sendTo) {
+    Common.getGame().getStompClient().send("/send", {},
+        JSON.stringify({
+          "message": message,
+          "messageType": messageType,
+            "sendTo": sendTo
+        }));
 };
 
 //工具类

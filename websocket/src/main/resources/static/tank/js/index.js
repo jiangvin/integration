@@ -151,6 +151,18 @@
 					context.fillText('你的名字: ' + name,Common.width() / 2,85);
 				}
 			})
+
+			//注册事件，同步单位
+			game.addEvent("SYNC_MY_TANK",function () {
+				Common.sendStompMessage("ADD_TANK",
+					{
+						"x": tankLogo.x,
+						"y": tankLogo.y,
+						"speed": tankLogo.speed,
+						"orientation": tankLogo.orientation,
+						"action": tankLogo.action
+					});
+			})
 		}
 	})();
     game.init();
