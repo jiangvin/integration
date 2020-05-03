@@ -29,9 +29,10 @@ let _canvas;
 Common.getCanvas = function() {
     if (!_canvas) {
         _canvas = document.getElementById("canvas");
-        Common.windowChange();
 
         //自动跟随窗口变化
+        //先手动调用一次，再绑定事件
+        Common.windowChange();
         window.addEventListener("resize", function () {
             Common.windowChange();
         });
@@ -70,11 +71,28 @@ Common.windowChange = function() {
     }
     let wrapper =  document.getElementById("wrapper");
     wrapper.style.cssText = style;
-    Common.generateTouchInfo();
+    Common.generateTouchInfo(height > width);
 };
 
 //操控相关
 let _touchControl = {"touch": null};
+Common.generateTouchInfo = function(portrait) {
+    let centerX = Common.width() / 4 / 2;
+    let centerY = Common.height() / 2 / 2;
+    let radius = centerX > centerY ? centerY : centerX;
+    centerY *= 3;
+    if (centerX - radius < 5) {
+        centerX += 10;
+    }
+    if (Common.height() - centerY - radius < 5) {
+        centerY -= 10;
+    }
+
+    _touchControl.centerX = centerX;
+    _touchControl.centerY = centerY;
+    _touchControl.radius = radius;
+    _touchControl.portrait = portrait;
+};
 Common.setTouch = function(touch) {
     if (_touchControl.touch !== null) {
         return;
@@ -141,31 +159,11 @@ Common.bindKeyboard = function() {
         }
     });
 };
-Common.generateTouchInfo = function() {
-    if (_touchControl.touch !== true) {
-        return;
-    }
-
-    let centerX = Common.width() / 4 / 2;
-    let centerY = Common.height() / 2 / 2;
-    let radius = centerX > centerY ? centerY : centerX;
-    centerY *= 3;
-    if (centerX - radius < 5) {
-        centerX += 10;
-    }
-    if (Common.height() - centerY - radius < 5) {
-        centerY -= 10;
-    }
-
-    _touchControl.centerX = centerX;
-    _touchControl.centerY = centerY;
-    _touchControl.radius = radius;
-};
 Common.bindTouch = function() {
-    Common.generateTouchInfo();
     window.addEventListener('touchstart', function(e) {
-        let x = e.touches[0].clientX;
-        let y = e.touches[0].clientY;
+        const touchPoint = Common.getTouchPoint(e.touches[0]);
+        let x = touchPoint.x;
+        let y = touchPoint.y;
 
         const distance = Common.distance(x,y,_touchControl.centerX,_touchControl.centerY);
         if (distance > _touchControl.radius) {
@@ -183,8 +181,9 @@ Common.bindTouch = function() {
         _game.controlEvent("Stop");
     });
     window.addEventListener('touchmove', function(e) {
-        let x = e.touches[0].clientX;
-        let y = e.touches[0].clientY;
+        const touchPoint = Common.getTouchPoint(e.touches[0]);
+        let x = touchPoint.x;
+        let y = touchPoint.y;
 
         const distance = Common.distance(x,y,_touchControl.centerX,_touchControl.centerY);
         const radius = _touchControl.radius;
@@ -240,6 +239,22 @@ Common.getEventFromTouch = function() {
             return "Down";
         }
     }
+};
+Common.getTouchPoint = function(eventPoint) {
+    let x = eventPoint.clientX;
+    let y = eventPoint.clientY;
+
+    const touchPoint = {};
+    if (_touchControl.portrait) {
+        //竖屏
+        touchPoint.x = y;
+        touchPoint.y = Common.height() - x;
+    } else {
+        //横屏
+        touchPoint.x = x;
+        touchPoint.y = y;
+    }
+    return touchPoint;
 };
 
 let _context;
