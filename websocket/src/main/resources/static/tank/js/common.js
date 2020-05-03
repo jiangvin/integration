@@ -4,7 +4,7 @@ const Common = function() {};
 Common.init = function() {
     //在手机上禁用滑动
     window.addEventListener('touchmove', function(e) {
-        e.stopPropagation();
+        e.preventDefault();
     }, false);
 };
 
