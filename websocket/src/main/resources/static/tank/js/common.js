@@ -197,7 +197,7 @@ Common.bindTouch = function() {
         _touchControl.touchY = y;
         _game.controlEvent(Common.getEventFromTouch());
     });
-    window.addEventListener('touchend', function(e) {
+    window.addEventListener('touchend', function() {
         _touchControl.touchX = null;
         _touchControl.touchY = null;
         _game.controlEvent("Stop");
@@ -326,30 +326,63 @@ Common.inputBindMessageControl = function() {
     }
 
     _bindMessageControl = true;
+
+    if (Common.getTouch() !== true) {
+        Common.inputBindKeyboard();
+    } else {
+        Common.inputBindTouch();
+    }
+};
+Common.inputBindKeyboard = function() {
     window.addEventListener("keydown",function (e) {
-        if (e.key !== "Enter") {
+        if (e.key === "Enter") {
+            Common.inputMessageEvent();
+        }
+    });
+};
+Common.inputBindTouch = function() {
+    window.addEventListener('touchstart', function(e) {
+        const touchPoint = Common.getTouchPoint(e.touches[0]);
+        let x = touchPoint.x;
+        let y = touchPoint.y;
+
+        const distance = Common.distance(x,y,_touchControl.hornCenterX,_touchControl.hornCenterY);
+        if (distance > _touchControl.hornRadius) {
+            //超过外圆，不做任何操作
             return;
         }
-
-        const input = $('#input');
-        if (_inputEnable) {
-            //关闭输入框
-            //关闭输入框前先处理文字信息
-            const text = input.val();
-            if (text !== "") {
-                Common.sendStompMessage(text);
-                input.val("");
-            }
-            _inputEnable = !_inputEnable;
-            Common.inputEnable(_inputEnable);
-        } else {
-            //打开输入框
-            _inputEnable = !_inputEnable;
-            Common.inputEnable(_inputEnable);
-            input.focus();
-        }
-
+        Common.inputMessageEvent();
     });
+
+    window.addEventListener('touchend', function() {
+
+        //取消的时候会失去焦点，延迟看能不能重新获得焦点
+        Common.getGame().addEvent("input-focus", function () {
+            if (_inputEnable) {
+                const input = $('#input');
+                input.focus();
+            }
+        },1);
+    });
+};
+Common.inputMessageEvent = function() {
+    const input = $('#input');
+    if (_inputEnable) {
+        //关闭输入框
+        //关闭输入框前先处理文字信息
+        const text = input.val();
+        if (text !== "") {
+            Common.sendStompMessage(text);
+            input.val("");
+        }
+        _inputEnable = !_inputEnable;
+        Common.inputEnable(_inputEnable);
+    } else {
+        //打开输入框
+        _inputEnable = !_inputEnable;
+        Common.inputEnable(_inputEnable);
+        input.focus();
+    }
 };
 
 //网络通信
