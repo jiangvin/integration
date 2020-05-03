@@ -12,9 +12,6 @@ Common.init = function() {
             }
         }
     }, false);
-
-    //加载图片资源
-    Common.loadImage();
 };
 
 Common.extend = function(target, settings, params) {
@@ -459,26 +456,4 @@ Date.prototype.format = function(fmt) {
         }
     }
     return fmt;
-};
-
-//图片资源
-const _images = [];
-Common.loadImage = function() {
-    //喇叭
-    let img = document.createElement('img');
-    img.src = 'tank/image/horn.png';
-    _images['horn'] = img;
-};
-Common.getImage = function(id) {
-    return _images[id];
-};
-//测试
-Common.images = function() {
-    let img = document.createElement('img');
-    img.src = 'tank/image/tank01.png';
-    img.widthPics = 4;
-    img.heightPics = 1;
-    img.displayWidth = img.width / img.widthPics;
-    img.displayHeight = img.height / img.heightPics;
-    return img;
 };
