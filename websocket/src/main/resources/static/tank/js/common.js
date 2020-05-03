@@ -81,11 +81,11 @@ Common.generateTouchInfo = function(portrait) {
     let centerY = Common.height() / 2 / 2;
     let radius = centerX > centerY ? centerY : centerX;
     centerY *= 3;
-    if (centerX - radius < 5) {
-        centerX += 10;
+    if (centerX - radius < 20) {
+        centerX += 20;
     }
-    if (Common.height() - centerY - radius < 5) {
-        centerY -= 10;
+    if (Common.height() - centerY - radius < 20) {
+        centerY -= 20;
     }
 
     _touchControl.centerX = centerX;
