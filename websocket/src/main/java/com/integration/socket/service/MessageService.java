@@ -1,16 +1,12 @@
 package com.integration.socket.service;
 
 import com.integration.socket.model.MessageType;
-import com.integration.socket.model.bo.TankBo;
 import com.integration.socket.model.dto.MessageDto;
-import com.integration.socket.model.dto.TankDto;
-import com.integration.util.object.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,12 +23,10 @@ public class MessageService {
 
     public static final String QUEUE_PATH = "/queue/send";
 
-    private final TankService tankService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public MessageService(SimpMessagingTemplate simpMessagingTemplate, TankService tankService) {
+    public MessageService(SimpMessagingTemplate simpMessagingTemplate) {
         this.simpMessagingTemplate = simpMessagingTemplate;
-        this.tankService = tankService;
     }
 
     public void sendMessage(MessageDto messageDto) {
@@ -66,24 +60,7 @@ public class MessageService {
         }
     }
 
-    public void receiveMessage(MessageDto messageDto, String sendFrom) {
-        switch (messageDto.getMessageType()) {
-            case USER_MESSAGE:
-                processUserMessage(messageDto, sendFrom);
-                break;
-            case ADD_TANK:
-                processAddTank(messageDto, sendFrom);
-                break;
-            case UPDATE_TANK_CONTROL:
-                processTankControl(messageDto, sendFrom);
-                break;
-            default:
-                log.warn("unsupported messageType:{} from {}", messageDto.getMessageType(), sendFrom);
-                break;
-        }
-    }
-
-    private void processUserMessage(MessageDto messageDto, String sendFrom) {
+    void processUserMessage(MessageDto messageDto, String sendFrom) {
         if (StringUtils.isEmpty(messageDto.getSendTo())) {
             messageDto.setMessage(String.format("%s: %s", sendFrom, messageDto.getMessage()));
         } else {
@@ -92,41 +69,7 @@ public class MessageService {
         sendMessage(messageDto);
     }
 
-    private void processAddTank(MessageDto messageDto, String sendFrom) {
-        TankDto tankDto = ObjectUtil.readValue(messageDto.getMessage(), TankDto.class);
-        if (tankDto == null) {
-            return;
-        }
-        tankDto.setId(sendFrom);
-        if (!tankService.addTank(tankDto)) {
-            return;
-        }
-
-        //收到单位，即将向所有人同步单位信息
-        MessageDto sendBack = new MessageDto(tankService.getTankList(), MessageType.TANKS);
-        sendMessage(sendBack);
-    }
-
-    private void processTankControl(MessageDto messageDto, String sendFrom) {
-        TankDto request = ObjectUtil.readValue(messageDto.getMessage(), TankDto.class);
-        if (request == null) {
-            return;
-        }
-        request.setId(sendFrom);
-
-        TankBo updateBo = tankService.updateTankControl(request);
-        if (updateBo == null) {
-            log.warn("can not update tank:{}, ignore it...", sendFrom);
-            return;
-        }
-
-        TankDto response = TankDto.convert(tankService.updateTankControl(request));
-        MessageDto sendBack = new MessageDto(Collections.singletonList(response), MessageType.TANKS);
-        sendMessage(sendBack);
-    }
-
-
-    public void sendUserStatusAndMessage(List<String> users, String username, boolean isLeave) {
+    void sendUserStatusAndMessage(List<String> users, String username, boolean isLeave) {
         //没人了，不用更新状态
         if (users.isEmpty()) {
             log.info("no user in service, no need to send message");

@@ -44,7 +44,7 @@ public class WebSocketHandshakeInterceptor extends HttpSessionHandshakeIntercept
             throw new ExceptionUtil.BadRequestException(ExceptionUtil.Type.INVALID_USER_NAME);
         }
 
-        if (onlineUserService.get(name) != null) {
+        if (onlineUserService.exists(name)) {
             throw new ExceptionUtil.ForbiddenException(ExceptionUtil.Type.USER_NAME_ALREADY_EXISTS);
         }
         return super.beforeHandshake(request, response, webSocketHandler, attributes);

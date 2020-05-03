@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping("/checkName")
     public boolean checkName(@RequestParam(value = "name") String name) {
-        if (onlineUserService.getUserList().contains(name)) {
+        if (onlineUserService.exists(name)) {
             throw new CustomException("输入的名字重复: " + name);
         }
         return true;

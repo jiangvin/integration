@@ -1,11 +1,7 @@
 package com.integration.socket.interceptor;
 
-import com.integration.socket.model.MessageType;
 import com.integration.socket.model.bo.UserBo;
-import com.integration.socket.model.dto.MessageDto;
-import com.integration.socket.service.MessageService;
-import com.integration.socket.service.OnlineUserService;
-import com.integration.socket.service.TankService;
+import com.integration.socket.service.GameService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -17,6 +13,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author 蒋文龙(Vin)
@@ -28,17 +25,15 @@ import java.security.Principal;
 @Slf4j
 public class MessageInterceptor implements ChannelInterceptor {
 
-    private final OnlineUserService onlineUserService;
+    private final GameService gameService;
 
-    private final MessageService messageService;
+    /**
+     * 缓存新用户，当用户完成所有路径订阅后才放入game中
+     */
+    private ConcurrentHashMap <String, UserBo> newUserCache = new ConcurrentHashMap<>();
 
-    private final TankService tankService;
-
-    public MessageInterceptor(OnlineUserService onlineUserService,
-                              @Lazy MessageService messageService, TankService tankService) {
-        this.onlineUserService = onlineUserService;
-        this.messageService = messageService;
-        this.tankService = tankService;
+    public MessageInterceptor(@Lazy GameService gameService) {
+        this.gameService = gameService;
     }
 
     @SneakyThrows
@@ -53,37 +48,32 @@ public class MessageInterceptor implements ChannelInterceptor {
 
         String username = principal.getName();
         if (StompCommand.CONNECT.equals(command)) {
-
             //有新用户加入
             log.info("user:{} try to connect...", username);
-            onlineUserService.add(username, accessor.getSessionId());
+            if (newUserCache.containsKey(username)) {
+                return;
+            }
+            newUserCache.put(username, new UserBo(username, accessor.getSessionId()));
         } else if (StompCommand.SUBSCRIBE.equals(command)) {
-
             //新用户订阅了消息
-            if (onlineUserService.get(username) == null) {
+            if (!newUserCache.containsKey(username)) {
                 return;
             }
 
-            UserBo userBo = onlineUserService.get(username);
+            UserBo userBo = newUserCache.get(username);
             String destination = accessor.getDestination();
             log.info("user:{} try to subscribe the path:{}...", username, destination);
             userBo.getSubscribeList().add(destination);
 
-            //新用户订阅了公共消息，这时候发送公共推送，确保新用户也能收到
+            //新用户完成了订阅，从缓存中删除，并加入到游戏中
             if (userBo.isFinishSubscribe()) {
-                messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, false);
+                newUserCache.remove(userBo.getUsername());
+                log.info("add user:{} into game...", userBo.getUsername());
+                gameService.addUser(userBo);
             }
         } else if (StompCommand.DISCONNECT.equals(command)) {
-
-            //用户离开
-            if (!onlineUserService.remove(username)) {
-                return;
-            }
-
-            tankService.removeTank(username);
             log.info("user:{} try to disconnected...", username);
-            messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
-            messageService.sendMessage(new MessageDto(username, MessageType.REMOVE_TANK));
+            gameService.removeUser(username);
         } else if (!StompCommand.SEND.equals(command)) {
             //send类型在controller里面单独处理
             log.info("user:{} send nonsupport command:{}...", username, command);

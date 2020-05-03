@@ -17,28 +17,32 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @Slf4j
 public class OnlineUserService {
-    private ConcurrentHashMap<String, UserBo> sessionMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, UserBo> userMap = new ConcurrentHashMap<>();
 
-    public void add(String key, String sessionId) {
-        sessionMap.put(key, new UserBo(key, sessionId));
+    public boolean exists(String key) {
+        return userMap.containsKey(key);
     }
 
-    public boolean remove(String key) {
-        if (!sessionMap.containsKey(key)) {
+    void add(UserBo userBo) {
+        userMap.put(userBo.getUsername(), userBo);
+    }
+
+    boolean remove(String key) {
+        if (!userMap.containsKey(key)) {
             return false;
         }
-        sessionMap.remove(key);
-        log.info("remove session:{}({})", key, sessionMap.size());
+        userMap.remove(key);
+        log.info("remove user:{} in user service(count:{})", key, userMap.size());
         return true;
     }
 
-    public UserBo get(String key) {
-        return sessionMap.get(key);
+    UserBo get(String key) {
+        return userMap.get(key);
     }
 
     public List<String> getUserList() {
         List<String> users = new ArrayList<>();
-        sessionMap.forEach((key, value) -> users.add(key));
+        userMap.forEach((key, value) -> users.add(key));
         return users;
     }
 }

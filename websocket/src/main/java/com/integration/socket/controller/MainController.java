@@ -1,8 +1,9 @@
 package com.integration.socket.controller;
 
 import com.integration.socket.model.dto.MessageDto;
-import com.integration.socket.service.MessageService;
+import com.integration.socket.service.GameService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
@@ -19,11 +20,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller("/")
 public class MainController {
 
-    private final MessageService messageService;
-
-    public MainController(MessageService messageService) {
-        this.messageService = messageService;
-    }
+    @Autowired
+    private GameService gameService;
 
     @GetMapping("/")
     public ModelAndView tankGame() {
@@ -53,7 +51,6 @@ public class MainController {
         }
 
         String username = accessor.getUser().getName();
-        log.info("receive:{} from user:{}", messageDto.toString(), username);
-        messageService.receiveMessage(messageDto, username);
+        gameService.receiveMessage(messageDto, username);
     }
 }
