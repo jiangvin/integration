@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta name="viewport" content="width=device-width,maximum-scale=0.7,viewport-fit=cover,user-scalable=no">
-    <title>Tank World</title>
+    <title th:text="${name}"></title>
     <link rel="shortcut icon" href="tank/image/favicon.png">
     <link rel="stylesheet" type="text/css" href="tank/css/style.css">
 </head>
-<body>
 
+<body>
 <div id="wrapper">
     <canvas id="canvas">不支持画布</canvas>
     <input id="input" type="text" placeholder="请输入名字" class="input-name"/>

@@ -4,6 +4,7 @@ import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.service.GameService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,9 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller("/")
 public class MainController {
 
+    @Value("${title}")
+    private String title;
+
     @Autowired
     private GameService gameService;
 
@@ -27,6 +31,7 @@ public class MainController {
     public ModelAndView tankGame() {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("index");
+        mav.getModel().put("name", title);
         return mav;
     }
 
@@ -34,7 +39,7 @@ public class MainController {
     public ModelAndView helloWorld() {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("main");
-        mav.getModel().put("name", "Hello World!");
+        mav.getModel().put("name", "chat");
         return mav;
     }
 
