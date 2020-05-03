@@ -16,8 +16,8 @@ function Game() {
     const _control = {lastOrientation:-1, lastAction:-1};
 
     //Game的画布初始化，要放在前面
-    const canvas = Common.getCanvas();
-    const context = Common.getContext();
+    const _canvas = Common.getCanvas();
+    const _context = Common.getContext();
 
     //帧率相关
     let _framesPerSecond = 60;
@@ -157,21 +157,21 @@ function Game() {
             }
 
             //开始绘制画面
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = '#2b2b2b';
-            context.fillRect(0, 0, canvas.width, canvas.height);
+            _context.clearRect(0, 0, _canvas.width, _canvas.height);
+            _context.fillStyle = '#2b2b2b';
+            _context.fillRect(0, 0, _canvas.width, _canvas.height);
 
             const stage = thisGame.currentStage();
-            stage.draw(context);
+            stage.draw(_context);
 
             //聊天信息
-            thisGame.drawMessage(context);
+            thisGame.drawMessage(_context);
 
             //触控板信息 - 触控模式
-            thisGame.drawTouchCycle(context);
+            thisGame.drawTouchCycle(_context);
 
             //常规显示信息
-            thisGame.drawInfo(context);
+            thisGame.drawInfo(_context);
 
             _drawHandler = requestAnimationFrame(step);
         };
