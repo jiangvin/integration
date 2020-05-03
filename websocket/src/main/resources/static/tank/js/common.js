@@ -318,7 +318,7 @@ Common.inputBindMessageControl = function() {
 
 //网络通信
 let _stompClient;
-Common.stompConnect = function(name) {
+Common.stompConnect = function(name, callback) {
     const socket = new SockJS('/websocket-simple?name=' + name);
     _stompClient = Stomp.over(socket);
     _stompClient.connect({}, function(frame) {
@@ -331,6 +331,7 @@ Common.stompConnect = function(name) {
         _stompClient.subscribe('/user/queue/send', function (response) {
             _game.receiveStompMessage(JSON.parse(response.body));
         });
+        callback();
     });
 };
 Common.sendStompMessage = function(message, messageType, sendTo) {

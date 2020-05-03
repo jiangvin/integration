@@ -6,9 +6,11 @@
 function Game() {
     const thisGame = this;
 
-    //状态
-    let _status = 1;  //0:关闭 1:正常 大于1为自定义状态
-    let _statusMessage = "等待连接...";  //当状态大于1时显示的提示字串
+    // 状态
+    // 0:关闭 1:正常 大于1为自定义状态
+    // 2:游戏第一次连接并且等待TANKS消息
+    let _status = 1;
+    let _statusMessage = "暂停";  //当状态大于1时显示的提示字串
 
     //控制
     const _control = {lastOrientation:-1, lastAction:-1};
@@ -38,6 +40,7 @@ function Game() {
     //运算控制
     let _updateHandler;
 
+    //网络连接
     this.receiveStompMessage = function (messageDto) {
         switch (messageDto.messageType) {
             case "USER_MESSAGE":
@@ -49,11 +52,27 @@ function Game() {
             case "USERS":
                 _users = messageDto.message;
                 break;
+            case "TANKS":
+                //第一次连接收到服务器消息后置为正常
+                if (_status === 2) {
+                    _status = 1;
+                }
             default:
                 //给当前场景处理服务消息
                 this.currentStage().receiveStompMessage(messageDto);
                 break;
         }
+    };
+
+    //状态相关
+    this.updateStatus = function (status,statusMessage) {
+        _status = status;
+        if (statusMessage) {
+            _statusMessage = statusMessage;
+        }
+    };
+    this.getStatus = function () {
+        return _status;
     };
 
     //控制相关
@@ -116,12 +135,11 @@ function Game() {
                     break;
                 case 1:
                     //游戏正常运行
-                    thisGame.updateEvents();
                     const stage = thisGame.currentStage();
                     stage.update();
-                    break;
                 default:
-                    //游戏暂停
+                    //游戏暂停，不影响游戏类的消息运行
+                    thisGame.updateEvents();
                     break;
             }
         }, 17);
@@ -278,7 +296,6 @@ function Game() {
             context.fillText(_statusMessage,Common.width() / 2,Common.height() * .4);
         }
     };
-
     //触屏提示圆
     this.drawTouchCycle = function (context) {
         const touchInfo = Common.getTouchInfo();

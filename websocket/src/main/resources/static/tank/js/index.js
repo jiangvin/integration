@@ -33,7 +33,8 @@
 				context.fillText('请选择控制方式',Common.width() / 2,Common.height() - 70);
 			}
 		});
-		//事件绑定
+
+		//事件绑定 - 按按钮才触发
         Common.buttonBind(function (e) {
         	const name = Common.inputText();
 
@@ -56,25 +57,31 @@
 				return;
 			}
 
-			//开始连接
-			Common.stompConnect(name);
+			//设定是否为触控模式
             Common.setTouch(e.currentTarget.id === "button2");
 
-			game.addUserCheckEvent();
-			stage.updateAfterConnect(name);
-			stage.updateItemId(tankLogo,name);
+			//开始连接
+            game.updateStatus(2,"等待连接中...");
+			Common.stompConnect(name,function () {
+                updateAfterConnect(name);
+            });
+
 		});
 
-        stage.updateAfterConnect = function (name) {
+        //其他函数定义
+        this.updateAfterConnect = function (name) {
+            stage.updateItemId(tankLogo,name);
+            game.addUserCheckEvent();
+
 			//隐藏输入框和按钮
 			Common.inputEnable(false);
 			Common.buttonEnable(false);
 
 			//更新提示文字
-            delete this.items[info.id];
+            delete stage.items[info.id];
             stage.createItem({
                 draw: function (context) {
-                    let text = Common.getTouch() ? "滑动屏幕控制,触屏不能发言" : "键盘上下左右控制,回车发言";
+                    let text = Common.getTouch() ? "滑动屏幕控制" : "键盘上下左右控制,回车发言";
                     context.font = '24px Helvetica';
                     context.textAlign = 'center';
                     context.textBaseline = 'middle';
@@ -88,7 +95,7 @@
 			Common.inputBindMessageControl();
 
 			//新增文字描述来取代按钮和输入框
-			this.createItem( {
+            stage.createItem( {
 				draw:function (context) {
 					context.font = '30px Arial';
 					context.textAlign = 'center';
