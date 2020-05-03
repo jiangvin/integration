@@ -13,18 +13,33 @@
     <input id="input" type="text" placeholder="请输入名字" class="input-name"/>
     <button id="button1" style="LEFT: 39.5%;">键盘控制</button>
     <button id="button2" style="LEFT: 50.5%;">触屏控制</button>
-    <div class="select-window">
+    <div class="select-window" style="visibility: hidden;">
         <div class="radio">
             <input type="radio" id="radio1" name="drone" checked />
             <label for="radio1" class="radio-label">P v P</label>
+            <select id="select1">
+                <option value="1">红队</option>
+                <option value="2">蓝队</option>
+                <option value="0">观看</option>
+            </select>
+            <p id="p1" class="select-status">未知</p>
         </div>
         <div class="radio" style="TOP: 33%;">
             <input type="radio" id="radio2" name="drone"/>
             <label for="radio2" class="radio-label">P v E</label>
+            <select id="select2">
+                <option value="1">玩家</option>
+                <option value="0">观看</option>
+            </select>
+            <p id="p2" class="select-status">未知</p>
         </div>
         <div class="radio" style="TOP: 66%;">
             <input type="radio" id="radio3" name="drone"/>
             <label for="radio3" class="radio-label">E v E</label>
+            <select id="select3">
+                <option value="0">观看</option>
+            </select>
+            <p id="p3" class="select-status">未知</p>
         </div>
     </div>
 </div>

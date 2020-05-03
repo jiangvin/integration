@@ -42,6 +42,19 @@ input.input-message {
     width: 70%;
 }
 
+select {
+    position: absolute;
+    text-align: center;
+    font-size: 1.0em;
+    padding: .3em .5em;
+    border-radius: 1em;
+    color: #5e6c77;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    outline:none;
+    top: -0.5em;
+}
+
 button {
     position: absolute;
     left: 45%;
@@ -70,13 +83,14 @@ div {
 }
 div.select-window {
     left: 15%;
-    top: 20%;
+    top: 30%;
     width: 70%;
     height: 60%;
 }
 
 .radio {
     margin: 0.5rem;
+    width: 70%;
 }
 .radio input[type="radio"] {
     position: absolute;
@@ -92,7 +106,7 @@ div.select-window {
     height: 1.4em;
     position: relative;
     top: -0.2em;
-    margin-right: 1em;
+    margin-right: 2%;
     vertical-align: top;
     cursor: pointer;
     text-align: center;
@@ -116,5 +130,11 @@ div.select-window {
     margin-right: 0;
 }
 .radio-label {
+    margin-right: 4%;
     color: #ffffff;
+}
+
+p.select-status {
+    color: white;
+    margin-top: 1%;
 }
