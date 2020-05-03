@@ -72,6 +72,7 @@
         this.updateAfterConnect = function (name) {
             stage.updateItemId(tankLogo,name);
             game.addUserCheckEvent();
+            game.addConnectCheckEvent();
 
 			//隐藏输入框和按钮
 			Common.inputEnable(false);

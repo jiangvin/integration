@@ -333,6 +333,12 @@ Common.inputBindMessageControl = function() {
 
 //网络通信
 let _stompClient;
+Common.stompConnectStatus = function() {
+  if (!_stompClient) {
+      return false;
+  }
+  return _stompClient.connected;
+};
 Common.stompConnect = function(name, callback) {
     const socket = new SockJS('/websocket-simple?name=' + name);
     _stompClient = Stomp.over(socket);

@@ -226,13 +226,25 @@ function Game() {
     };
 
     //事件类
-    this.addEvent = function (eventType,callBack,timeout) {
+    this.addEvent = function (eventType,callBack,timeout,ignoreLog) {
         let event = {};
         event.eventType = eventType;
         event.callback = callBack;
         event.timeout = timeout ? timeout : 100; //默认100帧倒计时，不到1.5秒
-        console.log("add event:" + event.eventType + " timeout:" + event.timeout);
+        event.ignoreLog = ignoreLog;
         _events.push(event);
+    };
+    this.addConnectCheckEvent = function () {
+        const callBack = function() {
+            if (Common.stompConnectStatus() === true) {
+                thisGame.addEvent("CONNECT_CHECK", callBack, 120, true);
+            } else {
+                thisGame.updateStatus(99,"与服务器断开！");
+            }
+        };
+
+        console.log("connect status will be checked per 120 frames...");
+        thisGame.addEvent("CONNECT_CHECK", callBack, 120);
     };
     this.addUserCheckEvent = function () {
         this.addEvent("USER_CHECK", function () {
@@ -254,7 +266,9 @@ function Game() {
             if (event.timeout > 0) {
                 --event.timeout;
             } else {
-                console.log("process event:" + event.eventType);
+                if (event.ignoreLog !== true) {
+                    console.log("process event:" + event.eventType);
+                }
                 event.callback();
                 //删除事件
                 _events.splice(i,1);
