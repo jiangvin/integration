@@ -4,7 +4,6 @@
 	//启动页
 	(function() {
 		const stage = game.createStage({
-			images : Source.getImage("tank01"),
             status : 1
 		});
 		//Tank Logo
