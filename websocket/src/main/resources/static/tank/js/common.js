@@ -4,7 +4,13 @@ const Common = function() {};
 Common.init = function() {
     //在手机上禁用滑动
     window.addEventListener('touchmove', function(e) {
-        e.preventDefault();
+        // 判断默认行为是否可以被禁用
+        if (e.cancelable) {
+            // 判断默认行为是否已经被禁用
+            if (!e.defaultPrevented) {
+                e.preventDefault();
+            }
+        }
     }, false);
 
     //加载图片资源
