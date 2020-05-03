@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Objects;
-
 /**
  * @author 蒋文龙(Vin)
  * @description
@@ -50,7 +48,11 @@ public class MainController {
      */
     @MessageMapping("/send")
     public void connect(MessageDto messageDto, SimpMessageHeaderAccessor accessor) {
-        String username = Objects.requireNonNull(accessor.getUser()).getName();
+        if (accessor.getUser() == null) {
+            return;
+        }
+
+        String username = accessor.getUser().getName();
         log.info("receive:{} from user:{}", messageDto.toString(), username);
         messageService.receiveMessage(messageDto, username);
     }

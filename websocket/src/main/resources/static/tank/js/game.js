@@ -240,6 +240,12 @@ function Game() {
                 thisGame.addEvent("CONNECT_CHECK", callBack, 120, true);
             } else {
                 thisGame.updateStatus(99,"与服务器断开！");
+
+                //TODO 断线重连
+                //5秒后关闭游戏
+                thisGame.addEvent("CLOSE", function () {
+                    thisGame.updateStatus(0);
+                },60 * 5);
             }
         };
 
@@ -335,7 +341,28 @@ function Game() {
         context.closePath();
         context.fill();
 
+        //右圆
+        context.beginPath();
+        context.arc(touchInfo.rightCenterX, touchInfo.rightCenterY,
+            touchInfo.rightRadius, 0,2 * Math.PI);
+        context.closePath();
+        context.fill();
+
+        //喇叭
+        context.beginPath();
+        context.arc(touchInfo.hornCenterX, touchInfo.hornCenterY,
+            touchInfo.hornRadius, 0,2 * Math.PI);
+        context.closePath();
+        context.fill();
+
         context.globalAlpha = 1;
+        const image = Common.getImage("horn");
+        const size = touchInfo.hornRadius * 2;
+        context.drawImage(image,
+            0, 0,
+            image.width, image.height,
+            touchInfo.hornCenterX - size / 2, touchInfo.hornCenterY - size / 2,
+            size, size);
     };
 
     //初始化游戏引擎

@@ -6,6 +6,9 @@ Common.init = function() {
     window.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }, false);
+
+    //加载图片资源
+    Common.loadImage();
 };
 
 Common.extend = function(target, settings, params) {
@@ -81,16 +84,32 @@ Common.generateTouchInfo = function(portrait) {
     let centerY = Common.height() / 2 / 2;
     let radius = centerX > centerY ? centerY : centerX;
     centerY *= 3;
+
+    let rightCenterX = centerX * 7;
+    let rightCenterY = centerY;
+    let rightRadius = radius * .7;
+
     if (centerX - radius < 20) {
+        rightCenterX -= 20;
         centerX += 20;
     }
     if (Common.height() - centerY - radius < 20) {
+        rightCenterY -= 20;
         centerY -= 20;
     }
 
     _touchControl.centerX = centerX;
     _touchControl.centerY = centerY;
     _touchControl.radius = radius;
+
+    _touchControl.rightCenterX = rightCenterX;
+    _touchControl.rightCenterY = rightCenterY;
+    _touchControl.rightRadius = rightRadius;
+
+    _touchControl.hornCenterX = rightCenterX + rightRadius;
+    _touchControl.hornCenterY = rightCenterY - rightRadius * .95;
+    _touchControl.hornRadius = radius / 4;
+
     _touchControl.portrait = portrait;
 };
 Common.setTouch = function(touch) {
@@ -98,9 +117,12 @@ Common.setTouch = function(touch) {
         return;
     }
     _touchControl.touch = touch;
+    const input = $('#input');
     if (_touchControl.touch) {
+        input.attr("placeholder","请输入信息,再次点击喇叭发送");
         Common.bindTouch();
     } else {
+        input.attr("placeholder","请输入信息,回车发送");
         Common.bindKeyboard();
     }
 
@@ -294,7 +316,6 @@ Common.inputEnable = function(enable) {
 };
 Common.inputResize = function() {
     const input = $('#input');
-    input.attr("placeholder","请输入信息");
     input.val("");
     input.removeClass("input-name");
     input.addClass("input-message");
@@ -401,7 +422,18 @@ Date.prototype.format = function(fmt) {
     return fmt;
 };
 
-//测试类
+//图片资源
+const _images = [];
+Common.loadImage = function() {
+    //喇叭
+    let img = document.createElement('img');
+    img.src = 'tank/image/horn.png';
+    _images['horn'] = img;
+};
+Common.getImage = function(id) {
+    return _images[id];
+};
+//测试
 Common.images = function() {
     let img = document.createElement('img');
     img.src = 'tank/image/tank01.png';
