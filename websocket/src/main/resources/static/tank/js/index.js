@@ -108,19 +108,33 @@
 				}
 
 				const selectWindow = document.getElementById("room-list");
+				let selectFlag = false;
 				result.data.forEach(function (room) {
+					let div = document.createElement('div');
+					div.className = "radio";
+					selectWindow.appendChild(div);
+
 					const input = document.createElement('input');
 					input.type = 'radio';
 					input.id = room.roomId;
-					input.name = "select-room";
+					input.name = "drone";
+					//第一个元素被选中
+					if (selectFlag === false) {
+						input.checked = true;
+						selectFlag = true;
+					}
+					div.appendChild(input);
 
 					const label = document.createElement('label');
-					label.for = input.id;
+					label.setAttribute("for",input.id);
 					label.className = "radio-label";
 					label.textContent = "房间名:" + room.roomId
+						+ " 地图名:" + room.mapId
 						+ " 类型:" + room.roomType
 						+ " 创建者:" + room.creator
 						+ " 人数:" + room.userCount;
+					div.appendChild(label);
+
 
 					const select = document.createElement('select');
 					select.id = room.roomId + "_";
@@ -148,14 +162,7 @@
 						default:
 							break;
 					}
-
-					let div = document.createElement('div');
-					div.className = "radio";
-					div.appendChild(input);
-					div.appendChild(label);
 					div.appendChild(select);
-
-					selectWindow.appendChild(div);
 				});
 				document.getElementById('room-list').style.visibility = 'visible';
 			});

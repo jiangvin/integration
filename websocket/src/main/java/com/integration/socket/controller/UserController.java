@@ -47,9 +47,9 @@ public class UserController {
     public List<RoomDto> getRooms(@RequestParam(value = "start", defaultValue = "0") int start,
                                   @RequestParam(value = "start", defaultValue = "5") int limit) {
         List<RoomDto> rooms = new ArrayList<>();
-        rooms.add(new RoomDto("房间1", "创建者1", RoomType.PVP, 1));
-        rooms.add(new RoomDto("房间2", "创建者2", RoomType.PVE, 2));
-        rooms.add(new RoomDto("房间3", "创建者3", RoomType.EVE, 3));
+        rooms.add(new RoomDto("房间1", "创建者1", "地图1", RoomType.PVP, 1));
+        rooms.add(new RoomDto("房间2", "创建者2", "地图2", RoomType.PVE, 2));
+        rooms.add(new RoomDto("房间3", "创建者3", "地图3", RoomType.EVE, 3));
         return rooms;
     }
 }

@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class RoomDto {
     private String roomId;
     private String creator;
+    private String mapId;
     private RoomType roomType;
     private int userCount;
 }
