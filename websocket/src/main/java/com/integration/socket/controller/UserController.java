@@ -27,7 +27,7 @@ public class UserController {
         this.onlineUserService = onlineUserService;
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/getUsers")
     public List<String> getUsers() {
         return onlineUserService.getUserList();
     }

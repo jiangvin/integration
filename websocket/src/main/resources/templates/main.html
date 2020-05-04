@@ -53,7 +53,7 @@
     }
 
     function refreshStatus() {
-        $.getJSON('/user/getAll', function(result) {
+        $.getJSON('/user/getUsers', function(result) {
             if (!result.success) {
                 showMessage(result.message, "color: red");
             } else {

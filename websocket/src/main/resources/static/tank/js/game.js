@@ -255,7 +255,7 @@ function Game() {
     this.addUserCheckEvent = function () {
         this.addEvent("USER_CHECK", function () {
             if (_users.length === 0) {
-                $.getJSON('/user/getAll', function(result) {
+                $.getJSON('/user/getUsers', function(result) {
                     if (result.success) {
                         _users = result.data;
                     } else {
