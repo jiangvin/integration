@@ -44,26 +44,21 @@
 			}
 
         	//检测名字是否重复
-			let success;
-			$.ajaxSettings.async = false; //让访问变成同步执行
 			$.getJSON('/user/checkName?name=' + name, function(result) {
-				success = result.success;
 				if (!result.success) {
 					game.addMessage(result.message, "#ff0000");
+					return;
 				}
+
+				//设定是否为触控模式
+				Common.setTouch(e.currentTarget.id === "button2");
+
+				//开始连接
+				game.updateStatus(2,"等待连接中...");
+				Common.stompConnect(name,function () {
+					updateAfterConnect(name);
+				});
 			});
-			if (!success) {
-				return;
-			}
-
-			//设定是否为触控模式
-            Common.setTouch(e.currentTarget.id === "button2");
-
-			//开始连接
-            game.updateStatus(2,"等待连接中...");
-			Common.stompConnect(name,function () {
-                updateAfterConnect(name);
-            });
 
 		});
 

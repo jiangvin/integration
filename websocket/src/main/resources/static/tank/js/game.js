@@ -255,7 +255,6 @@ function Game() {
     this.addUserCheckEvent = function () {
         this.addEvent("USER_CHECK", function () {
             if (_users.length === 0) {
-                $.ajaxSettings.async = true; //异步执行
                 $.getJSON('/user/getAll', function(result) {
                     if (result.success) {
                         _users = result.data;
