@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author 蒋文龙(Vin)
@@ -37,10 +37,19 @@ public class GameService {
     private MessageService messageService;
 
     /**
-     * 菜单管理
+     * 布景管理
      */
-    private List<BaseStage> stageList;
-    private int stageIndex;
+    private BaseStage menu;
+    private ConcurrentHashMap<String, BaseStage> roomMap = new ConcurrentHashMap<>();
+
+    @PostConstruct
+    private void init() {
+        initStage();
+    }
+
+    private void initStage() {
+        menu = new StageMenu(messageService);
+    }
 
     public void addUser(UserBo userBo) {
         onlineUserService.add(userBo);
@@ -49,15 +58,19 @@ public class GameService {
 
     public void removeUser(String username) {
         //用户离开
-        if (!onlineUserService.remove(username)) {
+        UserBo userBo = onlineUserService.get(username);
+        if (userBo == null) {
             return;
         }
+
+        onlineUserService.remove(username);
         messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
-        currentStage().remove(username);
+        currentStage(userBo).remove(username);
     }
 
     public void receiveMessage(MessageDto messageDto, String sendFrom) {
-        if (!userCheck(messageDto, sendFrom)) {
+        UserBo userBo = userCheckAndGetSendFrom(messageDto, sendFrom);
+        if (userBo == null) {
             return;
         }
 
@@ -68,45 +81,37 @@ public class GameService {
                 messageService.processUserMessage(messageDto, sendFrom);
                 break;
             default:
-                currentStage().processMessage(messageDto, sendFrom);
+                currentStage(userBo).processMessage(messageDto, sendFrom);
                 break;
         }
     }
 
-    @PostConstruct
-    private void init() {
-        //初始化舞台
-        initStage();
-    }
-
-    private void initStage() {
-        this.stageIndex = 0;
-        this.stageList = new ArrayList<>();
-
-        //初始化菜单
-        this.stageList.add(new StageMenu(messageService));
-    }
-
     @Scheduled(fixedDelay = 17)
     public void update() {
-        currentStage().update();
-    }
-
-    private BaseStage currentStage() {
-        return this.stageList.get(stageIndex);
-    }
-
-    private boolean userCheck(MessageDto messageDto, String sendFrom) {
-        //检查发送方
-        if (!onlineUserService.exists(sendFrom)) {
-            return false;
+        menu.update();
+        for (Map.Entry<String, BaseStage> kv : roomMap.entrySet()) {
+            kv.getValue().update();
         }
+    }
 
+    private BaseStage currentStage(UserBo userBo) {
+        if (!StringUtils.isEmpty(userBo.getRoomId())) {
+            if (!roomMap.containsKey(userBo.getRoomId())) {
+                log.warn("can not find room:{} from user:{}", userBo.getRoomId(), userBo.getUsername());
+            }
+            return roomMap.get(userBo.getRoomId());
+        } else {
+            return menu;
+        }
+    }
+
+    private UserBo userCheckAndGetSendFrom(MessageDto messageDto, String sendFrom) {
         //检查接收方
-        if (StringUtils.isEmpty(messageDto.getSendTo())) {
-            return true;
+        if (!StringUtils.isEmpty(messageDto.getSendTo()) && !onlineUserService.exists(messageDto.getSendTo())) {
+            return null;
         }
 
-        return onlineUserService.exists(messageDto.getSendTo());
+        //检查发送方
+        return onlineUserService.get(sendFrom);
     }
 }
