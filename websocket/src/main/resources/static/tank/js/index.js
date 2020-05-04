@@ -130,7 +130,7 @@
 					label.className = "radio-label";
 					label.textContent = "房间名:" + room.roomId
 						+ " 地图名:" + room.mapId
-						+ " 类型:" + room.roomType
+						+ "," + room.roomType
 						+ " 创建者:" + room.creator
 						+ " 人数:" + room.userCount;
 					div.appendChild(label);
@@ -164,6 +164,35 @@
 					}
 					div.appendChild(select);
 				});
+
+				//添加末端的按钮
+				const div = document.createElement('div');
+				div.className = "select-item";
+				selectWindow.appendChild(div);
+
+				const btnJoin = document.createElement('button');
+				btnJoin.textContent = "加入房间";
+				div.appendChild(btnJoin);
+
+				const btnCreate = document.createElement('button');
+				btnCreate.textContent = "创建房间";
+				div.appendChild(btnCreate);
+
+				const btnNext = document.createElement('button');
+				btnNext.textContent = "下一页";
+				btnNext.className = "right";
+				div.appendChild(btnNext);
+
+				const btnFront = document.createElement('button');
+				btnFront.textContent = "上一页";
+				btnFront.className = "right";
+				div.appendChild(btnFront);
+
+				const pageInfo = document.createElement('label');
+				pageInfo.textContent = "1/1";
+				pageInfo.className = "right";
+				div.appendChild(pageInfo);
+
 				document.getElementById('room-list').style.visibility = 'visible';
 			});
 

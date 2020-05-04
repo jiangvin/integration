@@ -54,11 +54,18 @@ select {
     top: -0.5em;
 }
 
+label.right {
+    color: white;
+    float: right;
+    margin: 1%;
+}
+
 button {
-    width: 10%;
+    min-width: 10%;
     text-align: center;
     font-size: 1.0em;
     padding: .3em;
+    margin: .2em;
     border-radius: 1em;
     color: #5e6c77;
     background: #ffffff;
@@ -74,9 +81,13 @@ button:active {
     border: 2px solid #2b2b2b;
 }
 button.connect {
+    width: 10%;
     position: absolute;
     left: 45%;
     top: 115px;
+}
+button.right {
+    float: right;
 }
 
 div.select-window {
@@ -133,6 +144,6 @@ div.select-window {
     margin-right: 0;
 }
 .radio-label {
-    margin-right: 4%;
+    margin-right: 1%;
     color: #ffffff;
 }
