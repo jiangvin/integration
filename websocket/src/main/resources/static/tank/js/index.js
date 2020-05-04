@@ -111,7 +111,7 @@
 				let selectFlag = false;
 				result.data.forEach(function (room) {
 					let div = document.createElement('div');
-					div.className = "radio";
+					div.className = "select-item";
 					selectWindow.appendChild(div);
 
 					const input = document.createElement('input');
