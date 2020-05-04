@@ -1,10 +1,10 @@
 
 // 图片资源类
-function Source() {
+function Resource() {
     this.images = null;
 }
 
-Source.getImages = function() {
+Resource.getImages = function() {
     if (this.images) {
         return this.images;
     }
@@ -23,8 +23,8 @@ Source.getImages = function() {
     return this.images;
 };
 
-Source.getImage = function (id,widthPics,heightPics) {
-    const images = Source.getImages();
+Resource.getImage = function (id, widthPics, heightPics) {
+    const images = Resource.getImages();
     if (!images[id]) {
         widthPics = widthPics ? widthPics : 1;
         heightPics = heightPics ? heightPics : 1;

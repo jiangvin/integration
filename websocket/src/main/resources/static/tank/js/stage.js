@@ -92,7 +92,7 @@ function Stage(params) {
             x:0,
             y:0,
             speed:0,
-            image: Source.getImage("tank01"),
+            image: Resource.getImage("tank01"),
             status: 1,
             id:"",
             action:0,

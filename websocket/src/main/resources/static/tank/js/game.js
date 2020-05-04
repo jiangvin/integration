@@ -355,7 +355,7 @@ function Game() {
         context.fill();
 
         context.globalAlpha = 1;
-        const image = Source.getImage("horn");
+        const image = Resource.getImage("horn");
         const size = touchInfo.hornRadius * 2;
         context.drawImage(image,
             0, 0,
