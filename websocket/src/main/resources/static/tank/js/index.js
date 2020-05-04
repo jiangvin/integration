@@ -100,6 +100,66 @@
 				}
 			});
 
+            //显示房间列表
+			$.getJSON('/user/getRooms', function(result) {
+				if (!result.success) {
+					game.addMessage(result.message, "#ff0000");
+					return;
+				}
+
+				const selectWindow = document.getElementById("room-list");
+				result.data.forEach(function (room) {
+					const input = document.createElement('input');
+					input.type = 'radio';
+					input.id = room.roomId;
+					input.name = "select-room";
+
+					const label = document.createElement('label');
+					label.for = input.id;
+					label.className = "radio-label";
+					label.textContent = "房间名:" + room.roomId
+						+ " 类型:" + room.roomType
+						+ " 创建者:" + room.creator
+						+ " 人数:" + room.userCount;
+
+					const select = document.createElement('select');
+					select.id = room.roomId + "_";
+					const optView = document.createElement('option');
+					optView.text = "观看";
+					optView.value = "0";
+					select.add(optView);
+					switch (room.roomType) {
+						case "PVP":
+							const optRed = document.createElement('option');
+							optRed.text = "红队";
+							optRed.value = "1";
+							select.add(optRed);
+							const optBlue = document.createElement('option');
+							optBlue.text = "蓝队";
+							optBlue.value = "2";
+							select.add(optBlue);
+							break;
+						case "PVE":
+							const optPlayer = document.createElement('option');
+							optPlayer.text = "玩家";
+							optPlayer.value = "1";
+							select.add(optPlayer);
+							break;
+						default:
+							break;
+					}
+
+					let div = document.createElement('div');
+					div.className = "radio";
+					div.appendChild(input);
+					div.appendChild(label);
+					div.appendChild(select);
+
+					selectWindow.appendChild(div);
+				});
+				document.getElementById('room-list').style.visibility = 'visible';
+			});
+
 			//注册事件，延迟执行同步单位
 			game.addEvent("SYNC_MY_TANK",function () {
 				Common.sendStompMessage(
@@ -110,7 +170,7 @@
 						"orientation": tankLogo.orientation,
 						"action": tankLogo.action
 					}, "ADD_TANK");
-			},1);
+			},10);
 		}
 	})();
     game.init();
