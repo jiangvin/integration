@@ -76,7 +76,7 @@
 					return;
 				}
 				game.updateStatus(1);
-
+				Menu.getTankLogo().status = 1;
 				//显示房间列表
 				Menu.showRoomList();
 			});

@@ -29,7 +29,8 @@ function Stage(params) {
                             y:tank.y,
                             orientation: tank.orientation,
                             action: tank.action,
-                            speed: tank.speed
+                            speed: tank.speed,
+                            showId: true
                         });
                     }
                 });
@@ -84,41 +85,37 @@ function Stage(params) {
     };
 
     this.createTank = function (options) {
-        let tankOptions = {};
-        Common.extend(tankOptions,{
-            x:0,
-            y:0,
-            speed:0,
-            image: Resource.getImage("tank01"),
-            status: 1,
-            id:"",
-            action:0,
-            orientation:0,
+        if (!options.image) {
+            options.image = Resource.getImage("tank01");
+        }
+        if (options.status == null) {
+            options.status = 1;
+        }
+        options.draw = function (context) {
+            this.drawImage(context);
+        };
+        options.update = function () {
+            this.updateAnimation();
 
-            draw: function (context) {
-                this.drawImage(context);
-            },
-            update: function () {
-                if (this.action === 0) {
-                    return;
-                }
-
-                switch (this.orientation) {
-                    case 0:
-                        this.y -= this.speed;
-                        break;
-                    case 1:
-                        this.y += this.speed;
-                        break;
-                    case 2:
-                        this.x -= this.speed;
-                        break;
-                    case 3:
-                        this.x += this.speed;
-                        break;
-                }
+            if (this.action === 0) {
+                return;
             }
-        },options);
-        return this.createItem(tankOptions);
+
+            switch (this.orientation) {
+                case 0:
+                    this.y -= this.speed;
+                    break;
+                case 1:
+                    this.y += this.speed;
+                    break;
+                case 2:
+                    this.x -= this.speed;
+                    break;
+                case 3:
+                    this.x += this.speed;
+                    break;
+            }
+        };
+        return this.createItem(options);
     };
 }
