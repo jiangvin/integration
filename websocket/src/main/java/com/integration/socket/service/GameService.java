@@ -80,7 +80,22 @@ public class GameService {
 
         onlineUserService.remove(username);
         messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, true);
-        currentStage(userBo).remove(username);
+        BaseStage stage = currentStage(userBo);
+        if (stage == null) {
+            return;
+        }
+        stage.remove(username);
+
+        //房间为空时删除房间
+        if (!(stage instanceof StageRoom)) {
+            return;
+        }
+        StageRoom room = (StageRoom) stage;
+        if (room.getUserCount() != 0) {
+            return;
+        }
+        roomMap.remove(room.getRoomId());
+        roomList.remove(room);
     }
 
     public void receiveMessage(MessageDto messageDto, String sendFrom) {
