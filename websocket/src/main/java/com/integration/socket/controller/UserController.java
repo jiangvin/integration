@@ -46,7 +46,7 @@ public class UserController {
 
     @GetMapping("/getRooms")
     public RoomListDto getRooms(@RequestParam(value = "start", defaultValue = "0") int start,
-                                @RequestParam(value = "start", defaultValue = "5") int limit) {
+                                @RequestParam(value = "limit", defaultValue = "5") int limit) {
         List<RoomDto> rooms = new ArrayList<>();
         rooms.add(new RoomDto("房间1", "创建者1", "地图1", RoomType.PVP, 1));
         rooms.add(new RoomDto("房间2", "创建者2", "地图2", RoomType.PVE, 2));
