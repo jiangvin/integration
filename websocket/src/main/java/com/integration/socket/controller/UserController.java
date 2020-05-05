@@ -2,6 +2,7 @@ package com.integration.socket.controller;
 
 import com.integration.socket.model.RoomType;
 import com.integration.socket.model.dto.RoomDto;
+import com.integration.socket.model.dto.RoomListDto;
 import com.integration.socket.service.OnlineUserService;
 import com.integration.util.model.CustomException;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +45,21 @@ public class UserController {
     }
 
     @GetMapping("/getRooms")
-    public List<RoomDto> getRooms(@RequestParam(value = "start", defaultValue = "0") int start,
-                                  @RequestParam(value = "start", defaultValue = "5") int limit) {
+    public RoomListDto getRooms(@RequestParam(value = "start", defaultValue = "0") int start,
+                                @RequestParam(value = "start", defaultValue = "5") int limit) {
         List<RoomDto> rooms = new ArrayList<>();
         rooms.add(new RoomDto("房间1", "创建者1", "地图1", RoomType.PVP, 1));
         rooms.add(new RoomDto("房间2", "创建者2", "地图2", RoomType.PVE, 2));
         rooms.add(new RoomDto("房间3", "创建者3", "地图3", RoomType.EVE, 3));
-        return rooms;
+        rooms.add(new RoomDto("房间4", "创建者4", "地图4", RoomType.EVE, 4));
+        rooms.add(new RoomDto("房间5", "创建者5", "地图5", RoomType.EVE, 5));
+        rooms.add(new RoomDto("房间6", "创建者6", "地图6", RoomType.EVE, 6));
+        rooms.add(new RoomDto("房间7", "创建者7", "地图7", RoomType.EVE, 7));
+        rooms.add(new RoomDto("房间8", "创建者8", "地图8", RoomType.EVE, 8));
+        rooms.add(new RoomDto("房间9", "创建者9", "地图9", RoomType.EVE, 9));
+        rooms.add(new RoomDto("房间10", "创建者10", "地图10", RoomType.EVE, 10));
+
+
+        return new RoomListDto(rooms.subList(start, start + limit), rooms.size());
     }
 }

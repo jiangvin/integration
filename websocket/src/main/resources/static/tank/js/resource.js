@@ -1,5 +1,5 @@
+//资源类
 
-// 图片资源类
 function Resource() {
     this.images = null;
 }

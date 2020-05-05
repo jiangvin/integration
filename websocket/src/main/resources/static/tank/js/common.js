@@ -23,7 +23,7 @@ Common.extend = function(target, settings, params) {
 };
 
 let _game;
-Common.getGame = function() {
+Common.getGameWithInit = function() {
     if (!_game) {
         _game = new Game("canvas");
         Common.init();
@@ -360,7 +360,7 @@ Common.inputBindTouch = function() {
     window.addEventListener('touchend', function() {
 
         //取消的时候会失去焦点，延迟看能不能重新获得焦点
-        Common.getGame().addTimeEvent("input-focus", function () {
+        _game.addTimeEvent("input-focus", function () {
             if (_inputEnable) {
                 const input = $('#input');
                 input.focus();

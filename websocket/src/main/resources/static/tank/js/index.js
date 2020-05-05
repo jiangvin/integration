@@ -1,46 +1,9 @@
 //主程序,业务逻辑
 (function() {
-	const game = Common.getGame();
+	const game = Common.getGameWithInit();
 	//启动页
 	(function() {
-		const stage = game.createStage({
-            status : 1
-		});
-		//Tank Logo
-		const tankLogo = stage.createTank({
-			x: Common.width() / 2,
-			y: Common.height() * .45,
-			speed: 1
-		});
-		//游戏名
-		stage.createItem({
-			draw:function(context) {
-				context.font = 'bold 55px Helvetica';
-				context.textAlign = 'center';
-				context.textBaseline = 'middle';
-				context.fillStyle = '#FFF';
-				context.fillText('Tank World',Common.width() / 2,40);
-			}
-		});
-		//提示信息
-		const info1 = stage.createItem({
-			draw:function(context) {
-				context.font = '24px Helvetica';
-				context.textAlign = 'center';
-				context.textBaseline = 'middle';
-				context.fillStyle = '#949494';
-				context.fillText('键盘: 上下左右/空格/回车控制游戏',Common.width() / 2,Common.height() * .6);
-			}
-		});
-		const info2 = stage.createItem({
-			draw:function(context) {
-				context.font = '24px Helvetica';
-				context.textAlign = 'center';
-				context.textBaseline = 'middle';
-				context.fillStyle = '#949494';
-				context.fillText('触控: 触控屏幕控制游戏',Common.width() / 2,Common.height() * .6 + 30);
-			}
-		});
+		const stageMenu = Menu.getOrCreateMenu(game);
 
 		//事件绑定 - 按按钮才触发
         Common.buttonBind(function (e) {
@@ -73,7 +36,8 @@
 
         //其他函数定义
         this.updateAfterConnect = function (name) {
-            stage.updateItemId(tankLogo,name);
+        	const tankLogo = Menu.getTankLogo();
+			stageMenu.updateItemId(tankLogo,name);
             game.addConnectCheckEvent();
 
 			//隐藏输入框和按钮
@@ -81,15 +45,14 @@
 			Common.buttonEnable(false);
 
 			//删除提示文字
-            delete stage.items[info1.id];
-			delete stage.items[info2.id];
+			stageMenu.deleteInfo();
 
         	//重设输入框的属性和事件
 			Common.inputResize();
 			Common.inputBindMessageControl();
 
 			//新增文字描述来取代按钮和输入框
-            stage.createItem( {
+            stageMenu.createItem( {
 				draw:function (context) {
 					context.font = '30px Arial';
 					context.textAlign = 'center';
@@ -100,6 +63,7 @@
 			});
 
             //显示房间列表
+
 			$.getJSON('/user/getRooms', function(result) {
 				if (!result.success) {
 					game.addMessage(result.message, "#ff0000");
@@ -108,7 +72,7 @@
 
 				const selectWindow = document.getElementById("room-list");
 				let selectFlag = false;
-				result.data.forEach(function (room) {
+				result.data.roomList.forEach(function (room) {
 					let div = document.createElement('div');
 					div.className = "select-item";
 					selectWindow.appendChild(div);
