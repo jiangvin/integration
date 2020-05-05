@@ -60,10 +60,107 @@ Menu.getOrCreateMenu = function (game) {
 
 Menu.getTankLogo = function() {
     return this.tankLogo;
-}
+};
 
 //删除提示信息
-Stage.prototype.deleteInfo = function () {
-  delete this.items["info1"];
-  delete this.items["info2"];
+Menu.deleteInfo = function() {
+    delete this.stage.items["info1"];
+    delete this.stage.items["info2"];
+};
+
+Menu.showRoomList = function () {
+    $.getJSON('/user/getRooms', function(result) {
+        if (!result.success) {
+            Resource.getGame().addMessage(result.message, "#ff0000");
+            return;
+        }
+
+        const selectWindow = document.getElementById("room-list");
+        let selectFlag = false;
+        result.data.roomList.forEach(function (room) {
+            let div = document.createElement('div');
+            div.className = "select-item";
+            selectWindow.appendChild(div);
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.id = room.roomId;
+            input.name = "drone";
+            //第一个元素被选中
+            if (selectFlag === false) {
+                input.checked = true;
+                selectFlag = true;
+            }
+            div.appendChild(input);
+
+            const label = document.createElement('label');
+            label.setAttribute("for",input.id);
+            label.className = "radio-label";
+            label.textContent = "房间名:" + room.roomId
+                + " 地图名:" + room.mapId
+                + "," + room.roomType
+                + " 创建者:" + room.creator
+                + " 人数:" + room.userCount;
+            div.appendChild(label);
+
+
+            const select = document.createElement('select');
+            select.id = room.roomId + "_";
+            const optView = document.createElement('option');
+            optView.text = "观看";
+            optView.value = "0";
+            select.add(optView);
+            switch (room.roomType) {
+                case "PVP":
+                    const optRed = document.createElement('option');
+                    optRed.text = "红队";
+                    optRed.value = "1";
+                    select.add(optRed);
+                    const optBlue = document.createElement('option');
+                    optBlue.text = "蓝队";
+                    optBlue.value = "2";
+                    select.add(optBlue);
+                    break;
+                case "PVE":
+                    const optPlayer = document.createElement('option');
+                    optPlayer.text = "玩家";
+                    optPlayer.value = "1";
+                    select.add(optPlayer);
+                    break;
+                default:
+                    break;
+            }
+            div.appendChild(select);
+        });
+
+        //添加末端的按钮
+        const div = document.createElement('div');
+        div.className = "select-item";
+        selectWindow.appendChild(div);
+
+        const btnJoin = document.createElement('button');
+        btnJoin.textContent = "加入房间";
+        div.appendChild(btnJoin);
+
+        const btnCreate = document.createElement('button');
+        btnCreate.textContent = "创建房间";
+        div.appendChild(btnCreate);
+
+        const btnNext = document.createElement('button');
+        btnNext.textContent = "下一页";
+        btnNext.className = "right";
+        div.appendChild(btnNext);
+
+        const btnFront = document.createElement('button');
+        btnFront.textContent = "上一页";
+        btnFront.className = "right";
+        div.appendChild(btnFront);
+
+        const pageInfo = document.createElement('label');
+        pageInfo.textContent = "1/1";
+        pageInfo.className = "right";
+        div.appendChild(pageInfo);
+
+        document.getElementById('room-list').style.visibility = 'visible';
+    });
 };

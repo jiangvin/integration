@@ -1,10 +1,11 @@
 //资源类
 
 function Resource() {
+    this.game = null;
     this.images = null;
 }
 
-Resource.getImages = function() {
+Resource.getImages = function () {
     if (this.images) {
         return this.images;
     }
@@ -37,4 +38,26 @@ Resource.getImage = function (id, widthPics, heightPics) {
         images[id] = img;
     }
     return images[id];
+};
+
+Resource.getGame = function () {
+    if (this.game) {
+        return this.game;
+    }
+
+    //初始化
+    this.game = new Game("canvas");
+
+    //在手机上禁用滑动
+    window.addEventListener('touchmove', function(e) {
+        // 判断默认行为是否可以被禁用
+        if (e.cancelable) {
+            // 判断默认行为是否已经被禁用
+            if (!e.defaultPrevented) {
+                e.preventDefault();
+            }
+        }
+    }, false);
+
+    return this.game;
 };

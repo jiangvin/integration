@@ -1,34 +1,11 @@
 const Common = function() {};
 
-//全局初始化函数，在创建game后启动
-Common.init = function() {
-    //在手机上禁用滑动
-    window.addEventListener('touchmove', function(e) {
-        // 判断默认行为是否可以被禁用
-        if (e.cancelable) {
-            // 判断默认行为是否已经被禁用
-            if (!e.defaultPrevented) {
-                e.preventDefault();
-            }
-        }
-    }, false);
-};
-
 Common.extend = function(target, settings, params) {
     params = params || {};
     for (let i in settings) {
         target[i] = params[i] || settings[i];
     }
     return target;
-};
-
-let _game;
-Common.getGameWithInit = function() {
-    if (!_game) {
-        _game = new Game("canvas");
-        Common.init();
-    }
-    return _game;
 };
 
 let _canvas;
@@ -160,7 +137,7 @@ Common.bindKeyboard = function() {
                 break;
         }
         if (event != null) {
-            _game.controlEvent(event);
+            Resource.getGame().controlEvent(event);
         }
     });
     window.addEventListener('keyup',function(e) {
@@ -180,7 +157,7 @@ Common.bindKeyboard = function() {
                 break;
         }
         if (event != null) {
-            _game.controlEvent(event);
+            Resource.getGame().controlEvent(event);
         }
     });
 };
@@ -198,12 +175,12 @@ Common.bindTouch = function() {
 
         _touchControl.touchX = x;
         _touchControl.touchY = y;
-        _game.controlEvent(Common.getEventFromTouch());
+        Resource.getGame().controlEvent(Common.getEventFromTouch());
     });
     window.addEventListener('touchend', function() {
         _touchControl.touchX = null;
         _touchControl.touchY = null;
-        _game.controlEvent("Stop");
+        Resource.getGame().controlEvent("Stop");
     });
     window.addEventListener('touchmove', function(e) {
         const touchPoint = Common.getTouchPoint(e.touches[0]);
@@ -245,7 +222,7 @@ Common.bindTouch = function() {
             _touchControl.touchX = x + _touchControl.centerX;
             _touchControl.touchY = y + _touchControl.centerY;
         }
-        _game.controlEvent(Common.getEventFromTouch());
+        Resource.getGame().controlEvent(Common.getEventFromTouch());
     });
 };
 Common.getEventFromTouch = function() {
@@ -360,7 +337,7 @@ Common.inputBindTouch = function() {
     window.addEventListener('touchend', function() {
 
         //取消的时候会失去焦点，延迟看能不能重新获得焦点
-        _game.addTimeEvent("input-focus", function () {
+        Resource.getGame().addTimeEvent("input-focus", function () {
             if (_inputEnable) {
                 const input = $('#input');
                 input.focus();
@@ -400,14 +377,14 @@ Common.stompConnect = function(name, callback) {
     const socket = new SockJS('/websocket-simple?name=' + name);
     _stompClient = Stomp.over(socket);
     _stompClient.connect({}, function(frame) {
-        _game.addMessage("网络连接中: " + frame,"#ffffff");
+        Resource.getGame().addMessage("网络连接中: " + frame,"#ffffff");
 
         // 客户端订阅消息, 公共消息和私有消息
         _stompClient.subscribe('/topic/send', function (response) {
-            _game.receiveStompMessage(JSON.parse(response.body));
+            Resource.getGame().receiveStompMessage(JSON.parse(response.body));
         });
         _stompClient.subscribe('/user/queue/send', function (response) {
-            _game.receiveStompMessage(JSON.parse(response.body));
+            Resource.getGame().receiveStompMessage(JSON.parse(response.body));
         });
         callback();
     });
