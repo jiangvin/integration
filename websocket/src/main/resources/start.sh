@@ -11,5 +11,5 @@ if [[ -z $FILE_JAR ]]; then
     echo 'Can not find websocket file!'
 else
     echo 'Ready to start '${FILE_JAR}
-    nohup java -jar ./${FILE_JAR} &
+    nohup java -jar ./${FILE_JAR} --spring.profiles.active=prod &
 fi

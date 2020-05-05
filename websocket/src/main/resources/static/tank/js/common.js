@@ -333,17 +333,6 @@ Common.inputBindTouch = function() {
         }
         Common.inputMessageEvent();
     });
-
-    window.addEventListener('touchend', function() {
-
-        //取消的时候会失去焦点，延迟看能不能重新获得焦点
-        Resource.getGame().addTimeEvent("input-focus", function () {
-            if (_inputEnable) {
-                const input = $('#input');
-                input.focus();
-            }
-        },1);
-    });
 };
 Common.inputMessageEvent = function() {
     const input = $('#input');
