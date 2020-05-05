@@ -3,6 +3,11 @@
     function Menu() {
         this.stage = null;
         this.tankLogo = null;
+
+        this.roomStart = null;
+        this.roomLimit = null;
+        this.roomCount = null;
+        this.pageInfo = null;
     }
 
     Menu.getOrCreateMenu = function (game) {
@@ -69,7 +74,10 @@
     };
 
     Menu.showRoomList = function () {
+        this.roomStart = 0;
+        this.roomLimit = 5;
         const selectWindow = document.getElementById("room-list");
+        generateWindowWidth(selectWindow);
 
         //添加末端的按钮
         const div = document.createElement('div');
@@ -88,37 +96,66 @@
         const btnNext = document.createElement('button');
         btnNext.textContent = "下一页";
         btnNext.className = "right";
+        const thisMenu = this;
+        btnNext.onclick = function () {
+            if (!thisMenu.roomCount) {
+                return;
+            }
+
+            const pageInfo = generatePageInfo(thisMenu);
+            if (pageInfo.currentPage >= pageInfo.totalPage) {
+                Resource.getGame().addMessage("这已经是最后一页","#FF0");
+            } else {
+                thisMenu.roomStart += thisMenu.roomLimit;
+            }
+            queryRoomList(thisMenu);
+        };
         div.appendChild(btnNext);
 
         const btnFront = document.createElement('button');
         btnFront.textContent = "上一页";
         btnFront.className = "right";
+        btnFront.onclick = function() {
+            if (!thisMenu.roomCount) {
+                return;
+            }
+
+            if (generatePageInfo(thisMenu).currentPage <= 1) {
+                Resource.getGame().addMessage("这已经是第一页","#FF0");
+            } else {
+                thisMenu.roomStart -= thisMenu.roomLimit;
+            }
+            queryRoomList(thisMenu);
+        };
         div.appendChild(btnFront);
 
-        const pageInfo = document.createElement('label');
-        pageInfo.textContent = "1/1";
-        pageInfo.className = "right";
-        div.appendChild(pageInfo);
+        this.pageInfo = document.createElement('label');
+        this.pageInfo.textContent = "1/1";
+        this.pageInfo.className = "right";
+        div.appendChild(this.pageInfo);
 
         document.getElementById('room-list').style.visibility = 'visible';
-        queryRoomList(0,5);
+        queryRoomList(this);
     };
 
-    const queryRoomList = function (start,limit) {
-        $.getJSON('/user/getRooms?start=' + start + "&limit=" + limit, function(result) {
+    const queryRoomList = function (menu) {
+        $.getJSON('/user/getRooms?start=' + menu.roomStart + "&limit=" + menu.roomLimit, function(result) {
             if (!result.success) {
                 Resource.getGame().addMessage(result.message, "#ff0000");
                 return;
             }
+            updatePageInfo(menu,result.data.roomCount);
 
             //删除之前的元素
             const buttonChild = document.getElementById("button-label");
             const selectWindow = document.getElementById("room-list");
-            selectWindow.childNodes.forEach(function (child) {
-                if (child.id !== "button-label") {
+            for (let i = 0; i < selectWindow.childNodes.length; ++i) {
+                const child = selectWindow.childNodes[i];
+                if (child.nodeType === 1 && child.id !== "button-label") {
                     selectWindow.removeChild(child);
+                    --i;
                 }
-            });
+            }
 
             let selectFlag = false;
             result.data.roomList.forEach(function (room) {
@@ -178,4 +215,39 @@
             });
         });
     };
+
+    const updatePageInfo = function (menu,roomCount) {
+        if (roomCount) {
+            menu.roomCount = roomCount;
+        }
+
+        const pageInfo = generatePageInfo(menu);
+        menu.pageInfo.textContent = pageInfo.currentPage + "/" + pageInfo.totalPage;
+    };
+
+    const generatePageInfo = function (menu) {
+        let pageInfo = {};
+        pageInfo.currentPage = menu.roomStart / menu.roomLimit + 1;
+        if (!menu.roomCount) {
+            pageInfo.totalPage = pageInfo.currentPage;
+        } else {
+            pageInfo.totalPage = Math.ceil(menu.roomCount / menu.roomLimit);
+        }
+        return pageInfo;
+    };
+
+    const generateWindowWidth = function (selectWindow) {
+        let width =  65000 / Common.width();
+        if (width < 50) {
+            width = 50;
+        }
+        if (width > 90) {
+            width = 90;
+        }
+        let left = 50 - width / 2;
+        selectWindow.style.left = left + "%";
+        selectWindow.style.width = width + "%";
+    }
+
+
 }

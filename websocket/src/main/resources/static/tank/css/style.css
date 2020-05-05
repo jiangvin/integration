@@ -94,9 +94,7 @@ div.select-window {
     position: absolute;
     border: 2px solid #5E6C77;
     border-radius: 1em;
-    left: 20%;
     top: 20%;
-    width: 60%;
 }
 
 .select-item {

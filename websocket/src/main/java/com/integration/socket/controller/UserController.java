@@ -58,8 +58,9 @@ public class UserController {
         rooms.add(new RoomDto("房间8", "创建者8", "地图8", RoomType.EVE, 8));
         rooms.add(new RoomDto("房间9", "创建者9", "地图9", RoomType.EVE, 9));
         rooms.add(new RoomDto("房间10", "创建者10", "地图10", RoomType.EVE, 10));
+        rooms.add(new RoomDto("房间11", "创建者11", "地图11", RoomType.PVP, 11));
 
 
-        return new RoomListDto(rooms.subList(start, start + limit), rooms.size());
+        return new RoomListDto(rooms.subList(start, Math.min(start + limit, rooms.size())), rooms.size());
     }
 }
