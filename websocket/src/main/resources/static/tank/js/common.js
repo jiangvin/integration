@@ -360,7 +360,7 @@ Common.inputBindTouch = function() {
     window.addEventListener('touchend', function() {
 
         //取消的时候会失去焦点，延迟看能不能重新获得焦点
-        Common.getGame().addEvent("input-focus", function () {
+        Common.getGame().addTimeEvent("input-focus", function () {
             if (_inputEnable) {
                 const input = $('#input');
                 input.focus();

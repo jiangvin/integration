@@ -65,7 +65,6 @@
         //其他函数定义
         this.updateAfterConnect = function (name) {
             stage.updateItemId(tankLogo,name);
-            game.addUserCheckEvent();
             game.addConnectCheckEvent();
 
 			//隐藏输入框和按钮
@@ -196,8 +195,12 @@
 				document.getElementById('room-list').style.visibility = 'visible';
 			});
 
-			//注册事件，延迟执行同步单位
-			game.addEvent("SYNC_MY_TANK",function () {
+			//注册事件
+			game.addMessageEvent("USERS", function () {
+				if (game.getStatus() !== 2) {
+					return;
+				}
+				game.updateStatus(3,"等待同步数据...")
 				Common.sendStompMessage(
 					{
 						"x": tankLogo.x,
@@ -206,7 +209,17 @@
 						"orientation": tankLogo.orientation,
 						"action": tankLogo.action
 					}, "ADD_TANK");
-			},10);
+			});
+			game.addMessageEvent("TANKS", function () {
+				if (game.getStatus() !== 3) {
+					return;
+				}
+				game.updateStatus(1);
+			});
+			game.addTimeEvent("READY",function () {
+				Common.sendStompMessage(
+					"READY","READY");
+			},50);
 		}
 	})();
     game.init();

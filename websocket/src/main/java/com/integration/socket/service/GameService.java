@@ -73,8 +73,6 @@ public class GameService {
     }
 
     public void receiveMessage(MessageDto messageDto, String sendFrom) {
-        log.info("receive:{} from user:{}", messageDto.toString(), sendFrom);
-
         //新用户加入时处理，不需要检查用户是否存在
         if (messageDto.getMessageType() == MessageType.READY) {
             processNewUserReady(sendFrom);
@@ -86,6 +84,7 @@ public class GameService {
             return;
         }
 
+        log.info("receive:{} from user:{}", messageDto.toString(), sendFrom);
         switch (messageDto.getMessageType()) {
             case USER_MESSAGE:
                 messageService.processUserMessage(messageDto, sendFrom);

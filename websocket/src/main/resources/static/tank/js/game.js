@@ -7,8 +7,10 @@ function Game() {
     const thisGame = this;
 
     // 状态
-    // 0:关闭 1:正常 大于1为自定义状态
-    // 2:游戏第一次连接并且等待TANKS消息
+    // 0:关闭
+    // 1:正常 (大于1为自定义状态)
+    // 2:发送READY并等待USERS
+    // 3:发送ADD_TANK并等待TANKS消息
     let _status = 1;
     let _statusMessage = "暂停";  //当状态大于1时显示的提示字串
 
@@ -23,7 +25,9 @@ function Game() {
     let _framesPerSecond = 60;
 
     //定时触发器类
-    let _events = [];
+    const _timeEvents = [];
+    //消息触发器类
+    const _messageEvents = [];
 
     //用户类
     let _users = [];
@@ -42,6 +46,13 @@ function Game() {
 
     //网络连接
     this.receiveStompMessage = function (messageDto) {
+        //处理消息事件
+        if (_messageEvents[messageDto.messageType]) {
+            console.log("process message event:" + messageDto.messageType);
+            _messageEvents[messageDto.messageType].callback();
+            delete _messageEvents[messageDto.messageType];
+        }
+
         switch (messageDto.messageType) {
             case "USER_MESSAGE":
                 thisGame.addMessage(messageDto.message, "#FFF");
@@ -52,11 +63,6 @@ function Game() {
             case "USERS":
                 _users = messageDto.message;
                 break;
-            case "TANKS":
-                //第一次连接收到服务器消息后置为正常
-                if (_status === 2) {
-                    _status = 1;
-                }
             default:
                 //给当前场景处理服务消息
                 this.currentStage().receiveStompMessage(messageDto);
@@ -137,6 +143,8 @@ function Game() {
                     //游戏正常运行
                     const stage = thisGame.currentStage();
                     stage.update();
+                    thisGame.updateEvents();
+                    break;
                 default:
                     //游戏暂停，不影响游戏类的消息运行
                     thisGame.updateEvents();
@@ -226,57 +234,53 @@ function Game() {
     };
 
     //事件类
-    this.addEvent = function (eventType,callBack,timeout,ignoreLog) {
+    this.addTimeEvent = function (eventType,callBack,timeout,ignoreLog) {
         let event = {};
         event.eventType = eventType;
         event.callback = callBack;
         event.timeout = timeout ? timeout : 100; //默认100帧倒计时，不到1.5秒
         event.ignoreLog = ignoreLog;
-        _events.push(event);
+        _timeEvents.push(event);
+    };
+    this.addMessageEvent = function (eventType,callBack) {
+        //消息已存在
+        const messageEvent = {};
+        if (_messageEvents[eventType]) {
+            return;
+        }
+        messageEvent.callback = callBack;
+        _messageEvents[eventType] = messageEvent;
     };
     this.addConnectCheckEvent = function () {
         const callBack = function() {
             if (Common.stompConnectStatus() === true) {
-                thisGame.addEvent("CONNECT_CHECK", callBack, 120, true);
+                thisGame.addTimeEvent("CONNECT_CHECK", callBack, 120, true);
             } else {
                 thisGame.updateStatus(99,"与服务器断开！");
 
                 //TODO 断线重连
                 //5秒后关闭游戏
-                thisGame.addEvent("CLOSE", function () {
+                thisGame.addTimeEvent("CLOSE", function () {
                     thisGame.updateStatus(0);
                 },60 * 5);
             }
         };
 
         console.log("connect status will be checked per 120 frames...");
-        thisGame.addEvent("CONNECT_CHECK", callBack, 120);
-    };
-    this.addUserCheckEvent = function () {
-        this.addEvent("USER_CHECK", function () {
-            if (_users.length === 0) {
-                $.getJSON('/user/getUsers', function(result) {
-                    if (result.success) {
-                        _users = result.data;
-                    } else {
-                        thisGame.addMessage(result.message,"#F00");
-                    }
-                });
-            }
-        });
+        thisGame.addTimeEvent("CONNECT_CHECK", callBack, 120);
     };
     this.updateEvents = function () {
-        for (let i = 0; i < _events.length; ++i) {
-            const event = _events[i];
+        for (let i = 0; i < _timeEvents.length; ++i) {
+            const event = _timeEvents[i];
             if (event.timeout > 0) {
                 --event.timeout;
             } else {
                 if (event.ignoreLog !== true) {
-                    console.log("process event:" + event.eventType);
+                    console.log("process time event:" + event.eventType);
                 }
                 event.callback();
                 //删除事件
-                _events.splice(i,1);
+                _timeEvents.splice(i,1);
                 --i;
             }
         }
