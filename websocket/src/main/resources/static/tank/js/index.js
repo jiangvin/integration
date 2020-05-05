@@ -23,13 +23,22 @@
 			}
 		});
 		//提示信息
-		const info = stage.createItem({
+		const info1 = stage.createItem({
 			draw:function(context) {
 				context.font = '24px Helvetica';
 				context.textAlign = 'center';
 				context.textBaseline = 'middle';
 				context.fillStyle = '#949494';
-				context.fillText('请选择控制方式',Common.width() / 2,Common.height() - 70);
+				context.fillText('键盘: 上下左右/空格/回车控制游戏',Common.width() / 2,Common.height() * .6);
+			}
+		});
+		const info2 = stage.createItem({
+			draw:function(context) {
+				context.font = '24px Helvetica';
+				context.textAlign = 'center';
+				context.textBaseline = 'middle';
+				context.fillStyle = '#949494';
+				context.fillText('触控: 触控屏幕控制游戏',Common.width() / 2,Common.height() * .6 + 30);
 			}
 		});
 
@@ -71,18 +80,9 @@
 			Common.inputEnable(false);
 			Common.buttonEnable(false);
 
-			//更新提示文字
-            delete stage.items[info.id];
-            stage.createItem({
-                draw: function (context) {
-                    let text = Common.getTouch() ? "滑动屏幕控制" : "键盘上下左右控制,回车发言";
-                    context.font = '24px Helvetica';
-                    context.textAlign = 'center';
-                    context.textBaseline = 'middle';
-                    context.fillStyle = '#949494';
-                    context.fillText(text, Common.width() / 2, Common.height() - 70);
-                }
-            });
+			//删除提示文字
+            delete stage.items[info1.id];
+			delete stage.items[info2.id];
 
         	//重设输入框的属性和事件
 			Common.inputResize();
