@@ -4,8 +4,11 @@ import com.integration.socket.model.MessageType;
 import com.integration.socket.model.UserReadyResult;
 import com.integration.socket.model.bo.UserBo;
 import com.integration.socket.model.dto.MessageDto;
+import com.integration.socket.model.dto.RoomDto;
+import com.integration.socket.model.dto.RoomListDto;
 import com.integration.socket.stage.BaseStage;
 import com.integration.socket.stage.StageMenu;
+import com.integration.socket.stage.StageRoom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +48,12 @@ public class GameService {
      */
     private BaseStage menu;
     private ConcurrentHashMap<String, BaseStage> roomMap = new ConcurrentHashMap<>();
+
+    /**
+     * 新增List来保证rooms的顺序
+     * 顺序 旧 -> 新
+     */
+    private List<StageRoom> roomList = new ArrayList<>();
 
     @PostConstruct
     private void init() {
@@ -93,6 +104,14 @@ public class GameService {
                 currentStage(userBo).processMessage(messageDto, sendFrom);
                 break;
         }
+    }
+
+    public RoomListDto getRoomListDto(int start, int limit) {
+        List<RoomDto> roomDtoList = new ArrayList<>();
+        for (StageRoom room : roomList.subList(start, Math.min(start + limit, roomList.size()))) {
+            roomDtoList.add(RoomDto.convert(room));
+        }
+        return new RoomListDto(roomDtoList, roomList.size());
     }
 
     @Scheduled(fixedDelay = 17)
