@@ -87,10 +87,15 @@
 
         const btnJoin = document.createElement('button');
         btnJoin.textContent = "加入房间";
+        btnJoin.className = "action";
         div.appendChild(btnJoin);
 
         const btnCreate = document.createElement('button');
         btnCreate.textContent = "创建房间";
+        btnCreate.className = "action";
+        btnCreate.onclick = function () {
+            createRoom();
+        };
         div.appendChild(btnCreate);
 
         const btnNext = document.createElement('button');
@@ -247,7 +252,85 @@
         let left = 50 - width / 2;
         selectWindow.style.left = left + "%";
         selectWindow.style.width = width + "%";
-    }
+    };
 
+    const createRoom = function () {
+        //删除原本的所有DIV元素
+        const selectWindow = document.getElementById("room-list");
+        for (let i = 0; i < selectWindow.childNodes.length; ++i) {
+            const child = selectWindow.childNodes[i];
+            if (child.nodeType === 1) {
+                selectWindow.removeChild(child);
+                --i;
+            }
+        }
+
+        //增加房间名输出框
+        const div = document.createElement('div');
+        div.className = "select-item";
+        const label = document.createElement('label');
+        label.className = "radio-label";
+        label.textContent = "房间:";
+        div.appendChild(label);
+        let input = document.createElement('input');
+        input.type = "text";
+        input.id = "input-room-name";
+        input.placeholder = "请输入房间名";
+        input.className = "input-room-name";
+        div.appendChild(input);
+        selectWindow.appendChild(div);
+
+        selectWindow.appendChild(createRoomSelect("地图:",["默认"],"selectMap"));
+        selectWindow.appendChild(createRoomSelect("类型:",["PVP","PVE","EVE"],"selectType"));
+        document.getElementById("selectType").onchange = function() {
+            const selectGroup = $('#selectGroup');
+            selectGroup.find('option').remove().end();
+            switch ($('#selectType').val()) {
+                case "PVP":
+                    selectGroup.append('<option value="red">红队</option>');
+                    selectGroup.append('<option value="blue">蓝队</option>');
+                    selectGroup.append('<option value="view">观看</option>');
+                    break;
+                case "PVE":
+                    selectGroup.append('<option value="player">玩家</option>');
+                    selectGroup.append('<option value="view">观看</option>');
+                    break;
+                case "EVE":
+                    selectGroup.append('<option value="view">观看</option>');
+                    break;
+            }
+        };
+        selectWindow.appendChild(createRoomSelect("队伍:",["红队","蓝队","观看"],"selectGroup"));
+
+        const divButton = document.createElement('div');
+        divButton.className = "select-item";
+        selectWindow.appendChild(divButton);
+
+        const buttonCommit = document.createElement("button");
+        buttonCommit.textContent = "确定";
+        buttonCommit.className = "action";
+        divButton.appendChild(buttonCommit);
+        const buttonCancel = document.createElement("button");
+        buttonCancel.textContent = "返回";
+        buttonCancel.className = "action";
+        buttonCancel.onclick = function() {
+            Menu.showRoomList();
+        };
+        divButton.appendChild(buttonCancel);
+    };
+
+    const createRoomSelect = function (typeText,options,selectId) {
+        const div = document.createElement('div');
+        div.className = "select-item";
+        const label = document.createElement('label');
+        label.className = "radio-label";
+        label.textContent = typeText;
+        div.appendChild(label);
+        const select = Resource.createSelect(options);
+        select.id = selectId;
+        select.style.width = "12em";
+        div.appendChild(select);
+        return div;
+    }
 
 }

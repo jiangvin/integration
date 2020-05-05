@@ -61,3 +61,13 @@ Resource.getGame = function () {
 
     return this.game;
 };
+
+Resource.createSelect = function (options) {
+    const select = document.createElement('select');
+    options.forEach(function (optionText) {
+        const option = document.createElement('option');
+        option.text = optionText;
+        select.add(option);
+    })
+    return select;
+};

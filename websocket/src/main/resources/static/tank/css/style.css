@@ -41,6 +41,11 @@ input.input-message {
     top: 80%;
     width: 70%;
 }
+input.input-room-name {
+    position: relative;
+    text-align: left;
+    font-size: 1.3em;
+}
 
 select {
     text-align: center;
@@ -85,6 +90,9 @@ button.connect {
     position: absolute;
     left: 45%;
     top: 115px;
+}
+button.action {
+    width: 8em;
 }
 button.right {
     float: right;
