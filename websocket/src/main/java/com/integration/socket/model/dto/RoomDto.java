@@ -20,7 +20,7 @@ public class RoomDto {
     private String creator;
     private String mapId;
     private RoomType roomType;
-    private int userCount;
+    private Integer userCount;
 
     public static RoomDto convert(StageRoom stageRoom) {
         RoomDto roomDto = new RoomDto();

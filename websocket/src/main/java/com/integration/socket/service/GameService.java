@@ -98,6 +98,10 @@ public class GameService {
         roomList.remove(room);
     }
 
+    public boolean roomNameExists(String roomName) {
+        return roomMap.containsKey(roomName);
+    }
+
     public void receiveMessage(MessageDto messageDto, String sendFrom) {
         //新用户加入时处理，不需要检查用户是否存在
         if (messageDto.getMessageType() == MessageType.READY) {

@@ -408,6 +408,15 @@ Common.generateId = function() {
 Common.distance = function(x1,y1,x2,y2) {
     return Math.sqrt(Math.pow(x1 - x2,2) + Math.pow(y1 - y2, 2));
 };
+Common.getRequest = function(url,callBack) {
+    $.getJSON(url, function(result) {
+        if (!result.success) {
+            Resource.getGame().addMessage(result.message, "#ff0000");
+            return;
+        }
+        callBack(result.data);
+    });
+};
 Date.prototype.format = function(fmt) {
     const o = {
         "M+": this.getMonth() + 1,               //月份

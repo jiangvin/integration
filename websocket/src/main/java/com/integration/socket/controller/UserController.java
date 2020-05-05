@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,5 +48,18 @@ public class UserController {
     public RoomListDto getRooms(@RequestParam(value = "start", defaultValue = "0") int start,
                                 @RequestParam(value = "limit", defaultValue = "5") int limit) {
         return gameService.getRoomListDto(start, limit);
+    }
+
+    @GetMapping("/getMaps")
+    public List<String> getMaps() {
+        return Collections.singletonList("default");
+    }
+
+    @GetMapping("/checkRoomName")
+    public boolean checkRoomName(@RequestParam(value = "name") String name) {
+        if (gameService.roomNameExists(name)) {
+            throw new CustomException("输入的房间号重复: " + name);
+        }
+        return true;
     }
 }

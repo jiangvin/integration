@@ -94,7 +94,9 @@
         btnCreate.textContent = "创建房间";
         btnCreate.className = "action";
         btnCreate.onclick = function () {
-            createRoom();
+            Common.getRequest("/user/getMaps", function (data) {
+                createRoom(data);
+            });
         };
         div.appendChild(btnCreate);
 
@@ -144,12 +146,8 @@
     };
 
     const queryRoomList = function (menu) {
-        $.getJSON('/user/getRooms?start=' + menu.roomStart + "&limit=" + menu.roomLimit, function(result) {
-            if (!result.success) {
-                Resource.getGame().addMessage(result.message, "#ff0000");
-                return;
-            }
-            updatePageInfo(menu,result.data.roomCount);
+        Common.getRequest('/user/getRooms?start=' + menu.roomStart + "&limit=" + menu.roomLimit, function (data) {
+            updatePageInfo(menu,data.roomCount);
 
             //删除之前的元素
             const buttonChild = document.getElementById("button-label");
@@ -163,7 +161,7 @@
             }
 
             let selectFlag = false;
-            result.data.roomList.forEach(function (room) {
+            data.roomList.forEach(function (room) {
                 let div = document.createElement('div');
                 div.className = "select-item";
                 selectWindow.insertBefore(div,buttonChild);
@@ -254,7 +252,7 @@
         selectWindow.style.width = width + "%";
     };
 
-    const createRoom = function () {
+    const createRoom = function (data) {
         //删除原本的所有DIV元素
         const selectWindow = document.getElementById("room-list");
         for (let i = 0; i < selectWindow.childNodes.length; ++i) {
@@ -280,7 +278,7 @@
         div.appendChild(input);
         selectWindow.appendChild(div);
 
-        selectWindow.appendChild(createRoomSelect("地图:",["默认"],"selectMap"));
+        selectWindow.appendChild(createRoomSelect("地图:",data,"selectMap"));
         selectWindow.appendChild(createRoomSelect("类型:",["PVP","PVE","EVE"],"selectType"));
         document.getElementById("selectType").onchange = function() {
             const selectGroup = $('#selectGroup');
@@ -309,6 +307,9 @@
         const buttonCommit = document.createElement("button");
         buttonCommit.textContent = "确定";
         buttonCommit.className = "action";
+        buttonCommit.onclick = function() {
+            commitRoomToServer();
+        };
         divButton.appendChild(buttonCommit);
         const buttonCancel = document.createElement("button");
         buttonCancel.textContent = "返回";
@@ -331,6 +332,17 @@
         select.style.width = "12em";
         div.appendChild(select);
         return div;
+    };
+
+    const commitRoomToServer = function () {
+        const roomId = $('#input-room-name').val();
+        if (roomId === "") {
+            Resource.getGame().addMessage("房间号不能为空!","#F00");
+        }
+
+        Common.getRequest("/user/checkRoomName",function () {
+
+        })
     }
 
 }

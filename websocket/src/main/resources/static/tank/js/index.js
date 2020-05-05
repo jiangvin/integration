@@ -16,12 +16,7 @@
 			}
 
         	//检测名字是否重复
-			$.getJSON('/user/checkName?name=' + name, function(result) {
-				if (!result.success) {
-					game.addMessage(result.message, "#ff0000");
-					return;
-				}
-
+			Common.getRequest('/user/checkName?name=' + name,function (data) {
 				//设定是否为触控模式
 				Common.setTouch(e.currentTarget.id === "button2");
 
@@ -31,7 +26,6 @@
 					updateAfterConnect(name);
 				});
 			});
-
 		});
 
         //其他函数定义
