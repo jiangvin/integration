@@ -3,7 +3,8 @@
 function Item(params) {
     this.params = params||{};
     this.settings = {
-        id:"",
+        id: Resource.getId(),
+        showId: false,          //是否显示id
         stage: null,
         image: null,            //相应图片
         x:0,					//位置坐标:横坐标
@@ -19,13 +20,12 @@ function Item(params) {
         frames:1,				//速度等级,内部计算器times多少帧变化一次
         times:0,				//刷新画布计数(用于循环动画状态判断)
         timeout:0,				//倒计时(用于过程动画状态判断)
-        control:{},				//控制缓存,到达定位点时处理
         update:function(){}, 	//更新参数信息
         draw:function(){},		//绘制
 
         //绘图
         drawImage:function(context) {
-            if (this.id !== "") {
+            if (this.showId) {
                 context.font = '14px Helvetica';
                 context.textAlign = 'center';
                 context.textBaseline = 'bottom';

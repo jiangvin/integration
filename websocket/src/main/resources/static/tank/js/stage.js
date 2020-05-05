@@ -67,11 +67,7 @@ function Stage(params) {
 
     this.createItem = function(options) {
         const item = new Item(options);
-        //关系绑定
         item.stage = this;
-        if (item.id === "") {
-            item.id = Resource.getId();
-        }
         this.items[item.id] = item;
         return item;
     };
@@ -81,8 +77,9 @@ function Stage(params) {
             delete this.items[item.id];
         }
 
-        //增加新id
+        //增加新id,默认新id要显示出来
         item.id = newId;
+        item.showId = true;
         this.items[newId] = item;
     };
 
