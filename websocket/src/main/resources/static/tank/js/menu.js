@@ -327,7 +327,7 @@
         label.className = "radio-label";
         label.textContent = typeText;
         div.appendChild(label);
-        const select = Resource.createSelect(options);
+        const select = Resource.getSelect(options);
         select.id = selectId;
         select.style.width = "12em";
         div.appendChild(select);
@@ -338,9 +338,10 @@
         const roomId = $('#input-room-name').val();
         if (roomId === "") {
             Resource.getGame().addMessage("房间号不能为空!","#F00");
+            return;
         }
 
-        Common.getRequest("/user/checkRoomName",function () {
+        Common.getRequest("/user/checkRoomName?name=" + roomId,function () {
 
         })
     }

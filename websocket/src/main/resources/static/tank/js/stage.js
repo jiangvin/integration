@@ -70,7 +70,7 @@ function Stage(params) {
         //关系绑定
         item.stage = this;
         if (item.id === "") {
-            item.id = Common.generateId();
+            item.id = Resource.getId();
         }
         this.items[item.id] = item;
         return item;

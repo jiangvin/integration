@@ -401,10 +401,6 @@ Common.sendStompMessage = function(message, messageType, sendTo) {
 };
 
 //工具类
-let _id = 0;
-Common.generateId = function() {
-    return "id_" + _id++;
-};
 Common.distance = function(x1,y1,x2,y2) {
     return Math.sqrt(Math.pow(x1 - x2,2) + Math.pow(y1 - y2, 2));
 };
