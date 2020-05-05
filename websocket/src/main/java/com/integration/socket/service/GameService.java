@@ -1,5 +1,7 @@
 package com.integration.socket.service;
 
+import com.integration.socket.model.MessageType;
+import com.integration.socket.model.UserReadyResult;
 import com.integration.socket.model.bo.UserBo;
 import com.integration.socket.model.dto.MessageDto;
 import com.integration.socket.stage.BaseStage;
@@ -51,13 +53,15 @@ public class GameService {
         menu = new StageMenu(messageService);
     }
 
-    public void addUser(UserBo userBo) {
-        onlineUserService.add(userBo);
-        messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), userBo.getUsername(), false);
+    public void subscribeInUserCache(String username, String destination) {
+        onlineUserService.subscribeInUserCache(username, destination);
+    }
+
+    public void addNewUserCache(UserBo userBo) {
+        onlineUserService.addNewUserCache(userBo);
     }
 
     public void removeUser(String username) {
-        //用户离开
         UserBo userBo = onlineUserService.get(username);
         if (userBo == null) {
             return;
@@ -69,12 +73,18 @@ public class GameService {
     }
 
     public void receiveMessage(MessageDto messageDto, String sendFrom) {
+        log.info("receive:{} from user:{}", messageDto.toString(), sendFrom);
+
+        //新用户加入时处理，不需要检查用户是否存在
+        if (messageDto.getMessageType() == MessageType.READY) {
+            processNewUserReady(sendFrom);
+            return;
+        }
+
         UserBo userBo = userCheckAndGetSendFrom(messageDto, sendFrom);
         if (userBo == null) {
             return;
         }
-
-        log.info("receive:{} from user:{}", messageDto.toString(), sendFrom);
 
         switch (messageDto.getMessageType()) {
             case USER_MESSAGE:
@@ -113,5 +123,21 @@ public class GameService {
 
         //检查发送方
         return onlineUserService.get(sendFrom);
+    }
+
+    private void processNewUserReady(String username) {
+        UserReadyResult result = onlineUserService.processNewUserReady(username);
+        switch (result) {
+            case ADD_USER:
+                //第一次加入，广播所有用户玩家信息
+                messageService.sendUserStatusAndMessage(onlineUserService.getUserList(), username, false);
+                break;
+            case ALREADY_EXISTS:
+                //已经加入了，单独给用户再同步一次玩家信息
+                messageService.sendMessage(new MessageDto(onlineUserService.getUserList(), MessageType.USERS, username));
+                break;
+            default:
+                break;
+        }
     }
 }

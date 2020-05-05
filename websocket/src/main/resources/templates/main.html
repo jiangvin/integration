@@ -84,6 +84,9 @@
             stompClient.subscribe('/user/queue/send', function (response) {
                 receive(JSON.parse(response.body));
             });
+
+            //准备好了
+            stompClient.send("/send", {}, JSON.stringify({ 'messageType': 'READY' }));
         });
     }
 

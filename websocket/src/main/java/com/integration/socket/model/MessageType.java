@@ -33,6 +33,11 @@ public enum MessageType {
     /**
      * 单向发送
      * 客户端 -> 服务器
+     * 用户准备完毕
+     */
+    READY,
+
+    /**
      * 用户新增tank，只在menu页使用
      */
     ADD_TANK,

@@ -4,7 +4,6 @@ import com.integration.socket.model.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 /**
  * @author 蒋文龙(Vin)
@@ -17,7 +16,6 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class MessageDto {
 
-    @NonNull
     private Object message;
 
     private MessageType messageType = MessageType.USER_MESSAGE;
