@@ -177,10 +177,13 @@ Common.bindTouch = function() {
         _touchControl.touchY = y;
         Resource.getGame().controlEvent(Common.getEventFromTouch());
     });
-    window.addEventListener('touchend', function() {
-        _touchControl.touchX = null;
-        _touchControl.touchY = null;
-        Resource.getGame().controlEvent("Stop");
+    window.addEventListener('touchend', function(e) {
+        //所有手指都离开屏幕才算坦克停止
+        if (e.touches.length === 0) {
+            _touchControl.touchX = null;
+            _touchControl.touchY = null;
+            Resource.getGame().controlEvent("Stop");
+        }
     });
     window.addEventListener('touchmove', function(e) {
         const touchPoint = Common.getTouchPoint(e.touches[0]);
@@ -316,7 +319,7 @@ Common.inputBindMessageControl = function() {
 Common.inputBindKeyboard = function() {
     window.addEventListener("keydown",function (e) {
         if (e.key === "Enter") {
-            Common.inputMessageEvent();
+            Common.inputMessageEvent(true);
         }
     });
 };
@@ -334,7 +337,7 @@ Common.inputBindTouch = function() {
         Common.inputMessageEvent();
     });
 };
-Common.inputMessageEvent = function() {
+Common.inputMessageEvent = function(inputFocus) {
     const input = $('#input');
     if (_inputEnable) {
         //关闭输入框
@@ -350,7 +353,9 @@ Common.inputMessageEvent = function() {
         //打开输入框
         _inputEnable = !_inputEnable;
         Common.inputEnable(_inputEnable);
-        input.focus();
+        if (inputFocus) {
+            input.focus();
+        }
     }
 };
 
