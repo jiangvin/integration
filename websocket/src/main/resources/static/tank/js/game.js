@@ -253,7 +253,7 @@ function Game() {
     };
     this.addConnectCheckEvent = function () {
         const callBack = function() {
-            if (Common.stompConnectStatus() === true) {
+            if (Common.getStompStatus() === true) {
                 thisGame.addTimeEvent("CONNECT_CHECK", callBack, 120, true);
             } else {
                 thisGame.updateStatus(99,"与服务器断开！");

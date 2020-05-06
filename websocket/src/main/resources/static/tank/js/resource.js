@@ -4,6 +4,7 @@ function Resource() {
     this.game = null;
     this.images = null;
     this.id = null;
+    this.stompClient = null;
 }
 
 Resource.getImages = function () {
@@ -78,4 +79,12 @@ Resource.getSelect = function (options) {
         select.add(option);
     });
     return select;
+};
+
+Resource.setStompClient = function (stompClient) {
+    this.stompClient = stompClient;
+};
+
+Resource.getStompClient = function () {
+    return this.stompClient;
 };

@@ -360,31 +360,33 @@ Common.inputMessageEvent = function(inputFocus) {
 };
 
 //网络通信
-let _stompClient;
-Common.stompConnectStatus = function() {
-  if (!_stompClient) {
+Common.getStompStatus = function() {
+    const stompClient = Resource.getStompClient();
+  if (!stompClient) {
       return false;
   }
-  return _stompClient.connected;
+  return stompClient.connected;
 };
 Common.stompConnect = function(name, callback) {
     const socket = new SockJS('/websocket-simple?name=' + name);
-    _stompClient = Stomp.over(socket);
-    _stompClient.connect({}, function(frame) {
+    const stompClient = Stomp.over(socket);
+    stompClient.connect({}, function(frame) {
         Resource.getGame().addMessage("网络连接中: " + frame,"#ffffff");
 
         // 客户端订阅消息, 公共消息和私有消息
-        _stompClient.subscribe('/topic/send', function (response) {
+        stompClient.subscribe('/topic/send', function (response) {
             Resource.getGame().receiveStompMessage(JSON.parse(response.body));
         });
-        _stompClient.subscribe('/user/queue/send', function (response) {
+        stompClient.subscribe('/user/queue/send', function (response) {
             Resource.getGame().receiveStompMessage(JSON.parse(response.body));
         });
+        Resource.setStompClient(stompClient);
         callback();
     });
 };
 Common.sendStompMessage = function(message, messageType, sendTo) {
-    if (!_stompClient) {
+    const stompClient = Resource.getStompClient();
+    if (!stompClient) {
         return;
     }
 
@@ -392,12 +394,17 @@ Common.sendStompMessage = function(message, messageType, sendTo) {
         messageType = "USER_MESSAGE";
     }
 
-    _stompClient.send("/send", {},
+    stompClient.send("/send", {},
         JSON.stringify({
           "message": message,
           "messageType": messageType,
             "sendTo": sendTo
         }));
+};
+Common.getStompInfo = function() {
+    const stompInfo = {};
+
+    return stompInfo;
 };
 
 //工具类
