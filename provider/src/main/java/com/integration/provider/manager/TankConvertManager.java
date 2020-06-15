@@ -38,6 +38,8 @@ public class TankConvertManager {
 
     private static final String JQUERY = "jquery.js";
 
+    private static final String VERSION = "_1.js";
+
     public static void main(String[] args) {
         String[] jsFolders = {"js\\web", "js\\share", "js\\app"};
 
@@ -104,7 +106,13 @@ public class TankConvertManager {
                 }
 
                 for (JsFile jsFile : jsFiles) {
-                    content.append(String.format("<script src=\"%s\"></script>", jsFile.path)).append("\r\n");
+                    String scriptPath;
+                    if (jsFile.path.contains(JQUERY)) {
+                        scriptPath = jsFile.path;
+                    } else {
+                        scriptPath = jsFile.path.replace(".js", VERSION);
+                    }
+                    content.append(String.format("<script src=\"%s\"></script>", scriptPath)).append("\r\n");
                 }
             }
 
@@ -144,7 +152,7 @@ public class TankConvertManager {
                 content.append(line.replace("export default class ", "class ")).append("\r\n");
             }
 
-            @Cleanup FileOutputStream fileOutputStream = new FileOutputStream(file);
+            @Cleanup FileOutputStream fileOutputStream = new FileOutputStream(new File(file.getPath().replace(".js", VERSION)));
             fileOutputStream.write(content.toString().getBytes());
         } catch (Exception e) {
             log.error("catch error:", e);
