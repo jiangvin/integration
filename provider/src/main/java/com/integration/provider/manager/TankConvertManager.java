@@ -36,9 +36,9 @@ public class TankConvertManager {
     private static final String HOME = "D:\\files\\java\\socket\\websocket\\src\\main\\resources";
     private static final String JS_HOME = HOME + "\\static\\";
 
-    private static final String JQUERY = "jquery.js";
+    private static final String IGNORE_PATH = "\\libs\\";
 
-    private static final String VERSION = "_1.js";
+    private static final String VERSION = "_4.js";
 
     public static void main(String[] args) {
         String[] jsFolders = {"js\\web", "js\\share", "js\\app"};
@@ -70,14 +70,14 @@ public class TankConvertManager {
             return;
         }
 
+        if (file.getPath().contains(IGNORE_PATH)) {
+            return;
+        }
+
         JsFile jsFile = new JsFile();
         jsFile.path = file.getPath().replace(JS_HOME, "");
         jsFile.name = jsFile.path.substring(jsFile.path.lastIndexOf("\\") + 1);
         jsFiles.add(jsFile);
-
-        if (file.getName().equals(JQUERY)) {
-            return;
-        }
 
         convertJsFile(file, jsFile, jsFiles);
 
@@ -106,12 +106,7 @@ public class TankConvertManager {
                 }
 
                 for (JsFile jsFile : jsFiles) {
-                    String scriptPath;
-                    if (jsFile.path.contains(JQUERY)) {
-                        scriptPath = jsFile.path;
-                    } else {
-                        scriptPath = jsFile.path.replace(".js", VERSION);
-                    }
+                    String scriptPath = jsFile.path.replace(".js", VERSION);
                     content.append(String.format("<script src=\"%s\"></script>", scriptPath)).append("\r\n");
                 }
             }
