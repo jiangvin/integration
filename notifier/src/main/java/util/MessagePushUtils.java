@@ -6,6 +6,7 @@ import model.Service;
 import model.WxMessage;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,6 +49,31 @@ public class MessagePushUtils {
         if (content.lastIndexOf("\n") == content.length() - 1) {
             content = content.substring(0, content.length() - 1);
         }
+
+        //优化提示信息，避免太多
+        String[] infos = content.split("\n");
+        if (infos.length > 5) {
+            List<String> keepInfos = new ArrayList<>();
+            for (int i = 0; i < infos.length; ++i) {
+                String info = infos[i];
+                if (!info.contains("恢复正常") || i == infos.length - 1) {
+                    keepInfos.add(info);
+                }
+            }
+
+            //缩减后依然大于5
+            if (keepInfos.size() > 5) {
+                keepInfos = keepInfos.subList(0, 5);
+            }
+
+            StringBuilder contentBuilder = new StringBuilder();
+            for (String keepInfo : keepInfos) {
+                contentBuilder.append(keepInfo).append("\n");
+            }
+            contentBuilder.append(String.format("(等总共%d条信息)", infos.length));
+            content = contentBuilder.toString();
+        }
+
 
         WxMessage wxMessage = new WxMessage(content, mentionedList);
         if (PropertyUtils.isDebug()) {
