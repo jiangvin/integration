@@ -70,10 +70,9 @@ public class MessagePushProperty {
         content.append(adjustPushMessage(service));
         updateAllStatus(service);
 
-        //提醒负责人,只在错误数量低于20的推送时提醒
+        //提醒负责人
         if (!service.getConnectFlag()
                 && service.getCoPhone() != null
-                && service.getErrorCount() <= PropertyUtils.MAX_PUSH_FOR_ERROR_COUNT
                 && !mentionedList.contains(service.getCoPhone())) {
             mentionedList.add(service.getCoPhone());
         }
