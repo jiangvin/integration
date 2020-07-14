@@ -36,11 +36,12 @@ public class TankConvertManager {
     }
 
     private static final String JS_FILE = ".js";
+    private static final String IGNORE_PATH = "\\libs\\";
 
     private static final String HOME = "D:\\files\\java\\socket\\websocket\\src\\main\\resources";
     private static final String JS_HOME = HOME + "\\static\\";
 
-    private static final String IGNORE_PATH = "\\libs\\";
+    private static final String ARTIFACT_TOOL = "C:\\Users\\jiangvin\\AppData\\Roaming\\npm\\uglifyjs.cmd";
 
     private static final String VERSION = "_40.js";
 
@@ -68,7 +69,7 @@ public class TankConvertManager {
         }
 
         //压缩
-        String command = String.format("C:\\Users\\jiangvin\\AppData\\Roaming\\npm\\uglifyjs.cmd %s -o %s -c -m", path, path);
+        String command = String.format("%s %s -o %s -c -m", ARTIFACT_TOOL, path, path);
         log.info("exec command:{}", command);
         log.info("result:{}", execCmd(command));
     }
@@ -134,14 +135,14 @@ public class TankConvertManager {
         convertJsFile(file, jsFile, jsFiles);
 
         //reset weight
-        checkWeight(jsFile, jsFiles);
+        checkAllWeight(jsFile, jsFiles);
     }
 
-    private static void checkWeight(JsFile target, List<JsFile> jsFiles) {
+    private static void checkAllWeight(JsFile target, List<JsFile> jsFiles) {
         for (JsFile jsFile : jsFiles) {
             if (jsFile.moreThan.contains(target.name) && jsFile.weight <= target.weight) {
                 jsFile.weight = target.weight + 1;
-                checkWeight(jsFile, jsFiles);
+                checkAllWeight(jsFile, jsFiles);
             }
         }
     }
@@ -186,7 +187,7 @@ public class TankConvertManager {
                 String fileName = line.replace("'", "").replace("\"", "").replace(";", "");
                 fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
                 Integer w = getWeight(jsFiles, fileName);
-                if (w != null) {
+                if (w != null && w >= weight) {
                     weight = w + 1;
                 }
                 jsFile.moreThan.add(fileName);
